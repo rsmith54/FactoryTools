@@ -1,8 +1,7 @@
-#include <DibosonRJ/calculateRJigsawVariables.h>
 
 #include <DibosonRJ/SelectDileptonicWWEvents.h>
 
-#include <DibosonRJ/RJigsawCalculator.h>
+#include <DibosonRJ/RJigsawCalculator_lvlv.h>
 
 #include <DibosonRJ/CalibrateST.h>
 
@@ -20,13 +19,9 @@
 #endif
 
 #ifdef __CINT__
-#pragma link C++ class RJigsawCalculator+;
+#pragma link C++ class RJigsawCalculator_lvlv+;
 #endif
 
 #ifdef __CINT__
 #pragma link C++ class SelectDileptonicWWEvents+;
-#endif
-
-#ifdef __CINT__
-#pragma link C++ class calculateRJigsawVariables+;
 #endif
