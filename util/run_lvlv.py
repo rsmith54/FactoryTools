@@ -47,8 +47,10 @@ job.useXAOD()
 logging.info("creating algorithms")
 calibrateST        = ROOT.CalibrateST()
 selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
-#selectDileptonicWW = SelectDileptonicWWEvents()
-#job.algsAdd(alg)
+
+calculateRJigsawVariables                   = ROOT.CalculateRJigsawVariables()
+calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
+
 job.algsAdd(calibrateST)
 job.algsAdd(selectDileptonicWW)
 
