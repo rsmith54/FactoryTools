@@ -3,6 +3,8 @@
 
 #include <EventLoop/Algorithm.h>
 
+class RJigsawCalculator;
+
 class CalculateRJigsawVariables : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
@@ -10,7 +12,10 @@ class CalculateRJigsawVariables : public EL::Algorithm
 public:
   // float cutValue;
 
-
+  enum RJigsawCalculatorName {
+    none = 0,
+    lvlv = 1
+  };
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -19,7 +24,9 @@ public:
   // Tree *myTree; //!
   // TH1 *myHist; //!
 
+  RJigsawCalculatorName  m_calculator_name;
 
+  RJigsawCalculator     * m_calculator;//!
 
   // this is a standard constructor
   CalculateRJigsawVariables ();

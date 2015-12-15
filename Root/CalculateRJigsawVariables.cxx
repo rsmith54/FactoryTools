@@ -2,13 +2,23 @@
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 #include <DibosonRJ/CalculateRJigsawVariables.h>
+#include <DibosonRJ/RJigsawCalculator_lvlv.h>
+
+
+#include <xAODBase/IParticleContainer.h>
+
+#include <DibosonRJ/strongErrorCheck.h>
+#include <unordered_map>
+#include <iostream>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
 
+#define printDebug()  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
 
-
-CalculateRJigsawVariables :: CalculateRJigsawVariables ()
+CalculateRJigsawVariables :: CalculateRJigsawVariables () :
+m_calculator_name(none),//user needs to choose their calculator name
+m_calculator(nullptr)
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -17,7 +27,6 @@ CalculateRJigsawVariables :: CalculateRJigsawVariables ()
   // initialization code will go into histInitialize() and
   // initialize().
 }
-
 
 
 EL::StatusCode CalculateRJigsawVariables :: setupJob (EL::Job& job)
@@ -74,6 +83,13 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
+  std::cout << "You have configured a " << m_calculator_name << " calculator.  See the code for enum definitions. " << std::endl;
+
+  if(m_calculator_name == lvlv)
+    {
+      m_calculator = new RJigsawCalculator_lvlv;
+      m_calculator->initialize();
+    }
   return EL::StatusCode::SUCCESS;
 }
 
@@ -85,6 +101,11 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
+
+  xAOD::IParticleContainer myparticles;
+  std::unordered_map<std::string,double> mymap;
+
+  m_calculator->calculate(mymap,myparticles);
   return EL::StatusCode::SUCCESS;
 }
 
@@ -111,6 +132,8 @@ EL::StatusCode CalculateRJigsawVariables :: finalize ()
   // submission node after all your histogram outputs have been
   // merged.  This is different from histFinalize() in that it only
   // gets called on worker nodes that processed input events.
+  delete m_calculator;
+
   return EL::StatusCode::SUCCESS;
 }
 
