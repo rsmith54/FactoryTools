@@ -11,6 +11,8 @@
 
 #include "xAODMissingET/MissingETContainer.h"
 #include "xAODMissingET/MissingETAuxContainer.h"
+#include "TauAnalysisTools/TauSmearingTool.h"
+#include "TauAnalysisTools/ITauSmearingTool.h"
 
 #include "DibosonRJ/CalibrateST.h"
 #include "DibosonRJ/strongErrorCheck.h"
@@ -101,9 +103,21 @@ EL::StatusCode CalibrateST :: initialize ()
   ST::SettingDataSource datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" );
 
-  STRONG_CHECK(m_objTool->setProperty("DataSource", datasource).isFailure());
-  STRONG_CHECK(m_objTool->initialize());
+  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource));
+  STRONG_CHECK( m_objTool->setProperty("JetInputType", xAOD::JetInput::EMTopo) );
+  STRONG_CHECK( m_objTool->setProperty("EleId", "TightLH") );
+  STRONG_CHECK( m_objTool->setProperty("EleIdBaseline", "LooseAndBLayerLH") );
+  STRONG_CHECK( m_objTool->setProperty("TauId", "Tight") );
+  STRONG_CHECK( m_objTool->setProperty("EleIsoWP", "GradientLoose") );
+  STRONG_CHECK( m_objTool->setProperty("METDoTrkSyst", false) );
+  STRONG_CHECK( m_objTool->setProperty("METDoCaloSyst", false) );
 
+  TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
+  STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );
+  STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
+
+
+  STRONG_CHECK( m_objTool->initialize());
 
   return EL::StatusCode::SUCCESS;
 }
@@ -143,7 +157,7 @@ EL::StatusCode CalibrateST :: execute ()
   // Taus
   xAOD::TauJetContainer* taus_nominal(nullptr);
   xAOD::ShallowAuxContainer* taus_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
+  //  STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
 
 
   xAOD::MissingETContainer*    newMetContainer    = new xAOD::MissingETContainer();
@@ -155,7 +169,7 @@ EL::StatusCode CalibrateST :: execute ()
 				  electrons_nominal,
 				  muons_nominal,
 				  photons_nominal,
-				  taus_nominal,
+				  nullptr, //taus_nominal,
 				  true,//tst
 				  true,//dojvt  cut
 				  nullptr//no invisible particles in met
