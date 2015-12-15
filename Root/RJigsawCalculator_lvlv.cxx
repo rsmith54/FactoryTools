@@ -178,7 +178,7 @@ EL::StatusCode RJigsawCalculator_lvlv::initialize() {
 }
 
 EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string, double>& RJVars,
-						 xAOD::IParticleContainer particles
+						 xAOD::IParticleContainer& particles
 						 ){
 
 

@@ -22,7 +22,7 @@ public :
   //to be used per event
   virtual   EL::StatusCode clearEvent() = 0 ;
   virtual   EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-			   xAOD::IParticleContainer particles
+			   xAOD::IParticleContainer& particles
 			   ) = 0;
 
   // this is needed to distribute the algorithm to the workers
