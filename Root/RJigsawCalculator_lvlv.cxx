@@ -22,8 +22,10 @@
 #include "RestFrames/ContraBoostInvJigsaw.hh"
 
 #include "DibosonRJ/RJigsawCalculator_lvlv.h"
-
 #include "EventLoop/StatusCode.h"
+
+// this is needed to distribute the algorithm to the workers
+ClassImp(RJigsawCalculator_lvlv)
 
 RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
   LAB_G(nullptr),

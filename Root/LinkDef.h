@@ -3,6 +3,7 @@
 
 #include <DibosonRJ/SelectDileptonicWWEvents.h>
 
+#include <DibosonRJ/RJigsawCalculator.h>
 #include <DibosonRJ/RJigsawCalculator_lvlv.h>
 
 #include <DibosonRJ/CalibrateST.h>
@@ -18,6 +19,10 @@
 
 #ifdef __CINT__
 #pragma link C++ class CalibrateST+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class RJigsawCalculator+;
 #endif
 
 #ifdef __CINT__

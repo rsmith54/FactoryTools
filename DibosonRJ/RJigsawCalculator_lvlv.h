@@ -33,6 +33,7 @@ namespace RestFrames {
 
 class RJigsawCalculator_lvlv : public RJigsawCalculator {
 
+public :
   RJigsawCalculator_lvlv();
   virtual ~RJigsawCalculator_lvlv ();
 
@@ -69,7 +70,8 @@ public :
   virtual EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
 				   xAOD::IParticleContainer particles
 				   );
-
+  // this is needed to distribute the algorithm to the workers
+  ClassDef(RJigsawCalculator_lvlv, 1);
 };
 
 #endif //RJIGSAW_CALCULATOR_LVLV_H
