@@ -25,6 +25,52 @@
 
 #include "EventLoop/StatusCode.h"
 
+RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
+  LAB_G(nullptr),
+  H_G(nullptr),
+  Wa_G(nullptr),
+  Wb_G(nullptr),
+  La_G(nullptr),
+  Na_G(nullptr),
+  Lb_G(nullptr),
+  Nb_G(nullptr),
+  LAB_R(nullptr),
+  H_R(nullptr),
+  Wa_R(nullptr),
+  Wb_R(nullptr),
+  La_R(nullptr),
+  Na_R(nullptr),
+  Lb_R(nullptr),
+  Nb_R(nullptr),
+  INV_R(nullptr),
+  MinMassJigsaw_R(nullptr),
+  RapidityJigsaw_R(nullptr),
+  ContraBoostJigsaw_R(nullptr)
+{}
+
+RJigsawCalculator_lvlv :: ~RJigsawCalculator_lvlv() {
+  delete LAB_G;
+  delete H_G;
+  delete Wa_G;
+  delete Wb_G;
+  delete La_G;
+  delete Na_G;
+  delete Lb_G;
+  delete Nb_G;
+  delete LAB_R;
+  delete H_R;
+  delete Wa_R;
+  delete Wb_R;
+  delete La_R;
+  delete Na_R;
+  delete Lb_R;
+  delete Nb_R;
+  delete INV_R;
+  delete MinMassJigsaw_R;
+  delete RapidityJigsaw_R;
+  delete ContraBoostJigsaw_R;
+}
+
 EL::StatusCode RJigsawCalculator_lvlv::clearEvent() {
   if(! LAB_G->ClearEvent()){return EL::StatusCode::FAILURE;}
   if(! LAB_R->ClearEvent()){return EL::StatusCode::FAILURE;}

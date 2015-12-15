@@ -3,10 +3,7 @@
 //author : Russell Smith
 //date   : December 2015
 
-#include "EventLoop/StatusCode.h"
-#include "xAODBase/IParticleContainer.h"
-
-#include <unordered_map>
+#include "DibosonRJ/RJigsawCalculator.h"
 
 namespace RestFrames {
   class LabGenFrame;
@@ -34,7 +31,10 @@ namespace RestFrames {
   class ContraBoostInvJigsaw;
 }
 
-class RJigsawCalculator_lvlv {
+class RJigsawCalculator_lvlv : public RJigsawCalculator {
+
+  RJigsawCalculator_lvlv();
+  virtual ~RJigsawCalculator_lvlv ();
 
 private :
   RestFrames::LabGenFrame *      LAB_G;
@@ -62,13 +62,13 @@ private :
 
 public :
 
-  EL::StatusCode initialize();
+  virtual EL::StatusCode initialize();
 
   //to be used per event
-  EL::StatusCode clearEvent();
-  EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-			   xAOD::IParticleContainer particles
-			   );
+  virtual EL::StatusCode clearEvent();
+  virtual EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
+				   xAOD::IParticleContainer particles
+				   );
 
 };
 
