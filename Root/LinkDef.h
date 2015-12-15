@@ -1,3 +1,5 @@
+#include <DibosonRJ/CalculateRJigsawVariables.h>
+
 
 #include <DibosonRJ/SelectDileptonicWWEvents.h>
 
@@ -24,4 +26,8 @@
 
 #ifdef __CINT__
 #pragma link C++ class SelectDileptonicWWEvents+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class CalculateRJigsawVariables+;
 #endif
