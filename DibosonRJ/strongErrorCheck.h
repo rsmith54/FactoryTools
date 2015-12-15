@@ -9,7 +9,7 @@
       if( ! result ) {                                   \
          ::Error( __PRETTY_FUNCTION__, "Failed to execute: \"%s\"", \
                   #ARG );                                \
-         return 1;                                       \
+	return EL::StatusCode::FAILURE;		 \
       }                                                  \
    } while( false )
 
