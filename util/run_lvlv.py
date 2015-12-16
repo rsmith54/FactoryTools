@@ -68,8 +68,8 @@ job.algsAdd(calculateRJigsawVariables)
 job.algsAdd(writeOutputNtuple)
 
 if options.nevents > 0 :
-    logging.info("Running " + str(option.nevents) + " events")
-    job.options().setDouble (ROOT.EL.Job.optMaxEvents, nevents);
+    logging.info("Running " + str(options.nevents) + " events")
+    job.options().setDouble (ROOT.EL.Job.optMaxEvents, float(options.nevents));
 
 
 import os
