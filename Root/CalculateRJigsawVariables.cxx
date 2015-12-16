@@ -5,6 +5,7 @@
 // Infrastructure include(s):
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
+#include "xAODRootAccess/TStore.h"
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
@@ -109,13 +110,17 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
 
+  xAOD::TStore * store = wk()->xaodStore();
+
   xAOD::IParticleContainer myparticles;
-  std::unordered_map<std::string,double> mymap;
+  std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
   //STRONG_CHECK //todo
-  m_calculator->calculate(mymap,myparticles);
+  m_calculator->calculate(*mymap,myparticles);
 
-
+  //todo remove this is for testing!!
+  (*mymap)["mytestoutput" ] = 1.;
+  assert( store->record( mymap , "RJigsawVarsMap" /*we should probably add a suffix for calculator type*/));
 
   return EL::StatusCode::SUCCESS;
 }

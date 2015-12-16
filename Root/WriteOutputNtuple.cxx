@@ -2,8 +2,12 @@
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 
+#include "xAODRootAccess/TEvent.h"
+#include "xAODRootAccess/TStore.h"
+
 #include <RJigsawTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
+
 
 #include <iostream>
 
@@ -96,9 +100,15 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
 
+  std::unordered_map<std::string,double> * mymap = nullptr;
+  store->retrieve( mymap,   "RJigsawVarsMap");
 
+  for (auto const& it : *mymap ) {
+    m_ntupManager->pushProperty(it.first,
+				it.second
+				);
+  }
   m_ntupManager->pushProperty("test", 1.);
-
 
   m_ntupManager-> fill();
   m_ntupManager->clear();
