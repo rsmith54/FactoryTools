@@ -10,6 +10,7 @@ parser.add_option("--submitDir", help="dir to store the output", default="submit
 parser.add_option("--dataDir", help="dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/")
 parser.add_option("--driver", help="select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help="Overwrite submit dir if it already exists",action="store_true", default=False)
+parser.add_option('--nevents', help="Run n events ", default = -1 )
 
 #parser.add_option("--whichAnalysis", help="select analysis", choices=("noCut", "Zmumu" , "Zee", "Wenu","NONE"), default="NONE")
 #parser.add_option("--errorLevel", help="select error level", choices=("VERBOSE","DEBUG","WARNING","ERROR"), default="WARNING")
@@ -45,14 +46,31 @@ job.sampleHandler(sh_all)
 job.useXAOD()
 
 logging.info("creating algorithms")
+
+outputFilename = "test"
+
 calibrateST        = ROOT.CalibrateST()
 selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
-
 calculateRJigsawVariables                   = ROOT.CalculateRJigsawVariables()
 calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
 
+writeOutputNtuple = ROOT.WriteOutputNtuple()
+writeOutputNtuple.outputName = outputFilename
+
+
+output = ROOT.EL.OutputStream(outputFilename);
+job.outputAdd(output);
+ntuple = ROOT.EL.NTupleSvc(outputFilename);
+job.algsAdd(ntuple)
 job.algsAdd(calibrateST)
 job.algsAdd(selectDileptonicWW)
+job.algsAdd(calculateRJigsawVariables)
+job.algsAdd(writeOutputNtuple)
+
+if options.nevents > 0 :
+    logging.info("Running " + str(option.nevents) + " events")
+    job.options().setDouble (ROOT.EL.Job.optMaxEvents, nevents);
+
 
 import os
 if os.path.isdir(options.submitDir) :
