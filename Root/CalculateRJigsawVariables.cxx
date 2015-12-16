@@ -1,6 +1,11 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
+
+// Infrastructure include(s):
+#include "xAODRootAccess/Init.h"
+#include "xAODRootAccess/TEvent.h"
+
 #include <DibosonRJ/CalculateRJigsawVariables.h>
 #include <DibosonRJ/RJigsawCalculator_lvlv.h>
 
@@ -88,7 +93,8 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   if(m_calculator_name == lvlv)
     {
       m_calculator = new RJigsawCalculator_lvlv;
-      STRONG_CHECK(m_calculator->initialize());
+      //STRONG_CHECK //todo
+      m_calculator->initialize();
     }
 
   return EL::StatusCode::SUCCESS;
@@ -106,7 +112,8 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   xAOD::IParticleContainer myparticles;
   std::unordered_map<std::string,double> mymap;
 
-  STRONG_CHECK(  m_calculator->calculate(mymap,myparticles));
+  //STRONG_CHECK //todo
+  m_calculator->calculate(mymap,myparticles);
 
 
 
