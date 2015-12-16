@@ -88,8 +88,9 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   if(m_calculator_name == lvlv)
     {
       m_calculator = new RJigsawCalculator_lvlv;
-      m_calculator->initialize();
+      STRONG_CHECK(m_calculator->initialize());
     }
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -105,7 +106,10 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   xAOD::IParticleContainer myparticles;
   std::unordered_map<std::string,double> mymap;
 
-  m_calculator->calculate(mymap,myparticles);
+  STRONG_CHECK(  m_calculator->calculate(mymap,myparticles));
+
+
+
   return EL::StatusCode::SUCCESS;
 }
 
