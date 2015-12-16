@@ -7,7 +7,7 @@
 
 
 # the name of the package:
-PACKAGE              = DibosonRJ
+PACKAGE              = RJigsawTools
 
 # the libraries to link with this one:
 PACKAGE_PRELOAD      =

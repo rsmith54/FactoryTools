@@ -1,7 +1,7 @@
 // Dear emacs, this is -*- c++ -*-
 // $Id: errorcheck.h 299732 2014-03-27 17:41:34Z krasznaa $
-#ifndef DIBOSONRJ_ERRORCHECK_H
-#define DIBOSONRJ_ERRORCHECK_H
+#ifndef RJIGSAWTOOLS_ERRORCHECK_H
+#define RJIGSAWTOOLS_ERRORCHECK_H
 
 #define STRONG_CHECK( ARG )                                     \
    do {                                                  \
@@ -13,4 +13,4 @@
       }                                                  \
    } while( false )
 
-#endif // DIBOSONRJ_ERRORCHECK_H
+#endif // RJIGSAWTOOLS_ERRORCHECK_H

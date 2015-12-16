@@ -14,8 +14,8 @@
 #include "TauAnalysisTools/TauSmearingTool.h"
 #include "TauAnalysisTools/ITauSmearingTool.h"
 
-#include "DibosonRJ/CalibrateST.h"
-#include "DibosonRJ/strongErrorCheck.h"
+#include "RJigsawTools/CalibrateST.h"
+#include "RJigsawTools/strongErrorCheck.h"
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalibrateST)

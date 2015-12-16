@@ -1,5 +1,5 @@
-#ifndef DibosonRJ_SelectDileptonicWWEvents_H
-#define DibosonRJ_SelectDileptonicWWEvents_H
+#ifndef RJigsawTools_SelectDileptonicWWEvents_H
+#define RJigsawTools_SelectDileptonicWWEvents_H
 
 #include <EventLoop/Algorithm.h>
 

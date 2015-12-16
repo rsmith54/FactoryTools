@@ -3,7 +3,7 @@
 //author : Russell Smith
 //date   : December 2015
 
-#include "DibosonRJ/RJigsawCalculator.h"
+#include "RJigsawTools/RJigsawCalculator.h"
 
 namespace RestFrames {
   class LabGenFrame;

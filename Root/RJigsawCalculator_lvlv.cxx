@@ -21,7 +21,7 @@
 #include "RestFrames/SetRapidityInvJigsaw.hh"
 #include "RestFrames/ContraBoostInvJigsaw.hh"
 
-#include "DibosonRJ/RJigsawCalculator_lvlv.h"
+#include "RJigsawTools/RJigsawCalculator_lvlv.h"
 #include "EventLoop/StatusCode.h"
 
 // this is needed to distribute the algorithm to the workers

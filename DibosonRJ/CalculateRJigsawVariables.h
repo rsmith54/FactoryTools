@@ -1,5 +1,5 @@
-#ifndef DibosonRJ_CalculateRJigsawVariables_H
-#define DibosonRJ_CalculateRJigsawVariables_H
+#ifndef RJigsawTools_CalculateRJigsawVariables_H
+#define RJigsawTools_CalculateRJigsawVariables_H
 
 #include <EventLoop/Algorithm.h>
 

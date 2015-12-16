@@ -1,13 +1,13 @@
-#include <DibosonRJ/CalculateRJigsawVariables.h>
+#include <RJigsawTools/CalculateRJigsawVariables.h>
 
 
-#include <DibosonRJ/SelectDileptonicWWEvents.h>
+#include <RJigsawTools/SelectDileptonicWWEvents.h>
 
-#include <DibosonRJ/RJigsawCalculator.h>
-#include <DibosonRJ/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/RJigsawCalculator.h>
+#include <RJigsawTools/RJigsawCalculator_lvlv.h>
 
-#include <DibosonRJ/WriteOutputNtuple.h>
-#include <DibosonRJ/CalibrateST.h>
+#include <RJigsawTools/WriteOutputNtuple.h>
+#include <RJigsawTools/CalibrateST.h>
 
 #ifdef __CINT__
 

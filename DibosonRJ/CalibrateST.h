@@ -1,5 +1,5 @@
-#ifndef DibosonRJ_CalibrateST_H
-#define DibosonRJ_CalibrateST_H
+#ifndef RJigsawTools_CalibrateST_H
+#define RJigsawTools_CalibrateST_H
 
 #include <EventLoop/Algorithm.h>
 #include "SUSYTools/SUSYObjDef_xAOD.h"

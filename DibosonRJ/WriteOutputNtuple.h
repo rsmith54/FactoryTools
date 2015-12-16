@@ -1,5 +1,5 @@
-#ifndef DibosonRJ_WriteOutputNtuple_H
-#define DibosonRJ_WriteOutputNtuple_H
+#ifndef RJigsawTools_WriteOutputNtuple_H
+#define RJigsawTools_WriteOutputNtuple_H
 
 #include <EventLoop/Algorithm.h>
 

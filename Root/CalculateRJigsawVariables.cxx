@@ -6,13 +6,13 @@
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
 
-#include <DibosonRJ/CalculateRJigsawVariables.h>
-#include <DibosonRJ/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/CalculateRJigsawVariables.h>
+#include <RJigsawTools/RJigsawCalculator_lvlv.h>
 
 
 #include <xAODBase/IParticleContainer.h>
 
-#include <DibosonRJ/strongErrorCheck.h>
+#include <RJigsawTools/strongErrorCheck.h>
 #include <unordered_map>
 #include <iostream>
 

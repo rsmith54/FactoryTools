@@ -2,7 +2,7 @@
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 
-#include <DibosonRJ/WriteOutputNtuple.h>
+#include <RJigsawTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
 
 #include <iostream>

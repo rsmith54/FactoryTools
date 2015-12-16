@@ -1,7 +1,7 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <DibosonRJ/SelectDileptonicWWEvents.h>
+#include <RJigsawTools/SelectDileptonicWWEvents.h>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(SelectDileptonicWWEvents)
