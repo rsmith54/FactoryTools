@@ -104,11 +104,10 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   store->retrieve( mymap,   "RJigsawVarsMap");
 
   for (auto const& it : *mymap ) {
-    m_ntupManager->pushProperty(it.first,
-				it.second
-				);
+    m_ntupManager->setProperty(it.first,
+			       it.second
+			       );
   }
-  m_ntupManager->pushProperty("test", 1.);
 
   m_ntupManager-> fill();
   m_ntupManager->clear();
