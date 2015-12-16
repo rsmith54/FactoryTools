@@ -47,21 +47,19 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-outputFilename = "test"
+outputFilename = "test_outputName"
 
+output = ROOT.EL.OutputStream(outputFilename);
 calibrateST        = ROOT.CalibrateST()
 selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
-calculateRJigsawVariables                   = ROOT.CalculateRJigsawVariables()
+
+calculateRJigsawVariables = ROOT.CalculateRJigsawVariables()
 calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
 
 writeOutputNtuple = ROOT.WriteOutputNtuple()
 writeOutputNtuple.outputName = outputFilename
 
-
-output = ROOT.EL.OutputStream(outputFilename);
 job.outputAdd(output);
-ntuple = ROOT.EL.NTupleSvc(outputFilename);
-job.algsAdd(ntuple)
 job.algsAdd(calibrateST)
 job.algsAdd(selectDileptonicWW)
 job.algsAdd(calculateRJigsawVariables)
