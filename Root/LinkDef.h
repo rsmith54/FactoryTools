@@ -6,6 +6,7 @@
 #include <DibosonRJ/RJigsawCalculator.h>
 #include <DibosonRJ/RJigsawCalculator_lvlv.h>
 
+#include <DibosonRJ/WriteOutputNtuple.h>
 #include <DibosonRJ/CalibrateST.h>
 
 #ifdef __CINT__
@@ -35,4 +36,8 @@
 
 #ifdef __CINT__
 #pragma link C++ class CalculateRJigsawVariables+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class WriteOutputNtuple+;
 #endif

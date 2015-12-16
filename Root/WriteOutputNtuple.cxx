@@ -1,14 +1,19 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
+
 #include <DibosonRJ/WriteOutputNtuple.h>
+#include <CommonTools/NtupManager.h>
+
+#include <iostream>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(WriteOutputNtuple)
 
 
 
-WriteOutputNtuple :: WriteOutputNtuple ()
+WriteOutputNtuple :: WriteOutputNtuple () :
+m_ntupManager(nullptr)
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -74,6 +79,10 @@ EL::StatusCode WriteOutputNtuple :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
+  std::cout << "writing to output file " << outputName << std::endl;
+  m_ntupManager = new NtupManager;
+  m_ntupManager->initialize( outputName+"tree", wk()->getOutputFile(outputName));//todo make the treename smarter
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -85,6 +94,15 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
+  xAOD::TStore * store = wk()->xaodStore();
+
+
+  m_ntupManager->pushProperty("test", 1.);
+
+
+  m_ntupManager-> fill();
+  m_ntupManager->clear();
+
   return EL::StatusCode::SUCCESS;
 }
 

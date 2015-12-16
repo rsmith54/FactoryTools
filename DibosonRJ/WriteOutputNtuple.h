@@ -3,14 +3,20 @@
 
 #include <EventLoop/Algorithm.h>
 
+class NtupManager;
+
 class WriteOutputNtuple : public EL::Algorithm
 {
+
+private :
+  NtupManager * m_ntupManager; //!
+
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
 public:
   // float cutValue;
 
-
+  std::string outputName;
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -18,6 +24,7 @@ public:
 public:
   // Tree *myTree; //!
   // TH1 *myHist; //!
+
 
 
 
