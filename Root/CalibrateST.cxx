@@ -112,6 +112,8 @@ EL::StatusCode CalibrateST :: initialize ()
   STRONG_CHECK( m_objTool->setProperty("METDoTrkSyst", false) );
   STRONG_CHECK( m_objTool->setProperty("METDoCaloSyst", false) );
 
+  m_objTool->msg().setLevel( MSG::ERROR );
+
   TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
   STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );
   STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
