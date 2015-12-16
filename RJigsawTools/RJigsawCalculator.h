@@ -17,6 +17,7 @@ public :
 
   virtual ~RJigsawCalculator() = 0;
 
+
   virtual EL::StatusCode initialize() = 0;
 
   //to be used per event
@@ -29,5 +30,7 @@ public :
   ClassDef(RJigsawCalculator, 1);
 
 };
+
+inline RJigsawCalculator::~RJigsawCalculator() { }
 
 #endif //RJIGSAW_CALCULATOR_H
