@@ -109,6 +109,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
+  m_calculator->clearEvent();
 
   xAOD::TStore * store = wk()->xaodStore();
 
@@ -121,6 +122,8 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   //todo remove this is for testing!!
   (*mymap)["mytestoutput" ] = 1.;
   assert( store->record( mymap , "RJigsawVarsMap" /*we should probably add a suffix for calculator type*/));
+
+
 
   return EL::StatusCode::SUCCESS;
 }
