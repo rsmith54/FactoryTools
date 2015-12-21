@@ -111,8 +111,6 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // code will go.
   m_calculator->clearEvent();
 
-  xAOD::TStore * store = wk()->xaodStore();
-
   xAOD::IParticleContainer myparticles;
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
