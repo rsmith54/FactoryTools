@@ -32,7 +32,9 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
+#list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
+list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
+
 ROOT.SH.scanDir(sh_all,list, "*")
 
 sh_all.setMetaString ("nc_tree", "CollectionTree");
