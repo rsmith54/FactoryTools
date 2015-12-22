@@ -20,8 +20,6 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalibrateST)
 
-
-
 CalibrateST :: CalibrateST () :
 m_objTool(nullptr)
 {
@@ -186,8 +184,8 @@ EL::StatusCode CalibrateST :: execute ()
 		 );
 
   //everything other than MET is stored by default using the ST call with true
-  STRONG_CHECK( store->record( newMetContainer    , "STCalib" + "MET"         ));//todo configurable if needed
-  STRONG_CHECK( store->record( newMetAuxContainer , "STCalib" + "MET" + "Aux."));//todo configurable if needed
+  STRONG_CHECK( store->record( newMetContainer    , "STCalibMET"         ));//todo configurable if needed
+  STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux."));//todo configurable if needed
 
   return EL::StatusCode::SUCCESS;
 }
