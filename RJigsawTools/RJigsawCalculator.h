@@ -8,26 +8,51 @@
 #include "xAODMissingET/MissingET.h"
 
 #include <unordered_map>
+#include <iostream>
 
 class RJigsawCalculator {
 
-private :
-
 public :
-
-
   virtual ~RJigsawCalculator() = 0;
 
 
-  virtual EL::StatusCode initialize() = 0;
+private :
+  enum ClearEventCalled {
+    NOTCALLED = 0,
+    CALLED = 1
+  };
 
+  ClearEventCalled  m_clearEventCalled ;
+
+public :
+  EL::StatusCode initialize(){m_clearEventCalled = CALLED;return doInitialize();}
   //to be used per event
-  virtual   EL::StatusCode clearEvent() = 0 ;
-  virtual   EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-				     xAOD::IParticleContainer& particles,
-				     xAOD::MissingET & met
-				     ) = 0;
+  EL::StatusCode clearEvent(){m_clearEventCalled = CALLED;return doClearEvent();}
+  EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
+			   xAOD::IParticleContainer& particles,
+			   xAOD::MissingET & met
+			   ){
+    if(m_clearEventCalled == NOTCALLED){
+      std::cout << "You didn't call clearEvent ! Exiting." << std::endl;
+      return EL::StatusCode::FAILURE;
+    }
+    m_clearEventCalled = NOTCALLED;
+    return doCalculate( RJVars,
+			particles,
+			met);
+  }
 
+private :
+  //todo probably clean this up
+  virtual EL::StatusCode doInitialize(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+  virtual EL::StatusCode doClearEvent(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RJVars,
+                                     xAOD::IParticleContainer& particles,
+                                     xAOD::MissingET& met
+                                     ){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+
+
+public :
   // this is needed to distribute the algorithm to the workers
   ClassDef(RJigsawCalculator, 1);
 

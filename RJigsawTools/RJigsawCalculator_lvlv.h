@@ -35,7 +35,7 @@ class RJigsawCalculator_lvlv : public RJigsawCalculator {
 
 public :
   RJigsawCalculator_lvlv();
-  virtual ~RJigsawCalculator_lvlv ();
+  virtual  ~RJigsawCalculator_lvlv ();
 
 private :
   RestFrames::LabGenFrame *      LAB_G;
@@ -68,17 +68,13 @@ private :
   double m_mL;
   double m_mN;
 
-
-public :
-
-  virtual EL::StatusCode initialize();
-
-  //to be used per event
-  virtual EL::StatusCode clearEvent();
-  virtual EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-				   xAOD::IParticleContainer& particles,
-				   xAOD::MissingET& met
-				   );
+private :
+  virtual EL::StatusCode doInitialize();
+  virtual EL::StatusCode doClearEvent();
+  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RJVars,
+                                     xAOD::IParticleContainer& particles,
+                                     xAOD::MissingET& met
+                                     );
   // this is needed to distribute the algorithm to the workers
   ClassDef(RJigsawCalculator_lvlv, 1);
 };
