@@ -189,8 +189,7 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::strin
 						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
-
-
+  //todo check the initialization
 
   // generate event
   double PTH = m_mH*gRandom->Rndm();
