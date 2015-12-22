@@ -139,17 +139,17 @@ EL::StatusCode CalibrateST :: execute ()
   // Electrons
   xAOD::ElectronContainer* electrons_nominal(nullptr);
   xAOD::ShallowAuxContainer* electrons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetElectrons(electrons_nominal, electrons_nominal_aux) );
+  STRONG_CHECK( m_objTool->GetElectrons(electrons_nominal, electrons_nominal_aux, true) );
 
   // Photons
   xAOD::PhotonContainer* photons_nominal(nullptr);
   xAOD::ShallowAuxContainer* photons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetPhotons(photons_nominal,photons_nominal_aux) );
+  STRONG_CHECK( m_objTool->GetPhotons(photons_nominal,photons_nominal_aux, true) );
 
   // Muons
   xAOD::MuonContainer* muons_nominal(nullptr);
   xAOD::ShallowAuxContainer* muons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetMuons(muons_nominal, muons_nominal_aux) );
+  STRONG_CHECK( m_objTool->GetMuons(muons_nominal, muons_nominal_aux, true) );
 
   // Jets
   xAOD::JetContainer* jets_nominal(nullptr);
@@ -166,15 +166,16 @@ EL::StatusCode CalibrateST :: execute ()
   xAOD::MissingETAuxContainer* newMetAuxContainer = new xAOD::MissingETAuxContainer();
   newMetContainer->setStore(newMetAuxContainer);
 
+  //todo this needs to be moved and calculated after selections
   STRONG_CHECK( m_objTool->GetMET(*newMetContainer,
 				  jets_nominal,
 				  electrons_nominal,
 				  muons_nominal,
 				  photons_nominal,
 				  nullptr, //taus_nominal,
-				  true,//tst
-				  true,//dojvt  cut
-				  nullptr//no invisible particles in met
+				  true,    //tst
+				  true,    //dojvt  cut
+				  nullptr  //no invisible particles in met
 				  ));
 
 
@@ -184,6 +185,9 @@ EL::StatusCode CalibrateST :: execute ()
 					 )
 		 );
 
+  //everything other than MET is stored by default using the ST call with true
+  STRONG_CHECK( store->record( newMetContainer    , "STCalib" + "MET"         ));//todo configurable if needed
+  STRONG_CHECK( store->record( newMetAuxContainer , "STCalib" + "MET" + "Aux."));//todo configurable if needed
 
   return EL::StatusCode::SUCCESS;
 }
