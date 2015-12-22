@@ -8,6 +8,7 @@
 #include "xAODMissingET/MissingET.h"
 
 #include <unordered_map>
+#include <iostream>
 
 class RJigsawCalculator {
 
@@ -15,25 +16,41 @@ public :
   virtual ~RJigsawCalculator() = 0;
 
 
+private :
+  enum ClearEventCalled {
+    NOTCALLED = 0,
+    CALLED = 1
+  };
+
+  ClearEventCalled  m_clearEventCalled ;
+
 public :
-  EL::StatusCode initialize(){return doInitialize();};
+  EL::StatusCode initialize(){m_clearEventCalled = CALLED;return doInitialize();}
   //to be used per event
-  EL::StatusCode clearEvent(){return doClearEvent();};
+  EL::StatusCode clearEvent(){m_clearEventCalled = CALLED;return doClearEvent();}
   EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
 			   xAOD::IParticleContainer& particles,
 			   xAOD::MissingET & met
-			   ){return doCalculate( RJVars,
-						 particles,
-						 met);};
+			   ){
+    if(m_clearEventCalled == NOTCALLED){
+      std::cout << "You didn't call clearEvent ! Exiting." << std::endl;
+      return EL::StatusCode::FAILURE;
+    }
+    m_clearEventCalled = NOTCALLED;
+    return doCalculate( RJVars,
+			particles,
+			met);
+  }
 
 private :
   //todo probably clean this up
-  virtual EL::StatusCode doInitialize(){assert(0&&"you called the base calculator function! Exiting");return EL::StatusCode::FAILURE;};
-  virtual EL::StatusCode doClearEvent(){assert(0&&"you called the base calculator function! Exiting");return EL::StatusCode::FAILURE;};
+  virtual EL::StatusCode doInitialize(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+  virtual EL::StatusCode doClearEvent(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
   virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RJVars,
                                      xAOD::IParticleContainer& particles,
                                      xAOD::MissingET& met
-                                     ){assert(0&&"you called the base calculator function! Exiting");return EL::StatusCode::FAILURE;};
+                                     ){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+
 
 public :
   // this is needed to distribute the algorithm to the workers
