@@ -81,14 +81,14 @@ RJigsawCalculator_lvlv :: ~RJigsawCalculator_lvlv() {
   delete ContraBoostJigsaw_R;
 }
 
-EL::StatusCode RJigsawCalculator_lvlv::clearEvent() {
+EL::StatusCode RJigsawCalculator_lvlv::doClearEvent() {
   if(! LAB_G->ClearEvent()){return EL::StatusCode::FAILURE;}
   if(! LAB_R->ClearEvent()){return EL::StatusCode::FAILURE;}
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_lvlv::initialize() {
+EL::StatusCode RJigsawCalculator_lvlv::doInitialize() {
   using namespace RestFrames;
 
   m_mH  = 125.;
@@ -185,10 +185,10 @@ EL::StatusCode RJigsawCalculator_lvlv::initialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string, double>& RJVars,
-						 xAOD::IParticleContainer& particles,
-						 xAOD::MissingET& met
-						 ){
+EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::string, double>& RJVars,
+						   xAOD::IParticleContainer& particles,
+						   xAOD::MissingET& met
+						   ){
 
 
 
