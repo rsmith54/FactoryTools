@@ -5,6 +5,7 @@
 
 #include "EventLoop/StatusCode.h"
 #include "xAODBase/IParticleContainer.h"
+#include "xAODMissingET/MissingET.h"
 
 #include <unordered_map>
 
@@ -23,8 +24,9 @@ public :
   //to be used per event
   virtual   EL::StatusCode clearEvent() = 0 ;
   virtual   EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-			   xAOD::IParticleContainer& particles
-			   ) = 0;
+				     xAOD::IParticleContainer& particles,
+				     xAOD::MissingET & met
+				     ) = 0;
 
   // this is needed to distribute the algorithm to the workers
   ClassDef(RJigsawCalculator, 1);

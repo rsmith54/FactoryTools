@@ -178,16 +178,17 @@ EL::StatusCode RJigsawCalculator_lvlv::initialize() {
 }
 
 EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string, double>& RJVars,
-						 xAOD::IParticleContainer& particles
+						 xAOD::IParticleContainer& particles,
+						 xAOD::MissingET& met
 						 ){
 
 
 
   // generate event
-  LAB_G.ClearEvent();                            // clear the gen tree
   double PTH = mH*gRandom->Rndm();
-  LAB_G.SetTransverseMomenta(PTH);               // give the Higgs some Pt
   double PzH = mH*(2.*gRandom->Rndm()-1.);
+  //todo get these from the particles given
+
   LAB_G.SetLongitudinalMomenta(PzH);             // give the Higgs some Pz
   LAB_G.AnalyzeEvent();                          // generate a new event
 

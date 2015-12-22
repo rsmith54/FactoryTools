@@ -68,7 +68,8 @@ public :
   //to be used per event
   virtual EL::StatusCode clearEvent();
   virtual EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-				   xAOD::IParticleContainer& particles
+				   xAOD::IParticleContainer& particles,
+				   xAOD::MissingET& met
 				   );
   // this is needed to distribute the algorithm to the workers
   ClassDef(RJigsawCalculator_lvlv, 1);
