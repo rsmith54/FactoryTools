@@ -61,6 +61,14 @@ private :
   RestFrames::SetRapidityInvJigsaw * RapidityJigsaw_R;
   RestFrames::ContraBoostInvJigsaw * ContraBoostJigsaw_R;
 
+  double m_mH;
+  double m_mHw;
+  double m_mW;
+  double m_mWw;
+  double m_mL;
+  double m_mN;
+
+
 public :
 
   virtual EL::StatusCode initialize();
