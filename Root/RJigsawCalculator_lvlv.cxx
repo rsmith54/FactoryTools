@@ -223,7 +223,7 @@ EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string,
 
   RJVars["MH_over_HGMass"] = MH/H_G->GetMass();
   RJVars["HGMass"] = H_G->GetMass();
-  RJVars["MW/mW"] = MW/m_mW;
+  RJVars["MW_over_mW"] = MW/m_mW;
 
   // h_MH->Fill(MH/H_G->GetMass());
   // h_mH->Fill(H_G->GetMass());
