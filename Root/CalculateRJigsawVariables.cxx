@@ -5,12 +5,14 @@
 // Infrastructure include(s):
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
+#include "xAODRootAccess/TStore.h"
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
 
 
 #include <xAODBase/IParticleContainer.h>
+#include <xAODMissingET/MissingETContainer.h>
 
 #include <RJigsawTools/strongErrorCheck.h>
 #include <unordered_map>
@@ -108,12 +110,21 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
+  xAOD::TStore * store = wk()->xaodStore();
+
+  m_calculator->clearEvent();
 
   xAOD::IParticleContainer myparticles;
-  std::unordered_map<std::string,double> mymap;
+  xAOD::MissingETContainer * metcont = nullptr;
+
+  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
+
+  std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
   //STRONG_CHECK //todo
-  m_calculator->calculate(mymap,myparticles);
+  m_calculator->calculate(*mymap,myparticles, *((*metcont)["Final"]));//this syntax is annoying...
+
+  assert( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
 
 

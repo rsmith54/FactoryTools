@@ -61,6 +61,14 @@ private :
   RestFrames::SetRapidityInvJigsaw * RapidityJigsaw_R;
   RestFrames::ContraBoostInvJigsaw * ContraBoostJigsaw_R;
 
+  double m_mH;
+  double m_mHw;
+  double m_mW;
+  double m_mWw;
+  double m_mL;
+  double m_mN;
+
+
 public :
 
   virtual EL::StatusCode initialize();
@@ -68,7 +76,8 @@ public :
   //to be used per event
   virtual EL::StatusCode clearEvent();
   virtual EL::StatusCode calculate(std::unordered_map<std::string, double>& RJVars,
-				   xAOD::IParticleContainer& particles
+				   xAOD::IParticleContainer& particles,
+				   xAOD::MissingET& met
 				   );
   // this is needed to distribute the algorithm to the workers
   ClassDef(RJigsawCalculator_lvlv, 1);

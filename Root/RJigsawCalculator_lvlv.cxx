@@ -28,6 +28,14 @@
 ClassImp(RJigsawCalculator_lvlv)
 
 RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
+  //todo fix
+  m_mH(0),
+  m_mHw(0),
+  m_mW(0),
+  m_mWw(0),
+  m_mL(0),
+  m_mN(0),
+
   LAB_G(nullptr),
   H_G(nullptr),
   Wa_G(nullptr),
@@ -83,8 +91,18 @@ EL::StatusCode RJigsawCalculator_lvlv::clearEvent() {
 EL::StatusCode RJigsawCalculator_lvlv::initialize() {
   using namespace RestFrames;
 
+  m_mH  = 125.;
+  m_mHw = 1. ;
+
+  m_mW  = 80.;
+  m_mWw = 3  ;
+
+  m_mL = .105;
+  m_mN = 0.;
+
+
   // Set up toy generation tree (not needed for reconstruction)
-  LAB_G = new LabGenFrame      ("LAB_G","LAB");
+  LAB_G = new LabGenFrame     ("LAB_G","LAB");
   H_G   = new ResonanceGenFrame("H_G","H");
   Wa_G  = new ResonanceGenFrame ("Wa_G","W_{a}");
   Wb_G  = new ResonanceGenFrame("Wb_G","W_{b}");
@@ -104,29 +122,19 @@ EL::StatusCode RJigsawCalculator_lvlv::initialize() {
   if( ! LAB_G->InitializeTree()){ return EL::StatusCode::FAILURE;}
   // set Higgs masses
 
-  //todo fix
-  double const mH  = 125.;
-  double const mHw = 1. ;
-
-  double const mW  = 80.;
-  double const mWw = 3  ;
-
-  double const mL = .105;
-  double const mN = 0.;
-
-  H_G->SetMass (mH  );
-  H_G->SetWidth(mHw);
+  H_G->SetMass (m_mH  );
+  H_G->SetWidth(m_mHw);
   // set W masses
-  Wa_G->SetMass(mW);
-  Wb_G->SetMass(mW);
-  Wa_G->SetWidth(mWw);
-  Wb_G->SetWidth(mWw);
+  Wa_G->SetMass(m_mW);
+  Wb_G->SetMass(m_mW);
+  Wa_G->SetWidth(m_mWw);
+  Wb_G->SetWidth(m_mWw);
   // set lepton masses
-  La_G->SetMass(mL);
-  Lb_G->SetMass(mL);
+  La_G->SetMass(m_mL);
+  Lb_G->SetMass(m_mL);
   // set neutrino masses
-  Na_G->SetMass(mN);
-  Nb_G->SetMass(mN);
+  Na_G->SetMass(m_mN);
+  Nb_G->SetMass(m_mN);
 
   if( ! LAB_G->InitializeAnalysis()){ return EL::StatusCode::FAILURE;}
 
@@ -178,9 +186,50 @@ EL::StatusCode RJigsawCalculator_lvlv::initialize() {
 }
 
 EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string, double>& RJVars,
-						 xAOD::IParticleContainer& particles
+						 xAOD::IParticleContainer& particles,
+						 xAOD::MissingET& met
 						 ){
 
+
+
+  // generate event
+  double PTH = m_mH*gRandom->Rndm();
+  LAB_G->SetTransverseMomenta(PTH);               // give the Higgs some Pt
+  double PzH = m_mH*(2.*gRandom->Rndm()-1.);
+  LAB_G->SetLongitudinalMomenta(PzH);             // give the Higgs some Pz
+  LAB_G->AnalyzeEvent();                          // generate a new event
+
+  // analyze event
+  TVector3 MET = LAB_G->GetInvisibleMomentum();    // Get the MET from gen tree
+  MET.SetZ(0.);
+
+  // give the signal-like tree the event info and analyze
+  INV_R->SetLabFrameThreeVector(MET);               // Set the MET in reco tree
+  La_R->SetLabFrameFourVector(La_G->GetFourVector());
+  Lb_R->SetLabFrameFourVector(Lb_G->GetFourVector());
+  LAB_R->AnalyzeEvent();                            // analyze the event
+
+  //////////////////////////////////////
+  // Observable Calculations
+  //////////////////////////////////////
+
+  //
+  // signal tree observables
+  //
+
+  //*** Higgs mass
+  double MH = H_R->GetMass();
+  double MW = Wa_R->GetMass();
+
+  RJVars["MH_over_HGMass"] = MH/H_G->GetMass();
+  RJVars["HGMass"] = H_G->GetMass();
+  RJVars["MW_over_mW"] = MW/m_mW;
+
+  // h_MH->Fill(MH/H_G->GetMass());
+  // h_mH->Fill(H_G->GetMass());
+  // h_MW->Fill(MW/mW);
+  // h_MH_v_MW->Fill(MH/H_G->GetMass(),MW/mW);
+  // h_mW_v_mW->Fill(Wa_G->GetMass(),Wb_G->GetMass());
 
 
   return EL::StatusCode::SUCCESS;

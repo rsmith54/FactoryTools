@@ -32,7 +32,9 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
+#list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
+list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
+
 ROOT.SH.scanDir(sh_all,list, "*")
 
 sh_all.setMetaString ("nc_tree", "CollectionTree");
@@ -47,21 +49,19 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-outputFilename = "test"
+outputFilename = "test_outputName"
 
+output = ROOT.EL.OutputStream(outputFilename);
 calibrateST        = ROOT.CalibrateST()
 selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
-calculateRJigsawVariables                   = ROOT.CalculateRJigsawVariables()
+
+calculateRJigsawVariables = ROOT.CalculateRJigsawVariables()
 calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
 
 writeOutputNtuple = ROOT.WriteOutputNtuple()
 writeOutputNtuple.outputName = outputFilename
 
-
-output = ROOT.EL.OutputStream(outputFilename);
 job.outputAdd(output);
-ntuple = ROOT.EL.NTupleSvc(outputFilename);
-job.algsAdd(ntuple)
 job.algsAdd(calibrateST)
 job.algsAdd(selectDileptonicWW)
 job.algsAdd(calculateRJigsawVariables)
