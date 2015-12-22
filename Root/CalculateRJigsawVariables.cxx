@@ -117,8 +117,6 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   //STRONG_CHECK //todo
   m_calculator->calculate(*mymap,myparticles);
 
-  //todo remove this is for testing!!
-  (*mymap)["mytestoutput" ] = 1.;
   assert( store->record( mymap , "RJigsawVarsMap" /*we should probably add a suffix for calculator type*/));
 
 

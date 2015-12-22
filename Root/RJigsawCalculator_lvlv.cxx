@@ -183,5 +183,43 @@ EL::StatusCode RJigsawCalculator_lvlv::calculate(std::unordered_map<std::string,
 
 
 
+  // generate event
+  LAB_G.ClearEvent();                            // clear the gen tree
+  double PTH = mH*gRandom->Rndm();
+  LAB_G.SetTransverseMomenta(PTH);               // give the Higgs some Pt
+  double PzH = mH*(2.*gRandom->Rndm()-1.);
+  LAB_G.SetLongitudinalMomenta(PzH);             // give the Higgs some Pz
+  LAB_G.AnalyzeEvent();                          // generate a new event
+
+  // analyze event
+  TVector3 MET = LAB_G.GetInvisibleMomentum();    // Get the MET from gen tree
+  MET.SetZ(0.);
+
+  // give the signal-like tree the event info and analyze
+  LAB_R.ClearEvent();                              // clear the signal-like tree
+  INV_R.SetLabFrameThreeVector(MET);               // Set the MET in reco tree
+  La_R.SetLabFrameFourVector(La_G.GetFourVector());
+  Lb_R.SetLabFrameFourVector(Lb_G.GetFourVector());
+  LAB_R.AnalyzeEvent();                            // analyze the event
+
+  //////////////////////////////////////
+  // Observable Calculations
+  //////////////////////////////////////
+
+  //
+  // signal tree observables
+  //
+
+  //*** Higgs mass
+  double MH = H_R.GetMass();
+  double MW = Wa_R.GetMass();
+
+  h_MH->Fill(MH/H_G.GetMass());
+  h_mH->Fill(H_G.GetMass());
+  h_MW->Fill(MW/mW);
+  h_MH_v_MW->Fill(MH/H_G.GetMass(),MW/mW);
+  h_mW_v_mW->Fill(Wa_G.GetMass(),Wb_G.GetMass());
+
+
   return EL::StatusCode::SUCCESS;
 }
