@@ -10,9 +10,7 @@
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
 
-
-#include <xAODBase/IParticleContainer.h>
-#include <xAODMissingET/MissingETContainer.h>
+#include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/strongErrorCheck.h>
 #include <unordered_map>
@@ -111,6 +109,19 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
+
+
+  const xAOD::EventInfo* eventInfo = 0;
+  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+
+  // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
+  if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
+
+
+
+  // if( eventInfo->isAvailable< float >( "ZpT" ) )
+  //   m_ZpT = eventInfo->auxdecor< float >( "ZpT" );
+
 
   m_calculator->clearEvent();
 

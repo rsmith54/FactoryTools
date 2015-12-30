@@ -18,6 +18,8 @@ public:
 
   std::string outputName;
 
+  std::string regionName;
+
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
   // node (done by the //!)

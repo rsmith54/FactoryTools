@@ -3,6 +3,19 @@
 #include <EventLoop/Worker.h>
 #include <RJigsawTools/SelectDileptonicWWEvents.h>
 
+#include <AsgTools/MsgStream.h>
+#include <AsgTools/MsgStreamMacros.h>
+
+#include "xAODRootAccess/Init.h"
+#include "xAODRootAccess/TEvent.h"
+#include "xAODRootAccess/TStore.h"
+
+#include "SUSYTools/SUSYObjDef_xAOD.h"
+
+#include <RJigsawTools/strongErrorCheck.h>
+
+
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(SelectDileptonicWWEvents)
 
@@ -87,6 +100,61 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   // code will go.
 
   //todo add some preselection here!
+
+  xAOD::TStore * store = wk()->xaodStore();
+
+  std::vector<xAOD::IParticle*> selectedLeptons;
+
+
+  const xAOD::EventInfo* eventInfo = 0;
+  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+
+
+  xAOD::MuonContainer* muons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(muons_nominal, "STCalibMuons"));
+
+  xAOD::ElectronContainer* electrons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(electrons_nominal, "STCalibElectrons"));
+
+  for (const auto& mu : *muons_nominal) {
+    if ((int)mu->auxdata<char>("baseline") == 0) continue;
+    if ((int)mu->auxdata<char>("passOR") != 1) continue;
+    if ((int)mu->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful muon
+    selectedLeptons.push_back(mu);
+  }
+
+  for (const auto& el : *electrons_nominal) {
+    if ((int)el->auxdata<char>("baseline") == 0) continue;
+    if ((int)el->auxdata<char>("passOR") != 1) continue;
+    if ((int)el->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful el
+    selectedLeptons.push_back(el);
+  }
+
+  int nLeptons = selectedLeptons.size();
+
+  ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
+
+
+
+  //Let's just categorize from here maybe? But if we want different CRs in different algs, 
+  // then we'd need to play with something in the store a little more smartly
+
+  TString regionName = "";
+
+  if(nLeptons==2){
+    regionName = "SR";
+  } else if(nLeptons==1) {
+    regionName = "CR1L";
+  } else if(nLeptons==0) {
+    regionName = "CR0L";
+  }
+
+  ATH_MSG_DEBUG("Event falls in region: " << regionName  );
+
+  eventInfo->auxdecor< std::string >("regionName") = regionName ;
+  ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
 
   return EL::StatusCode::SUCCESS;
 }

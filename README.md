@@ -16,9 +16,20 @@ Now we can checkout our dependencies using the following :
 ```
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git
 rc checkout_pkg atlasoff/PhysicsAnalysis/TopPhys/QuickAna/tags QuickAna
-rc checkout_pkg svn+ssh://rsmith@svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags CommonTools
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags CommonTools
 ```
 
+And of course do a normal rc set up procedure
 
+```
+rc find_packages
+rc compile
+```
+
+Then you can run a test with e.g.:
+
+```
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --dataDir /afs/cern.ch/user/l/leejr/work/lvlv_datasets #[point to a location of a DxAOD]
+```
 
 

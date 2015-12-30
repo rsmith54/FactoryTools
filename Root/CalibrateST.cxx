@@ -5,6 +5,8 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 #include "xAODEventInfo/EventInfo.h"
+#include "xAODEventInfo/EventAuxInfo.h"
+
 // Infrastructure include(s):
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
@@ -132,6 +134,10 @@ EL::StatusCode CalibrateST :: execute ()
   // code will go.
 
   xAOD::TStore * store  =  wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
+
+  const xAOD::EventInfo* eventInfo(nullptr);
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   // Get the nominal object containers from the event
   // Electrons
@@ -184,8 +190,14 @@ EL::StatusCode CalibrateST :: execute ()
 		 );
 
   //everything other than MET is stored by default using the ST call with true
-  STRONG_CHECK( store->record( newMetContainer    , "STCalibMET"         ));//todo configurable if needed
-  STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux."));//todo configurable if needed
+  STRONG_CHECK( store->record( newMetContainer    , "STCalibMET"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux.") );//todo configurable if needed
+
+  std::pair< xAOD::EventInfo*, xAOD::ShallowAuxInfo* > eventInfo_shallowCopy = xAOD::shallowCopyObject( *eventInfo );
+  STRONG_CHECK( store->record( eventInfo_shallowCopy.first , "EventInfo" ) );
+  STRONG_CHECK( store->record( eventInfo_shallowCopy.second, "EventInfoAux." ) );
+
+  eventInfo_shallowCopy.second->setShallowIO(true);
 
   return EL::StatusCode::SUCCESS;
 }
