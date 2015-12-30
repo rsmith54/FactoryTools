@@ -33,7 +33,8 @@ logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
 #list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
-list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
+#list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
+list = ROOT.SH.DiskListLocal(options.dataDir)
 
 ROOT.SH.scanDir(sh_all,list, "*")
 
@@ -61,11 +62,22 @@ calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
 writeOutputNtuple = ROOT.WriteOutputNtuple()
 writeOutputNtuple.outputName = outputFilename
 
+from copy import deepcopy
+
+writeOutputNtupleArray = []
+for regionName in ["SR","CR1L","CR0L"]:
+    tmpWriteOutputNtuple = deepcopy(writeOutputNtuple)
+    tmpWriteOutputNtuple.regionName = regionName
+    writeOutputNtupleArray.append( tmpWriteOutputNtuple )
+
+
 job.outputAdd(output);
 job.algsAdd(calibrateST)
 job.algsAdd(selectDileptonicWW)
 job.algsAdd(calculateRJigsawVariables)
-job.algsAdd(writeOutputNtuple)
+for tmpWriteOutputNtuple in writeOutputNtupleArray:
+    job.algsAdd(tmpWriteOutputNtuple)
+
 
 if options.nevents > 0 :
     logging.info("Running " + str(options.nevents) + " events")

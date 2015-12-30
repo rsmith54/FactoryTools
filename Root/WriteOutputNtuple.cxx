@@ -5,9 +5,12 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
+#include "SUSYTools/SUSYObjDef_xAOD.h"
+
 #include <RJigsawTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
 
+#include <RJigsawTools/strongErrorCheck.h>
 
 #include <iostream>
 
@@ -83,9 +86,10 @@ EL::StatusCode WriteOutputNtuple :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-  std::cout << "writing to output file " << outputName << std::endl;
+  ATH_MSG_INFO("writing to output file " << outputName );
+  ATH_MSG_INFO("writing to output tree " << regionName );
   m_ntupManager = new NtupManager;
-  m_ntupManager->initialize( outputName+"tree", wk()->getOutputFile(outputName));//todo make the treename smarter
+  m_ntupManager->initialize( outputName+regionName, wk()->getOutputFile(outputName));//todo make the treename smarter
 
   return EL::StatusCode::SUCCESS;
 }
@@ -100,6 +104,18 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
 
+  const xAOD::EventInfo* eventInfo = 0;
+  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+
+  // If it hasn't been selected in any of the regions from any of the select algs, don't bother writing anything out
+  // Note: You can put in a "post-pre-selection" which can cut on e.g. RJR vars and set the region to a blank string
+  // So this needn't be logically the same as the decision in CalculateRJigsawVariables::execute()
+
+  if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
+
+  // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
+  if( eventInfo->auxdecor< std::string >("regionName") != regionName ) return EL::StatusCode::SUCCESS;
+
   std::unordered_map<std::string,double> * mymap = nullptr;
   store->retrieve( mymap,   "RJigsawVarsMap");
 
@@ -109,7 +125,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 			       );
   }
 
-  m_ntupManager-> fill();
+  m_ntupManager->fill();
   m_ntupManager->clear();
 
   return EL::StatusCode::SUCCESS;
