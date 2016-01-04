@@ -10,14 +10,13 @@
 #include <RJigsawTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
 
+#include <RJigsawTools/printDebug.h>
 #include <RJigsawTools/strongErrorCheck.h>
 
 #include <iostream>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(WriteOutputNtuple)
-
-#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
 
 WriteOutputNtuple :: WriteOutputNtuple () :
 m_ntupManager(nullptr)

@@ -9,6 +9,7 @@
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/printDebug.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
@@ -19,7 +20,7 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
 
-#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
+//#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
 
 CalculateRJigsawVariables :: CalculateRJigsawVariables () :
 m_calculator_name(none),//user needs to choose their calculator name
