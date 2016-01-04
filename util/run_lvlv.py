@@ -57,21 +57,21 @@ output = ROOT.EL.OutputStream(outputFilename);
 import collections
 algsToRun = collections.OrderedDict()
 
-algsToRun["calibrateST"] = ROOT.CalibrateST()
-algsToRun["selectDileptonicWW"] = ROOT.SelectDileptonicWWEvents()
+algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].m_calculator_name = 1 #lvlv enum
 
 for regionName in ["SR","CR1L","CR0L"]:
-    tmpWriteOutputNtuple = ROOT.WriteOutputNtuple()
-    tmpwriteOutputNtuple.outputName = outputFilename
-    tmpWriteOutputNtuple.regionName = regionName
-    algsToRun["writeOutputNtuple_"+regionName] = ROOT.WriteOutputNtuple()
+    tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
+    tmpWriteOutputNtuple.outputName            = outputFilename
+    tmpWriteOutputNtuple.regionName            = regionName
+    algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
 job.outputAdd(output);
 for name,alg in algsToRun.iteritems() :
-    if options.verbose : alg.setMsgLevel( ROOT.MSG.VERBOSE)
+    if options.verbose : alg.setMsgLevel( ROOT.MSG.VERBOSE)#if you want verbose output
     logging.info("adding " + name + " to algs" )
     alg.SetName(name)#this is needed to see the alg names with athena messaging
     job.algsAdd(alg)
@@ -79,7 +79,6 @@ for name,alg in algsToRun.iteritems() :
 if options.nevents > 0 :
     logging.info("Running " + str(options.nevents) + " events")
     job.options().setDouble (ROOT.EL.Job.optMaxEvents, float(options.nevents));
-
 
 import os
 if os.path.isdir(options.submitDir) :
