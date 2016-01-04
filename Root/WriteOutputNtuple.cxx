@@ -111,6 +111,8 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // Note: You can put in a "post-pre-selection" which can cut on e.g. RJR vars and set the region to a blank string
   // So this needn't be logically the same as the decision in CalculateRJigsawVariables::execute()
 
+  ATH_MSG_DEBUG("Event falls in region: " << eventInfo->auxdecor< std::string >("regionName")  );
+
   if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
 
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
