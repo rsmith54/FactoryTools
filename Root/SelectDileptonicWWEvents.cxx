@@ -109,7 +109,6 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-
   xAOD::MuonContainer* muons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(muons_nominal, "STCalibMuons"));
 
@@ -138,7 +137,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
 
 
-  //Let's just categorize from here maybe? But if we want different CRs in different algs, 
+  //Let's just categorize from here maybe? But if we want different CRs in different algs,
   // then we'd need to play with something in the store a little more smartly
 
   TString regionName = "";
