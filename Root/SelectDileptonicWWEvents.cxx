@@ -135,12 +135,10 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
   ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
 
-
-
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
   // then we'd need to play with something in the store a little more smartly
 
-  TString regionName = "";
+  std::string regionName = "";
 
   if(nLeptons==2){
     regionName = "SR";

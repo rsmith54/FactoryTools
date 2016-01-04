@@ -10,14 +10,13 @@
 #include <RJigsawTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
 
+#include <RJigsawTools/printDebug.h>
 #include <RJigsawTools/strongErrorCheck.h>
 
 #include <iostream>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(WriteOutputNtuple)
-
-
 
 WriteOutputNtuple :: WriteOutputNtuple () :
 m_ntupManager(nullptr)
@@ -118,13 +117,18 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 
   if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
+  ATH_MSG_DEBUG("Our event passed one of the selection " );
+
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
   if( regionName != regionName ) return EL::StatusCode::SUCCESS;
+
+  ATH_MSG_DEBUG("Storing map in output " << regionName  );
 
   std::unordered_map<std::string,double> * mymap = nullptr;
   STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
 
   for (auto const& it : *mymap ) {
+    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
     m_ntupManager->setProperty(it.first,
 			       it.second
 			       );
@@ -133,6 +137,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   m_ntupManager->fill();
   m_ntupManager->clear();
 
+  printDebug();
   return EL::StatusCode::SUCCESS;
 }
 
