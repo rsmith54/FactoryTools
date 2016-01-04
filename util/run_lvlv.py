@@ -6,12 +6,12 @@ logging.basicConfig(level=logging.INFO)
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option("--submitDir", help="dir to store the output", default="submit_dir")
-parser.add_option("--dataDir", help="dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/")
-parser.add_option("--driver", help="select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
-parser.add_option('--doOverwrite', help="Overwrite submit dir if it already exists",action="store_true", default=False)
-parser.add_option('--nevents', help="Run n events ", default = -1 )
-parser.add_option('--verbose', help="Run all algs in verbose.", action="store_true", default=False)
+parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
+parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/")
+parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
+parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
+parser.add_option('--nevents', help     = "Run n events ", default = -1 )
+parser.add_option('--verbosity', help   = "Run all algs at the selected verbosity.",choices=("info", "warning","error", "debug", "verbose"), default="error")
 
 #parser.add_option("--whichAnalysis", help="select analysis", choices=("noCut", "Zmumu" , "Zee", "Wenu","NONE"), default="NONE")
 #parser.add_option("--errorLevel", help="select error level", choices=("VERBOSE","DEBUG","WARNING","ERROR"), default="WARNING")
@@ -23,6 +23,20 @@ import atexit
 @atexit.register
 def quiet_exit():
     ROOT.gSystem.Exit(0)
+
+def setVerbosity ( alg , levelString ) :
+    level = None
+    if levelString == "info"    : level = ROOT.MSG.INFO
+    if levelString == "warning" : level = ROOT.MSG.WARNING
+    if levelString == "error"   : level = ROOT.MSG.ERROR
+    if levelString == "debug"   : level = ROOT.MSG.DEBUG
+    if levelString == "verbose" : level = ROOT.MSG.VERBOSE
+
+    if not level :
+        logging.info("you set an illegal verbosity! Exiting.")
+        quiet_exit()
+    alg.setMsgLevel(level)
+
 
 ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 
@@ -61,7 +75,7 @@ algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].m_calculator_name = 1 #lvlv enum
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
 
 for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
@@ -71,7 +85,7 @@ for regionName in ["SR","CR1L","CR0L"]:
 
 job.outputAdd(output);
 for name,alg in algsToRun.iteritems() :
-    if options.verbose : alg.setMsgLevel( ROOT.MSG.VERBOSE)#if you want verbose output
+    setVerbosity(alg , options.verbosity)
     logging.info("adding " + name + " to algs" )
     alg.SetName(name)#this is needed to see the alg names with athena messaging
     job.algsAdd(alg)

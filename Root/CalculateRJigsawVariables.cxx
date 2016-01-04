@@ -23,7 +23,7 @@ ClassImp(CalculateRJigsawVariables)
 //#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
 
 CalculateRJigsawVariables :: CalculateRJigsawVariables () :
-m_calculator_name(none),//user needs to choose their calculator name
+calculatorName(none),//user needs to choose their calculator name
 m_calculator(nullptr)
 {
   // Here you put any code for the base initialization of variables,
@@ -89,9 +89,11 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-  ATH_MSG_INFO("You have configured a " << m_calculator_name << " calculator.  See the code for enum definitions. ");
+  ATH_MSG_INFO("You have configured a " << calculatorName << " calculator.  See the code for enum definitions. ");
 
-  if(m_calculator_name == lvlv)
+  STRONG_CHECK( calculatorName != none);
+
+  if(calculatorName == lvlvCalculator)
     {
       m_calculator = new RJigsawCalculator_lvlv;
       //STRONG_CHECK //todo
