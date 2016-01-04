@@ -19,7 +19,7 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
 
-#define printDebug()  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
 
 CalculateRJigsawVariables :: CalculateRJigsawVariables () :
 m_calculator_name(none),//user needs to choose their calculator name
@@ -88,7 +88,7 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-  std::cout << "You have configured a " << m_calculator_name << " calculator.  See the code for enum definitions. " << std::endl;
+  ATH_MSG_INFO("You have configured a " << m_calculator_name << " calculator.  See the code for enum definitions. ");
 
   if(m_calculator_name == lvlv)
     {
@@ -115,6 +115,8 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
   // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
+  ATH_MSG_DEBUG("Reading regionName : " <<  eventInfo->auxdecor< std::string >("regionName")   );
+
   if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
 
 
@@ -130,6 +132,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
+
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
   //STRONG_CHECK //todo
@@ -138,7 +141,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   assert( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
 
-
+  printDebug();
   return EL::StatusCode::SUCCESS;
 }
 
