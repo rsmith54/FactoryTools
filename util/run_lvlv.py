@@ -11,6 +11,7 @@ parser.add_option("--dataDir", help="dir to search for input"  , default="/afs/c
 parser.add_option("--driver", help="select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help="Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help="Run n events ", default = -1 )
+parser.add_option('--verbose', help="Run all algs in verbose.", action="store_true", default=False)
 
 #parser.add_option("--whichAnalysis", help="select analysis", choices=("noCut", "Zmumu" , "Zee", "Wenu","NONE"), default="NONE")
 #parser.add_option("--errorLevel", help="select error level", choices=("VERBOSE","DEBUG","WARNING","ERROR"), default="WARNING")
@@ -51,38 +52,33 @@ job.useXAOD()
 logging.info("creating algorithms")
 
 outputFilename = "test_outputName"
-
 output = ROOT.EL.OutputStream(outputFilename);
-calibrateST        = ROOT.CalibrateST()
-selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
 
-calculateRJigsawVariables = ROOT.CalculateRJigsawVariables()
-calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
+import collections
+algsToRun = collections.OrderedDict()
 
-writeOutputNtuple = ROOT.WriteOutputNtuple()
-writeOutputNtuple.outputName = outputFilename
+algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 
-from copy import deepcopy
+algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables"].m_calculator_name = 1 #lvlv enum
 
-writeOutputNtupleArray = []
 for regionName in ["SR","CR1L","CR0L"]:
-    tmpWriteOutputNtuple = deepcopy(writeOutputNtuple)
-    tmpWriteOutputNtuple.regionName = regionName
-    writeOutputNtupleArray.append( tmpWriteOutputNtuple )
-
+    tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
+    tmpWriteOutputNtuple.outputName            = outputFilename
+    tmpWriteOutputNtuple.regionName            = regionName
+    algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
 job.outputAdd(output);
-job.algsAdd(calibrateST)
-job.algsAdd(selectDileptonicWW)
-job.algsAdd(calculateRJigsawVariables)
-for tmpWriteOutputNtuple in writeOutputNtupleArray:
-    job.algsAdd(tmpWriteOutputNtuple)
-
+for name,alg in algsToRun.iteritems() :
+    if options.verbose : alg.setMsgLevel( ROOT.MSG.VERBOSE)#if you want verbose output
+    logging.info("adding " + name + " to algs" )
+    alg.SetName(name)#this is needed to see the alg names with athena messaging
+    job.algsAdd(alg)
 
 if options.nevents > 0 :
     logging.info("Running " + str(options.nevents) + " events")
     job.options().setDouble (ROOT.EL.Job.optMaxEvents, float(options.nevents));
-
 
 import os
 if os.path.isdir(options.submitDir) :
