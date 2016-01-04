@@ -140,7 +140,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
   // then we'd need to play with something in the store a little more smartly
 
-  TString regionName = "";
+  std::string regionName = "";
 
   if(nLeptons==2){
     regionName = "SR";
