@@ -111,15 +111,18 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // Note: You can put in a "post-pre-selection" which can cut on e.g. RJR vars and set the region to a blank string
   // So this needn't be logically the same as the decision in CalculateRJigsawVariables::execute()
 
-  ATH_MSG_DEBUG("Event falls in region: " << eventInfo->auxdecor< std::string >("regionName")  );
+  std::string const & regionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("Event falls in region: " << regionName  );
 
-  if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
+
+
+  if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
-  if( eventInfo->auxdecor< std::string >("regionName") != regionName ) return EL::StatusCode::SUCCESS;
+  if( regionName != regionName ) return EL::StatusCode::SUCCESS;
 
   std::unordered_map<std::string,double> * mymap = nullptr;
-  store->retrieve( mymap,   "RJigsawVarsMap");
+  STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
 
   for (auto const& it : *mymap ) {
     m_ntupManager->setProperty(it.first,
