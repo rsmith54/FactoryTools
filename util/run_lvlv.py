@@ -75,8 +75,7 @@ algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].m_calculator_name = 1 #lvlv enum
-#algsToRun["calculateRJigsawVariables"].m_calculator_name = ROOT.CalculateRJigsawVariables.RJigsawCalculatorName.lvlv
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
 
 for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
