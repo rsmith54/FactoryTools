@@ -52,38 +52,29 @@ job.useXAOD()
 logging.info("creating algorithms")
 
 outputFilename = "test_outputName"
-
 output = ROOT.EL.OutputStream(outputFilename);
-calibrateST        = ROOT.CalibrateST()
-selectDileptonicWW = ROOT.SelectDileptonicWWEvents()
 
-calculateRJigsawVariables = ROOT.CalculateRJigsawVariables()
-calculateRJigsawVariables.m_calculator_name = 1#lvlv enum
+import collections
+algsToRun = collections.OrderedDict()
 
-writeOutputNtuple = ROOT.WriteOutputNtuple()
-writeOutputNtuple.outputName = outputFilename
+algsToRun["calibrateST"] = ROOT.CalibrateST()
+algsToRun["selectDileptonicWW"] = ROOT.SelectDileptonicWWEvents()
 
-from copy import deepcopy
+algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables"].m_calculator_name = 1 #lvlv enum
 
-writeOutputNtupleArray = []
 for regionName in ["SR","CR1L","CR0L"]:
-    tmpWriteOutputNtuple = deepcopy(writeOutputNtuple)
+    tmpWriteOutputNtuple = ROOT.WriteOutputNtuple()
+    tmpwriteOutputNtuple.outputName = outputFilename
     tmpWriteOutputNtuple.regionName = regionName
-    writeOutputNtupleArray.append( tmpWriteOutputNtuple )
-
-
-if options.verbose :
-    logging.info( "currently not exactly sure how to loop over all algs to set verbose, but I'm setting the verbosity higher for the algs in your run script.")
-    selectDileptonicWW       .setMsgLevel( ROOT.MSG.VERBOSE)
-    calculateRJigsawVariables.setMsgLevel( ROOT.MSG.VERBOSE)
+    algsToRun["writeOutputNtuple_"+regionName] = ROOT.WriteOutputNtuple()
 
 job.outputAdd(output);
-job.algsAdd(calibrateST)
-job.algsAdd(selectDileptonicWW)
-job.algsAdd(calculateRJigsawVariables)
-for tmpWriteOutputNtuple in writeOutputNtupleArray:
-    job.algsAdd(tmpWriteOutputNtuple)
-
+for name,alg in algsToRun.iteritems() :
+    if options.verbose : alg.setMsgLevel( ROOT.MSG.VERBOSE)
+    logging.info("adding " + name + " to algs" )
+    alg.SetName(name)#this is needed to see the alg names with athena messaging
+    job.algsAdd(alg)
 
 if options.nevents > 0 :
     logging.info("Running " + str(options.nevents) + " events")
