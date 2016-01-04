@@ -32,4 +32,8 @@ Then you can run a test with e.g.:
 python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --dataDir /afs/cern.ch/user/l/leejr/work/lvlv_datasets #[point to a location of a DxAOD]
 ```
 
-
+PLEASE NOTE : The output will be in
+```
+submit_dir/data-TEST_OUTPUTNAME/*.root
+```
+by default when doing a test, where TEST_OUTPUTNAME is set in your submission script.  The file in submit_dir does not have your output trees!!!
