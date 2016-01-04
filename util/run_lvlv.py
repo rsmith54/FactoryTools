@@ -11,6 +11,7 @@ parser.add_option("--dataDir", help="dir to search for input"  , default="/afs/c
 parser.add_option("--driver", help="select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help="Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help="Run n events ", default = -1 )
+parser.add_option('--verbose', help="Run all algs in verbose.", action="store_true", default=False)
 
 #parser.add_option("--whichAnalysis", help="select analysis", choices=("noCut", "Zmumu" , "Zee", "Wenu","NONE"), default="NONE")
 #parser.add_option("--errorLevel", help="select error level", choices=("VERBOSE","DEBUG","WARNING","ERROR"), default="WARNING")
@@ -70,6 +71,11 @@ for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple.regionName = regionName
     writeOutputNtupleArray.append( tmpWriteOutputNtuple )
 
+
+if options.verbose :
+    logging.info( "currently not exactly sure how to loop over all algs to set verbose, but I'm setting the verbosity higher for the algs in your run script.")
+    selectDileptonicWW       .setMsgLevel( ROOT.MSG.VERBOSE)
+    calculateRJigsawVariables.setMsgLevel( ROOT.MSG.VERBOSE)
 
 job.outputAdd(output);
 job.algsAdd(calibrateST)
