@@ -28,22 +28,6 @@
 ClassImp(RJigsawCalculator_lvlv)
 
 RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
-  //todo fix
-  m_mH(0),
-  m_mHw(0),
-  m_mW(0),
-  m_mWw(0),
-  m_mL(0),
-  m_mN(0),
-
-  LAB_G(nullptr),
-  H_G(nullptr),
-  Wa_G(nullptr),
-  Wb_G(nullptr),
-  La_G(nullptr),
-  Na_G(nullptr),
-  Lb_G(nullptr),
-  Nb_G(nullptr),
   LAB_R(nullptr),
   H_R(nullptr),
   Wa_R(nullptr),
@@ -59,14 +43,6 @@ RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
 {}
 
 RJigsawCalculator_lvlv :: ~RJigsawCalculator_lvlv() {
-  delete LAB_G;
-  delete H_G;
-  delete Wa_G;
-  delete Wb_G;
-  delete La_G;
-  delete Na_G;
-  delete Lb_G;
-  delete Nb_G;
   delete LAB_R;
   delete H_R;
   delete Wa_R;
@@ -82,7 +58,6 @@ RJigsawCalculator_lvlv :: ~RJigsawCalculator_lvlv() {
 }
 
 EL::StatusCode RJigsawCalculator_lvlv::doClearEvent() {
-  if(! LAB_G->ClearEvent()){return EL::StatusCode::FAILURE;}
   if(! LAB_R->ClearEvent()){return EL::StatusCode::FAILURE;}
 
   return EL::StatusCode::SUCCESS;
@@ -90,53 +65,6 @@ EL::StatusCode RJigsawCalculator_lvlv::doClearEvent() {
 
 EL::StatusCode RJigsawCalculator_lvlv::doInitialize() {
   using namespace RestFrames;
-
-  m_mH  = 125.;
-  m_mHw = 1. ;
-
-  m_mW  = 80.;
-  m_mWw = 3  ;
-
-  m_mL = .105;
-  m_mN = 0.;
-
-
-  // Set up toy generation tree (not needed for reconstruction)
-  LAB_G = new LabGenFrame     ("LAB_G","LAB");
-  H_G   = new ResonanceGenFrame("H_G","H");
-  Wa_G  = new ResonanceGenFrame ("Wa_G","W_{a}");
-  Wb_G  = new ResonanceGenFrame("Wb_G","W_{b}");
-  La_G  = new VisibleGenFrame  ("La_G","#it{l}_{a}");
-  Na_G  = new InvisibleGenFrame ("Na_G","#nu_{a}");
-  Lb_G  = new VisibleGenFrame   ("Lb_G","#it{l}_{b}");
-  Nb_G  = new InvisibleGenFrame ("Nb_G","#nu_{b}");
-
-  LAB_G->SetChildFrame(*H_G);
-  H_G->AddChildFrame(*Wa_G);
-  H_G->AddChildFrame(*Wb_G);
-  Wa_G->AddChildFrame(*La_G);
-  Wa_G->AddChildFrame(*Na_G);
-  Wb_G->AddChildFrame(*Lb_G);
-  Wb_G->AddChildFrame(*Nb_G);
-
-  if( ! LAB_G->InitializeTree()){ return EL::StatusCode::FAILURE;}
-  // set Higgs masses
-
-  H_G->SetMass (m_mH  );
-  H_G->SetWidth(m_mHw);
-  // set W masses
-  Wa_G->SetMass(m_mW);
-  Wb_G->SetMass(m_mW);
-  Wa_G->SetWidth(m_mWw);
-  Wb_G->SetWidth(m_mWw);
-  // set lepton masses
-  La_G->SetMass(m_mL);
-  Lb_G->SetMass(m_mL);
-  // set neutrino masses
-  Na_G->SetMass(m_mN);
-  Nb_G->SetMass(m_mN);
-
-  if( ! LAB_G->InitializeAnalysis()){ return EL::StatusCode::FAILURE;}
 
   // Set up reco analysis tree
   LAB_R = new   LabRecoFrame     ("LAB_R","LAB");
@@ -189,47 +117,50 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::strin
 						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
+  if( particles.size() < 2 ){return EL::StatusCode::SUCCESS;}//todo figure out if this how we should handle this case
+  //todo do we need to require exactly 2 ?
+
+
   //todo check the initialization
-
-  // generate event
-  double PTH = m_mH*gRandom->Rndm();
-  LAB_G->SetTransverseMomenta(PTH);               // give the Higgs some Pt
-  double PzH = m_mH*(2.*gRandom->Rndm()-1.);
-  LAB_G->SetLongitudinalMomenta(PzH);             // give the Higgs some Pz
-  LAB_G->AnalyzeEvent();                          // generate a new event
-
-  // analyze event
-  TVector3 MET = LAB_G->GetInvisibleMomentum();    // Get the MET from gen tree
-  MET.SetZ(0.);
-
   // give the signal-like tree the event info and analyze
-  INV_R->SetLabFrameThreeVector(MET);               // Set the MET in reco tree
-  La_R->SetLabFrameFourVector(La_G->GetFourVector());
-  Lb_R->SetLabFrameFourVector(Lb_G->GetFourVector());
+  TVector3 vecMet(met.mpx() , met.mpy(), 0.);
+
+  std::vector<TLorentzVector> vecParticles;
+
+  for(auto particle : particles){
+    if( particle->type() != xAOD::Type::Electron &&
+	particle->type() != xAOD::Type::Muon
+	) {
+      std::cout << "You passed a nonlepton to the lvlv calculator!!!" ;
+      return EL::StatusCode::FAILURE;
+    }//todo use the ATH messaging if possible??
+    TLorentzVector tmpPart;
+    tmpPart.SetPtEtaPhiE(particle->pt(),
+			 particle->eta(),
+			 particle->phi(),
+			 particle->e()
+			 );
+    vecParticles.push_back(tmpPart);
+  }
+
+  auto ptSort = [](TLorentzVector const & a , TLorentzVector const & b){return a.Pt() < b.Pt();};
+  std::sort(vecParticles.begin(),vecParticles.end(), ptSort);
+  assert(vecParticles.at(0).Pt() > vecParticles.at(1).Pt());
+
+  INV_R->SetLabFrameThreeVector(vecMet);               // Set the MET in reco tree
+  La_R->SetLabFrameFourVector(vecParticles.at(0));
+  Lb_R->SetLabFrameFourVector(vecParticles.at(1));
   LAB_R->AnalyzeEvent();                            // analyze the event
 
   //////////////////////////////////////
   // Observable Calculations
   //////////////////////////////////////
 
-  //
-  // signal tree observables
-  //
+  double const MH = H_R->GetMass();
+  double const MW = Wa_R->GetMass();
 
-  //*** Higgs mass
-  double MH = H_R->GetMass();
-  double MW = Wa_R->GetMass();
-
-  RJVars["MH_over_HGMass"] = MH/H_G->GetMass();
-  RJVars["HGMass"] = H_G->GetMass();
-  RJVars["MW_over_mW"] = MW/m_mW;
-
-  // h_MH->Fill(MH/H_G->GetMass());
-  // h_mH->Fill(H_G->GetMass());
-  // h_MW->Fill(MW/mW);
-  // h_MH_v_MW->Fill(MH/H_G->GetMass(),MW/mW);
-  // h_mW_v_mW->Fill(Wa_G->GetMass(),Wb_G->GetMass());
-
+  RJVars["mH"] = MH;
+  RJVars["mW"] = MW;
 
   return EL::StatusCode::SUCCESS;
 }

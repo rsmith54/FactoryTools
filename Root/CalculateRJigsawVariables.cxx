@@ -135,14 +135,12 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
   //STRONG_CHECK //todo
   m_calculator->calculate(*mymap,myparticles, *((*metcont)["Final"]));//this syntax is annoying...
 
   assert( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
-
 
   printDebug();
   return EL::StatusCode::SUCCESS;

@@ -38,14 +38,6 @@ public :
   virtual  ~RJigsawCalculator_lvlv ();
 
 private :
-  RestFrames::LabGenFrame *      LAB_G;
-  RestFrames::ResonanceGenFrame *H_G;
-  RestFrames::ResonanceGenFrame *Wa_G;
-  RestFrames::ResonanceGenFrame *Wb_G;
-  RestFrames::VisibleGenFrame *  La_G;
-  RestFrames::InvisibleGenFrame *Na_G;
-  RestFrames::VisibleGenFrame *  Lb_G;
-  RestFrames::InvisibleGenFrame *Nb_G;
 
   RestFrames::LabRecoFrame * LAB_R;
   RestFrames::DecayRecoFrame * H_R;
@@ -60,13 +52,6 @@ private :
   RestFrames::SetMassInvJigsaw     * MinMassJigsaw_R;
   RestFrames::SetRapidityInvJigsaw * RapidityJigsaw_R;
   RestFrames::ContraBoostInvJigsaw * ContraBoostJigsaw_R;
-
-  double m_mH;
-  double m_mHw;
-  double m_mW;
-  double m_mWw;
-  double m_mL;
-  double m_mN;
 
 private :
   virtual EL::StatusCode doInitialize();
