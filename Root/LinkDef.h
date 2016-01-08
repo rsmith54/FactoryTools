@@ -1,7 +1,9 @@
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 
 
+#include <RJigsawTools/PreselectDileptonicWWEvents.h>
 #include <RJigsawTools/SelectDileptonicWWEvents.h>
+#include <RJigsawTools/PostselectDileptonicWWEvents.h>
 
 #include <RJigsawTools/RJigsawCalculator.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
@@ -31,7 +33,15 @@
 #endif
 
 #ifdef __CINT__
+#pragma link C++ class PreselectDileptonicWWEvents+;
+#endif
+
+#ifdef __CINT__
 #pragma link C++ class SelectDileptonicWWEvents+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class PostselectDileptonicWWEvents+;
 #endif
 
 #ifdef __CINT__
