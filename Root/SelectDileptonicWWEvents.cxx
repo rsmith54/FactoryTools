@@ -169,7 +169,6 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     xAOD::Particle *tmpparticle = new xAOD::Particle;
     myparticles->push_back(tmpparticle  );
     tmpparticle->setP4( mylepton->p4() );
-    ATH_MSG_DEBUG("particle pT: " << tmpparticle->pt()  );
   }
 
   ATH_MSG_DEBUG("Event falls in region: " << regionName  );

@@ -93,17 +93,17 @@ EL::StatusCode PreselectDileptonicWWEvents :: initialize ()
 
 
 
-  // GRL
-  m_grl = new GoodRunsListSelectionTool("GoodRunsListSelectionTool");
-  // Make this python-configurable! /LL
-  std::string GRLFilePath = "$ROOTCOREBIN/data/SUSYTools/GRL/Moriond2016/data15_13TeV.periodAllYear_DetStatus-v73-pro19-08_DQDefects-00-01-02_PHYS_StandardGRL_All_Good_25ns.xml";
-  std::vector<std::string> vecStringGRL;
-  vecStringGRL.push_back(GRLFilePath);
-  STRONG_CHECK(m_grl->setProperty( "GoodRunsListVec", vecStringGRL));
+  // // GRL
+  // m_grl = new GoodRunsListSelectionTool("GoodRunsListSelectionTool");
+  // // Make this python-configurable! /LL
+  // std::string GRLFilePath = "$ROOTCOREBIN/data/SUSYTools/GRL/Moriond2016/data15_13TeV.periodAllYear_DetStatus-v73-pro19-08_DQDefects-00-01-02_PHYS_StandardGRL_All_Good_25ns.xml";
+  // std::vector<std::string> vecStringGRL;
+  // vecStringGRL.push_back(GRLFilePath);
+  // STRONG_CHECK(m_grl->setProperty( "GoodRunsListVec", vecStringGRL));
 
-  // Make this python-configurable! /LL
-  STRONG_CHECK(m_grl->setProperty("PassThrough", false)); // if true (default) will ignore result of GRL and will just pass all events
-  STRONG_CHECK(m_grl->initialize());
+  // // Make this python-configurable! /LL
+  // STRONG_CHECK(m_grl->setProperty("PassThrough", false)); // if true (default) will ignore result of GRL and will just pass all events
+  // STRONG_CHECK(m_grl->initialize());
 
 
   return EL::StatusCode::SUCCESS;
@@ -127,14 +127,14 @@ EL::StatusCode PreselectDileptonicWWEvents :: execute ()
   eventInfo->auxdecor< std::string >("regionName") = "Preselected";  
 
 
-  // if data, check if event passes GRL
-  bool const isData = !(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ));
-  if(isData){ // it's data!
-     if(!m_grl->passRunLB(*eventInfo)){
-        eventInfo->auxdecor< std::string >("regionName") = "";      
-        return EL::StatusCode::SUCCESS;
-     }
-  } // end if isData
+  // // if data, check if event passes GRL
+  // bool const isData = !(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ));
+  // if(isData){ // it's data!
+  //    if(!m_grl->passRunLB(*eventInfo)){
+  //       eventInfo->auxdecor< std::string >("regionName") = "";      
+  //       return EL::StatusCode::SUCCESS;
+  //    }
+  // } // end if isData
 
 
   return EL::StatusCode::SUCCESS;
@@ -166,10 +166,10 @@ EL::StatusCode PreselectDileptonicWWEvents :: finalize ()
 
 
   // GRL
-  if (m_grl) {
-    delete m_grl;
-    m_grl = 0;
-  }
+  // if (m_grl) {
+  //   delete m_grl;
+  //   m_grl = 0;
+  // }
 
 
   return EL::StatusCode::SUCCESS;
