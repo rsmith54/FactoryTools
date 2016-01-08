@@ -71,6 +71,9 @@ output = ROOT.EL.OutputStream(outputFilename);
 import collections
 algsToRun = collections.OrderedDict()
 
+
+algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
+algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()

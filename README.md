@@ -17,6 +17,7 @@ Now we can checkout our dependencies using the following :
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git
 rc checkout_pkg atlasoff/PhysicsAnalysis/TopPhys/QuickAna/tags QuickAna
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags CommonTools
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git
 ```
 
 And of course do a normal rc set up procedure
