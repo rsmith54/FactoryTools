@@ -14,6 +14,8 @@
 
 #include <RJigsawTools/strongErrorCheck.h>
 
+#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODParticleEvent/ParticleAuxContainer.h"
 
 
 // this is needed to distribute the algorithm to the workers
@@ -103,11 +105,18 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
   xAOD::TStore * store = wk()->xaodStore();
 
-  std::vector<xAOD::IParticle*> selectedLeptons;
-
 
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+
+
+
+  xAOD::IParticleContainer * selectedLeptons = new xAOD::IParticleContainer();
+
+  xAOD::ParticleContainer * myparticles = new xAOD::ParticleContainer();
+  xAOD::ParticleAuxContainer * myparticlesaux = new xAOD::ParticleAuxContainer();
+  myparticles->setStore(myparticlesaux);
+
 
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
@@ -129,7 +138,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
-    selectedLeptons.push_back(mu);
+    selectedLeptons->push_back(mu);
   }
 
   for (const auto& el : *electrons_nominal) {
@@ -137,10 +146,10 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)el->auxdata<char>("passOR") != 1) continue;
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
-    selectedLeptons.push_back(el);
+    selectedLeptons->push_back(el);
   }
 
-  int nLeptons = selectedLeptons.size();
+  int nLeptons = selectedLeptons->size();
 
   ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
 
@@ -155,7 +164,19 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     regionName = "CR0L";
   }
 
+  //Here we should add the particles that we want in the calculation to myparticles
+
+  xAOD::Particle *tmpparticle = new xAOD::Particle;
+  tmpparticle->setPxPyPzE(0,0,0,0);
+  myparticles->push_back(tmpparticle  );
+
   ATH_MSG_DEBUG("Event falls in region: " << regionName  );
+
+
+  ATH_MSG_DEBUG("Writing particle container for calculator to store");
+  STRONG_CHECK( store->record( myparticles    , "myparticles"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( myparticlesaux    , "myparticlesaux."    ) );//todo configurable if needed
+
 
   eventInfo->auxdecor< std::string >("regionName") = regionName ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );

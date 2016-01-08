@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include <iostream>
 
+#include "xAODParticleEvent/ParticleContainer.h"
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
 
@@ -117,6 +119,10 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
+  xAOD::ParticleContainer* myparticles = 0;
+  STRONG_CHECK(store->retrieve( myparticles, "myparticles"));
+
+
   // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
   ATH_MSG_DEBUG("Reading regionName : " <<  eventInfo->auxdecor< std::string >("regionName")   );
 
@@ -130,7 +136,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   m_calculator->clearEvent();
 
-  xAOD::IParticleContainer myparticles;
+  // xAOD::IParticleContainer myparticles;
   xAOD::MissingETContainer * metcont = nullptr;
 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
@@ -138,7 +144,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
   //STRONG_CHECK //todo
-  m_calculator->calculate(*mymap,myparticles, *((*metcont)["Final"]));//this syntax is annoying...
+  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"]));//this syntax is annoying...
 
   assert( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
