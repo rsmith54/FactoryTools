@@ -72,12 +72,14 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
+algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
 
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
 
-for regionName in ["SR","CR1L","CR0L"]:
+for regionName in ["SR"]: #,"CR1L","CR0L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
