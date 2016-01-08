@@ -128,12 +128,12 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::strin
   std::vector<TLorentzVector> vecParticles;
 
   for(auto particle : particles){
-    if( particle->type() != xAOD::Type::Electron &&
-	particle->type() != xAOD::Type::Muon
-	) {
-      std::cout << "You passed a nonlepton to the lvlv calculator!!!" ;
-      return EL::StatusCode::FAILURE;
-    }//todo use the ATH messaging if possible??
+ //    if( particle->type() != xAOD::Type::Electron &&
+	// particle->type() != xAOD::Type::Muon
+	// ) {
+ //      std::cout << "You passed a nonlepton to the lvlv calculator!!!" ;
+ //      return EL::StatusCode::FAILURE;
+ //    }//todo use the ATH messaging if possible??
     TLorentzVector tmpPart;
     tmpPart.SetPtEtaPhiE(particle->p4().Pt(),
 			 particle->p4().Eta(),

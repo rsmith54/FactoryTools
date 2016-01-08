@@ -165,10 +165,12 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   }
 
   //Here we should add the particles that we want in the calculation to myparticles
-
-  xAOD::Particle *tmpparticle = new xAOD::Particle;
-  tmpparticle->setPxPyPzE(0,0,0,0);
-  myparticles->push_back(tmpparticle  );
+  for( const auto& mylepton: *selectedLeptons){
+    xAOD::Particle *tmpparticle = new xAOD::Particle;
+    myparticles->push_back(tmpparticle  );
+    tmpparticle->setP4( mylepton->p4() );
+    ATH_MSG_DEBUG("particle pT: " << tmpparticle->pt()  );
+  }
 
   ATH_MSG_DEBUG("Event falls in region: " << regionName  );
 
