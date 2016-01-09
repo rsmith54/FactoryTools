@@ -26,6 +26,8 @@ namespace RestFrames {
   class InvisibleRecoFrame ;
 
   class InvisibleGroup;
+  class CombinatoricGroup;
+  class MinMassesCombJigsaw;
   class SetMassInvJigsaw;
   class SetRapidityInvJigsaw;
   class ContraBoostInvJigsaw;
@@ -49,6 +51,8 @@ private :
   RestFrames::InvisibleRecoFrame * Nb_R;
 
   RestFrames::InvisibleGroup       * INV_R;
+  RestFrames::CombinatoricGroup    * VIS_R;
+  RestFrames::MinMassesCombJigsaw  * HemiJigsaw_R;
   RestFrames::SetMassInvJigsaw     * MinMassJigsaw_R;
   RestFrames::SetRapidityInvJigsaw * RapidityJigsaw_R;
   RestFrames::ContraBoostInvJigsaw * ContraBoostJigsaw_R;

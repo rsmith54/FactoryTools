@@ -112,6 +112,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
 
   xAOD::IParticleContainer * selectedLeptons = new xAOD::IParticleContainer();
+  xAOD::IParticleContainer * selectedJets = new xAOD::IParticleContainer();
 
   xAOD::ParticleContainer * myparticles = new xAOD::ParticleContainer();
   xAOD::ParticleAuxContainer * myparticlesaux = new xAOD::ParticleAuxContainer();
@@ -126,12 +127,22 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
 
+  xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
   xAOD::MuonContainer* muons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(muons_nominal, "STCalibMuons"));
 
   xAOD::ElectronContainer* electrons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(electrons_nominal, "STCalibElectrons"));
+
+  for (const auto& jet : *jets_nominal) {
+    if ((int)jet->auxdata<char>("baseline") == 0) continue;
+    if ((int)jet->auxdata<char>("passOR") != 1) continue;
+    if ((int)jet->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful el
+    selectedJets->push_back(jet);
+  }
 
   for (const auto& mu : *muons_nominal) {
     if ((int)mu->auxdata<char>("baseline") == 0) continue;
@@ -170,6 +181,13 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     myparticles->push_back(tmpparticle  );
     tmpparticle->setP4( mylepton->p4() );
   }
+
+  // // What happens if we add the jets into the calculation?
+  // for( const auto& myjet: *selectedJets){
+  //   xAOD::Particle *tmpparticle = new xAOD::Particle;
+  //   myparticles->push_back(tmpparticle  );
+  //   tmpparticle->setP4( myjet->p4() );
+  // }
 
   ATH_MSG_DEBUG("Event falls in region: " << regionName  );
 
