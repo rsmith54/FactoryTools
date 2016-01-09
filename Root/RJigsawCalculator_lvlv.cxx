@@ -17,6 +17,8 @@
 #include "RestFrames/InvisibleRecoFrame.hh"
 
 #include "RestFrames/InvisibleGroup.hh"
+#include "RestFrames/CombinatoricGroup.hh"
+#include "RestFrames/MinMassesCombJigsaw.hh"
 #include "RestFrames/SetMassInvJigsaw.hh"
 #include "RestFrames/SetRapidityInvJigsaw.hh"
 #include "RestFrames/ContraBoostInvJigsaw.hh"
@@ -37,6 +39,8 @@ RJigsawCalculator_lvlv :: RJigsawCalculator_lvlv() :
   Lb_R(nullptr),
   Nb_R(nullptr),
   INV_R(nullptr),
+  VIS_R(nullptr),
+  HemiJigsaw_R(nullptr),
   MinMassJigsaw_R(nullptr),
   RapidityJigsaw_R(nullptr),
   ContraBoostJigsaw_R(nullptr)
@@ -52,6 +56,8 @@ RJigsawCalculator_lvlv :: ~RJigsawCalculator_lvlv() {
   delete Lb_R;
   delete Nb_R;
   delete INV_R;
+  delete VIS_R;
+  delete HemiJigsaw_R;
   delete MinMassJigsaw_R;
   delete RapidityJigsaw_R;
   delete ContraBoostJigsaw_R;
@@ -90,6 +96,17 @@ EL::StatusCode RJigsawCalculator_lvlv::doInitialize() {
   INV_R = new InvisibleGroup("INV_R","WIMP Jigsaws");
   INV_R->AddFrame(*Na_R);
   INV_R->AddFrame(*Nb_R);
+
+  VIS_R = new CombinatoricGroup("VIS_R","Visible Object Jigsaws");
+  VIS_R->AddFrame(*La_R);
+  VIS_R->AddFrame(*Lb_R);
+  VIS_R->SetNElementsForFrame(*La_R,1,false);
+  VIS_R->SetNElementsForFrame(*Lb_R,1,false);
+
+  HemiJigsaw_R = new MinMassesCombJigsaw("HEM_JIGSAW_R","Minimize m _{V_{a,b}} Jigsaw");
+  VIS_R->AddJigsaw(*HemiJigsaw_R);
+  HemiJigsaw_R->AddFrame(*La_R,0);
+  HemiJigsaw_R->AddFrame(*Lb_R,1);
 
   // define jigsaws for the reconstruction tree
   MinMassJigsaw_R = new SetMassInvJigsaw ("MINMASS_R", "Invisible system mass Jigsaw");
@@ -148,8 +165,15 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::strin
   assert(vecParticles.at(0).Pt() > vecParticles.at(1).Pt());
 
   INV_R->SetLabFrameThreeVector(vecMet);               // Set the MET in reco tree
-  La_R->SetLabFrameFourVector(vecParticles.at(0));
-  Lb_R->SetLabFrameFourVector(vecParticles.at(1));
+  // La_R->SetLabFrameFourVector(vecParticles.at(0));
+  // Lb_R->SetLabFrameFourVector(vecParticles.at(1));
+  // VIS_R->AddLabFrameFourVector(vecParticles.at(0));
+  // VIS_R->AddLabFrameFourVector(vecParticles.at(1));
+
+  for(auto vecParticle : vecParticles){
+    VIS_R->AddLabFrameFourVector( vecParticle );
+  }
+
   LAB_R->AnalyzeEvent();                            // analyze the event
 
   //////////////////////////////////////
@@ -161,6 +185,15 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::strin
 
   RJVars["mH"] = MH;
   RJVars["mW"] = MW;
+
+  TLorentzVector pll = vecParticles.at(0)+vecParticles.at(1);
+  pll.SetPz(0);
+  double Ell = TMath::Sqrt(pll.Pt()*pll.Pt()+pll.M()*pll.M() );
+  double pvv = met.met();
+  double secondterm = (pll.Vect()+vecMet).Mag() * (pll.Vect()+vecMet).Mag();
+  double MT = TMath::Sqrt( (Ell+pvv)*(Ell+pvv) - secondterm  );
+
+  RJVars["mT"] = MT;
 
   return EL::StatusCode::SUCCESS;
 }
