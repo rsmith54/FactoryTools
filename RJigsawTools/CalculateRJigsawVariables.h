@@ -14,7 +14,8 @@ public:
 
   enum RJigsawCalculatorName {
     none           = 0,
-    lvlvCalculator = 1
+    lvlvCalculator = 1,
+    zlCalculator   = 2
   };
 
   // variables that don't get filled at submission time should be

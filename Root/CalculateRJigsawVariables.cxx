@@ -9,6 +9,7 @@
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/RJigsawCalculator_zl.h>
 #include <RJigsawTools/printDebug.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
@@ -16,7 +17,6 @@
 #include <RJigsawTools/strongErrorCheck.h>
 #include <unordered_map>
 #include <iostream>
-#include "typeinfo"
 #include "xAODParticleEvent/ParticleContainer.h"
 
 // this is needed to distribute the algorithm to the workers
@@ -99,6 +99,15 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
       //STRONG_CHECK //todo
       STRONG_CHECK_SC( m_calculator->initialize());
     }
+  else if(calculatorName == zlCalculator){
+    m_calculator  = new RJigsawCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize()) ;
+  }
+  else {
+    ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
+    return EL::StatusCode::FAILURE;
+  }
+
 
   return EL::StatusCode::SUCCESS;
 }
