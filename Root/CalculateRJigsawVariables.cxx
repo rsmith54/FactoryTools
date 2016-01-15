@@ -9,6 +9,7 @@
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/RJigsawCalculator_zl.h>
 #include <RJigsawTools/printDebug.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
@@ -16,13 +17,10 @@
 #include <RJigsawTools/strongErrorCheck.h>
 #include <unordered_map>
 #include <iostream>
-
 #include "xAODParticleEvent/ParticleContainer.h"
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
-
-//#define printDebug() ATH_MSG_DEBUG(__PRETTY_FUNCTION__ << " at line : " << __LINE__ )
 
 CalculateRJigsawVariables :: CalculateRJigsawVariables () :
 calculatorName(none),//user needs to choose their calculator name
@@ -99,8 +97,17 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
     {
       m_calculator = new RJigsawCalculator_lvlv;
       //STRONG_CHECK //todo
-      m_calculator->initialize();
+      STRONG_CHECK_SC( m_calculator->initialize());
     }
+  else if(calculatorName == zlCalculator){
+    m_calculator  = new RJigsawCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize()) ;
+  }
+  else {
+    ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
+    return EL::StatusCode::FAILURE;
+  }
+
 
   return EL::StatusCode::SUCCESS;
 }
@@ -128,28 +135,18 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
 
+  STRONG_CHECK_SC(  m_calculator->clearEvent())
 
 
-  // if( eventInfo->isAvailable< float >( "ZpT" ) )
-  //   m_ZpT = eventInfo->auxdecor< float >( "ZpT" );
-
-
-  m_calculator->clearEvent();
-
-  // xAOD::IParticleContainer myparticles;
   xAOD::MissingETContainer * metcont = nullptr;
-
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
-
   ATH_MSG_DEBUG("MET : " <<  (*metcont)["Final"]->met() );
-
 
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
-  //STRONG_CHECK //todo
-  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"]));//this syntax is annoying...
+  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"])));//this syntax is annoying...
 
-  assert( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
+  STRONG_CHECK   ( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
   printDebug();
   return EL::StatusCode::SUCCESS;

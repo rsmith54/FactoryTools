@@ -124,18 +124,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: execute ()
 
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
-  eventInfo->auxdecor< std::string >("regionName") = "Preselected";  
-
-
-  // // if data, check if event passes GRL
-  // bool const isData = !(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ));
-  // if(isData){ // it's data!
-  //    if(!m_grl->passRunLB(*eventInfo)){
-  //       eventInfo->auxdecor< std::string >("regionName") = "";      
-  //       return EL::StatusCode::SUCCESS;
-  //    }
-  // } // end if isData
-
+  eventInfo->auxdecor< std::string >("regionName") = "Preselected";
 
   return EL::StatusCode::SUCCESS;
 }

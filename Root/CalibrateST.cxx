@@ -112,7 +112,7 @@ EL::StatusCode CalibrateST :: initialize ()
   STRONG_CHECK( m_objTool->setProperty("METDoTrkSyst", false) );
   STRONG_CHECK( m_objTool->setProperty("METDoCaloSyst", false) );
 
-  m_objTool->msg().setLevel( MSG::ERROR );
+  m_objTool->msg().setLevel( MSG::ERROR );//void return
 
   TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
   STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );
@@ -133,8 +133,8 @@ EL::StatusCode CalibrateST :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
 
-  xAOD::TStore * store  =  wk()->xaodStore();
-  xAOD::TEvent* event = wk()->xaodEvent();
+  xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent * event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
