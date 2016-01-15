@@ -105,16 +105,14 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
   xAOD::TStore * store = wk()->xaodStore();
 
-
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
-  std::string regionName =  eventInfo->auxdecor< std::string >("regionName");
-  ATH_MSG_DEBUG("Preselected?: " << regionName  );
+  std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("Preselected?: " << preselectedRegionName  );
 
-  if( regionName == "" ) return EL::StatusCode::SUCCESS;
-
+  if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
 
   xAOD::IParticleContainer * selectedLeptons = new xAOD::IParticleContainer();
   xAOD::IParticleContainer * selectedJets = new xAOD::IParticleContainer();
@@ -156,20 +154,21 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     selectedLeptons->push_back(el);
   }
 
-  int nLeptons = selectedLeptons->size();
+  int const nLeptons = selectedLeptons->size();
 
   ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
 
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
   // then we'd need to play with something in the store a little more smartly
 
-  if(nLeptons==2){
-    regionName = "SR";
-  } else if(nLeptons==1) {
-    regionName = "CR1L";
-  } else if(nLeptons==0) {
-    regionName = "CR0L";
-  }
+  std::string regionName = "";
+
+  auto  getRegionName = [](int nLeptons){ std::string regionName = "";
+					  if(nLeptons == 2){regionName = "SR";}
+					  if(nLeptons == 1){regionName = "CR1L";}
+					  if(nLeptons == 0){regionName = "CR0L";}
+					  return regionName;};//todo >2 leptons in the SR? pretty rare though
+
 
   //Here we should add the particles that we want in the calculation to myparticles
   for( const auto& mylepton: *selectedLeptons){
@@ -185,15 +184,14 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   //   tmpparticle->setP4( myjet->p4() );
   // }
 
-  ATH_MSG_DEBUG("Event falls in region: " << regionName  );
-
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
   STRONG_CHECK( store->record( myparticles    , "myparticles"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( myparticlesaux    , "myparticlesaux."    ) );//todo configurable if needed
 
 
-  eventInfo->auxdecor< std::string >("regionName") = regionName ;
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
 
   return EL::StatusCode::SUCCESS;
