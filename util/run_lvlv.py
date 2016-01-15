@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
-parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/")
+parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
 parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help     = "Run n events ", default = -1 )
