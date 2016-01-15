@@ -109,6 +109,11 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
+  // If the event didn't pass the preselection alg, don't bother doing anything with it...
+  std::string regionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("Preselected?: " << regionName  );
+
+  if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
 
   xAOD::IParticleContainer * selectedLeptons = new xAOD::IParticleContainer();
@@ -117,15 +122,6 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   xAOD::ParticleContainer * myparticles = new xAOD::ParticleContainer();
   xAOD::ParticleAuxContainer * myparticlesaux = new xAOD::ParticleAuxContainer();
   myparticles->setStore(myparticlesaux);
-
-
-
-  // If the event didn't pass the preselection alg, don't bother doing anything with it...
-  std::string regionName =  eventInfo->auxdecor< std::string >("regionName");
-  ATH_MSG_DEBUG("Preselected?: " << regionName  );
-
-  if( regionName == "" ) return EL::StatusCode::SUCCESS;
-
 
   xAOD::JetContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
