@@ -18,7 +18,7 @@ struct RJigsawCalculator_lvlv_Test : testing::Test
 {
   static const std::string root;
 
-  static void SetUpTestCase ()
+  virtual void SetUp ()
   {
     // gSystem->MakeDirectory ((root + "").c_str());
     // std::ofstream ((root + "/file.root_17").c_str());
@@ -29,10 +29,12 @@ struct RJigsawCalculator_lvlv_Test : testing::Test
     // gSystem->MakeDirectory ((root + "/deepsample/subdir").c_str());
     // std::ofstream ((root + "/deepsample/subdir/deepfile.root").c_str());
   }
+
+  virtual void TearDown(){}
 };
 const std::string RJigsawCalculator_lvlv_Test::root = "test1";
 
-TEST (RJigsawCalculator_lvlv_Test, clearEventTest)
+TEST_F (RJigsawCalculator_lvlv_Test, clearEventTest)
 {
   RJigsawCalculator_lvlv calc;
   calc.initialize();
