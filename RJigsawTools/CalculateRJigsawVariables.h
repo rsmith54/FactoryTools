@@ -41,11 +41,13 @@ public:
   virtual EL::StatusCode finalize ();
   virtual EL::StatusCode histFinalize ();
 
+private :
+  RJigsawCalculator     * m_calculator;//!
+
+public :
   // this is needed to distribute the algorithm to the workers
   ClassDef(CalculateRJigsawVariables, 1);
 
-private :
-  RJigsawCalculator     * m_calculator;//!
 };
 
 #endif
