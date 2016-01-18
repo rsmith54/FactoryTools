@@ -79,8 +79,12 @@ algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
 
+#todo move the enums to a separate file since they are shared by multiple algs
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
+algsToRun["calculateRegionVars"] = ROOT.CalculateRegionVars()
+algsToRun["calculateRegionVars"].calculatorName = ROOT.CalculateRegionVars.lvlvCalculator
+
 
 for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()

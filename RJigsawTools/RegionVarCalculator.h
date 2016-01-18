@@ -23,9 +23,9 @@ public :
 public :
   EL::StatusCode initialize(xAOD::TStore * store){return doInitialize( store );}
   //to be used per event
-  EL::StatusCode calculate(std::unordered_map<std::string, double>& RegionVars,
-			   xAOD::IParticleContainer& particles,
-			   xAOD::MissingET & met
+  EL::StatusCode calculate(std::unordered_map<std::string, double>& RegionVars// ,
+			   // xAOD::IParticleContainer& particles,
+			   // xAOD::MissingET & met
 			   ){
     return doCalculate( RegionVars,
 			particles,

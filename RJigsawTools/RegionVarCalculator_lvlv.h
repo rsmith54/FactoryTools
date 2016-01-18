@@ -21,6 +21,30 @@ private :
                                      xAOD::MissingET& met
                                      );
 
+  EL::StatusCode doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
+				   xAOD::IParticleContainer& particles,
+				   xAOD::MissingET& met
+				   );
+
+
+  EL::StatusCode doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
+				   xAOD::IParticleContainer& particles,
+				   xAOD::MissingET& met
+				   );
+
+
+  EL::StatusCode doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,
+				   xAOD::IParticleContainer& particles,
+				   xAOD::MissingET& met
+				   );
+
+
+  EL::StatusCode doCR0LCalculations(std::unordered_map<std::string, double>& RegionVars,
+				    xAOD::IParticleContainer& particles,
+				    xAOD::MissingET& met
+				    );
+
+
 public :
   // this is needed to distribute the algorithm to the workers
   ClassDef(RegionVarCalculator_lvlv, 1);

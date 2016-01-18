@@ -1,3 +1,5 @@
+#include <RJigsawTools/CalculateRegionVars.h>
+
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 
 
@@ -75,4 +77,8 @@
 
 #ifdef __CINT__
 #pragma link C++ class WriteOutputNtuple+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class CalculateRegionVars+;
 #endif
