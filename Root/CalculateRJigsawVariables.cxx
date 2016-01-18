@@ -96,7 +96,6 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   if(calculatorName == lvlvCalculator)
     {
       m_calculator = new RJigsawCalculator_lvlv;
-      //STRONG_CHECK //todo
       STRONG_CHECK_SC( m_calculator->initialize());
     }
   else if(calculatorName == zlCalculator){
@@ -128,7 +127,6 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   xAOD::ParticleContainer* myparticles = 0;
   STRONG_CHECK(store->retrieve( myparticles, "myparticles"));
-
 
   // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
   ATH_MSG_DEBUG("Reading regionName : " <<  eventInfo->auxdecor< std::string >("regionName")   );
