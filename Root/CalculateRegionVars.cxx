@@ -121,7 +121,15 @@ EL::StatusCode CalculateRegionVars :: execute ()
 
   printDebug();
 
-  m_calculator->calculate();
+  xAOD::TStore * store = wk()->xaodStore();
+
+  std::unordered_map<std::string,double>               * mymap    = new std::unordered_map<std::string,double>;
+  std::unordered_map<std::string,std::vector<double> > * myvecmap = new std::unordered_map<std::string,std::vector<double> >;
+
+  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap));
+  STRONG_CHECK   ( store->record( mymap , "RegionVarsMap"   ));
+  STRONG_CHECK   ( store->record( mymap , "VecRegionVarsMap"));
+
 
   printDebug();
   return EL::StatusCode::SUCCESS;

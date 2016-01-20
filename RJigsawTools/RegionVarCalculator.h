@@ -23,15 +23,10 @@ public :
 public :
   EL::StatusCode initialize(xAOD::TStore * store){return doInitialize( store );}
   //to be used per event
-  EL::StatusCode calculate(std::unordered_map<std::string, double>& RegionVars// ,
-			   // xAOD::IParticleContainer& particles,
-			   // xAOD::MissingET & met
-			   ){
-    return doCalculate( RegionVars,
-			particles,
-			met
-			);
-  }
+  EL::StatusCode calculate(std::unordered_map<std::string, double>              & RegionVars,
+			   std::unordered_map<std::string, std::vector<double> >& VecRegionVars
+			   //This is somewhat for simplicity, to be able to right out vectors of i.e. jet pts
+			   ){return doCalculate( RegionVars, VecRegionVars);}
 
 
 private :
@@ -39,10 +34,10 @@ private :
   virtual EL::StatusCode doInitialize(xAOD::TStore * store){
     std::cout << "you called the base calculator function! Exiting" << std::endl;
     return EL::StatusCode::FAILURE;};
-  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RegionVars,
-                                     xAOD::IParticleContainer& particles,
-                                     xAOD::MissingET& met
-                                     ){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>              & RegionVars,
+                                     std::unordered_map<std::string, std::vector<double> >& VecRegionVars)
+{std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
+
 protected :
   RegionVarCalculator() : m_store(nullptr) {};//this is to set this to nullptr in the constructor for the derived class
   xAOD::TStore * m_store; //we need to give the store to the calculator for flexibility.

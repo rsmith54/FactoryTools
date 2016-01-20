@@ -110,6 +110,8 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // Note: You can put in a "post-pre-selection" which can cut on e.g. RJR vars and set the region to a blank string
   // So this needn't be logically the same as the decision in CalculateRJigsawVariables::execute()
 
+
+  //todo wtf is happening here
   std::string const & eventRegionName =  eventInfo->auxdecor< std::string >("regionName");
   ATH_MSG_DEBUG("Event falls in region: " << eventRegionName  );
 
@@ -117,7 +119,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 
   if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
-  ATH_MSG_DEBUG("Our event passed one of the selection " );
+  ATH_MSG_DEBUG("Our event passed one of the selection " << regionName);
 
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
   if( eventRegionName != regionName ) return EL::StatusCode::SUCCESS;
@@ -133,6 +135,29 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 			       it.second
 			       );
   }
+
+  std::unordered_map<std::string,double> * mymapRegionVars = nullptr;
+  STRONG_CHECK(store->retrieve( mymapRegionVars,   "RegionVarsMap"));
+
+  for (auto const& it : *mymapRegionVars ) {
+    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
+    m_ntupManager->setProperty(it.first,
+			       it.second
+			       );
+  }
+
+
+  std::unordered_map<std::string, std::vector<double> > * mymapVecRegionVars = nullptr;
+  STRONG_CHECK(store->retrieve( mymapVecRegionVars,   "VecRegionVarsMap"));
+
+  for (auto const& it : *mymapVecRegionVars ) {
+    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
+    m_ntupManager->setProperty(it.first,
+			       it.second
+			       );
+  }
+
+
 
   m_ntupManager->fill();
   m_ntupManager->clear();

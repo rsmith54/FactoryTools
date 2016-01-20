@@ -16,33 +16,20 @@ public :
 private :
   //todo probably clean this up
   virtual EL::StatusCode doInitialize(xAOD::TStore * store);
-  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RegionVars,
-                                     xAOD::IParticleContainer& particles,
-                                     xAOD::MissingET& met
-                                     );
+  virtual EL::StatusCode doCalculate (std::unordered_map<std::string, double>               & RegionVars,
+				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
-				   xAOD::IParticleContainer& particles,
-				   xAOD::MissingET& met
-				   );
+  EL::StatusCode doAllCalculations   (std::unordered_map<std::string, double>               & RegionVars,
+				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
+  EL::StatusCode doSRCalculations    (std::unordered_map<std::string, double>               & RegionVars,
+				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
-				   xAOD::IParticleContainer& particles,
-				   xAOD::MissingET& met
-				   );
+  EL::StatusCode doCR1LCalculations  (std::unordered_map<std::string, double>               & RegionVars,
+				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
-
-  EL::StatusCode doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,
-				   xAOD::IParticleContainer& particles,
-				   xAOD::MissingET& met
-				   );
-
-
-  EL::StatusCode doCR0LCalculations(std::unordered_map<std::string, double>& RegionVars,
-				    xAOD::IParticleContainer& particles,
-				    xAOD::MissingET& met
-				    );
+  EL::StatusCode doCR0LCalculations  (std::unordered_map<std::string, double>               & RegionVars,
+				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
 
 public :
