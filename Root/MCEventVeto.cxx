@@ -132,7 +132,7 @@ EL::StatusCode MCEventVeto :: execute ()
 
 
   const xAOD::TruthParticleContainer* truthPC = 0;
-  STRONG_CHECK(event->retrieve( truthPC, "TruthParticle"  ));
+  STRONG_CHECK(event->retrieve( truthPC, "TruthParticles"  ));
 
   const xAOD::MissingETContainer* metcontainer = 0;
   STRONG_CHECK(event->retrieve( metcontainer, "MET_Truth" ));
