@@ -15,6 +15,8 @@
 
 #include <RJigsawTools/WriteOutputNtuple.h>
 #include <RJigsawTools/CalibrateST.h>
+#include <RJigsawTools/MCEventVeto.h>
+#include <RJigsawTools/MCEventVetoHelper.h>
 
 #ifdef __CINT__
 
@@ -28,6 +30,15 @@
 #ifdef __CINT__
 #pragma link C++ class CalibrateST+;
 #endif
+
+#ifdef __CINT__
+#pragma link C++ class MCEventVeto+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class MCEventVetoHelper+;
+#endif
+
 
 #ifdef __CINT__
 #pragma link C++ class RJigsawCalculator+;
