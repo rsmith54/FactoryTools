@@ -25,7 +25,7 @@ public :
   //to be used per event
   EL::StatusCode calculate(std::unordered_map<std::string, double>              & RegionVars,
 			   std::unordered_map<std::string, std::vector<double> >& VecRegionVars
-			   //This is somewhat for simplicity, to be able to right out vectors of i.e. jet pts
+			   //This is somewhat for simplicity, to be able to write out vectors of i.e. jet pts
 			   ){return doCalculate( RegionVars, VecRegionVars);}
 
 
