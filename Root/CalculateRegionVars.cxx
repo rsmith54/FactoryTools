@@ -1,3 +1,8 @@
+// Infrastructure include(s):
+#include "xAODRootAccess/Init.h"
+#include "xAODRootAccess/TEvent.h"
+#include "xAODRootAccess/TStore.h"
+
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
@@ -9,10 +14,7 @@
 #include <RJigsawTools/printDebug.h>
 #include <RJigsawTools/strongErrorCheck.h>
 
-// Infrastructure include(s):
-#include "xAODRootAccess/Init.h"
-#include "xAODRootAccess/TEvent.h"
-#include "xAODRootAccess/TStore.h"
+
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRegionVars)
@@ -126,10 +128,30 @@ EL::StatusCode CalculateRegionVars :: execute ()
   std::unordered_map<std::string,double>               * mymap    = new std::unordered_map<std::string,double>;
   std::unordered_map<std::string,std::vector<double> > * myvecmap = new std::unordered_map<std::string,std::vector<double> >;
 
-  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap));
-  STRONG_CHECK   ( store->record( mymap , "RegionVarsMap"   ));
-  STRONG_CHECK   ( store->record( mymap , "VecRegionVarsMap"));
+  //store->print();
 
+  xAOD::MissingETContainer * metcont = nullptr;
+  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
+
+  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
+
+  xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
+
+  //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
+  std::vector<double> jetPtVec;
+
+  for (const auto& jet : *jets_nominal) {
+      if ((int)jet->auxdata<char>("baseline") == 0) continue;
+      if ((int)jet->auxdata<char>("passOR") != 1) continue;
+      if ((int)jet->auxdata<char>("signal") != 1) continue;
+
+      jetPtVec.push_back( jet->pt());
+    }
+
+  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap   ));
+  STRONG_CHECK   ( store->record( mymap    , "RegionVarsMap"   ));
+  STRONG_CHECK   ( store->record( myvecmap , "VecRegionVarsMap"));
 
   printDebug();
   return EL::StatusCode::SUCCESS;

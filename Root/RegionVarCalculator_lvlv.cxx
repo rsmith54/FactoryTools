@@ -2,6 +2,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
+#include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_lvlv.h"
 #include "RJigsawTools/strongErrorCheck.h"
@@ -47,23 +48,26 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
 {/*todo*/
   xAOD::TStore * store = m_store;
 
+  //store->print();
+
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  xAOD::JetContainer * jetcont = nullptr;
-  STRONG_CHECK(store->retrieve(jetcont, "STCalibAntiKt4EMTopoJets"));
-
-
+  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
-  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
+  xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
+
+  //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
   std::vector<double> jetPtVec;
 
-  for(xAOD::JetContainer::const_iterator jet_itr = jetcont->begin();
-      jet_itr != xAOD::JetContainer::const_iterator;
-      ++jet_itr )
-    {
-      jetPtVec.push_back( (*jet_itr)->pt());
+  for (const auto& jet : *jets_nominal) {
+      if ((int)jet->auxdata<char>("baseline") == 0) continue;
+      if ((int)jet->auxdata<char>("passOR") != 1) continue;
+      if ((int)jet->auxdata<char>("signal") != 1) continue;
+
+      jetPtVec.push_back( jet->pt());
     }
 
   VecRegionVars   [ "jetPt"] = jetPtVec;

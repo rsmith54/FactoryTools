@@ -134,7 +134,8 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)jet->auxdata<char>("baseline") == 0) continue;
     if ((int)jet->auxdata<char>("passOR") != 1) continue;
     if ((int)jet->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful el
+    // If I've gotten this far, I have a signal, isolated, beautiful jet
+    ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
     selectedJets->push_back(jet);
   }
 
@@ -143,6 +144,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
+    ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
     selectedLeptons->push_back(mu);
   }
 
@@ -151,6 +153,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)el->auxdata<char>("passOR") != 1) continue;
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
+    ATH_MSG_VERBOSE( "el pt : " << el->pt() );
     selectedLeptons->push_back(el);
   }
 
@@ -188,7 +191,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
   STRONG_CHECK( store->record( myparticles    , "myparticles"    ) );//todo configurable if needed
-  STRONG_CHECK( store->record( myparticlesaux    , "myparticlesaux."    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( myparticlesaux , "myparticlesaux."    ) );//todo configurable if needed
 
 
   eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
