@@ -151,10 +151,11 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   STRONG_CHECK(store->retrieve( mymapVecRegionVars,   "VecRegionVarsMap"));
 
   for (auto const& it : *mymapVecRegionVars ) {
-    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
-    m_ntupManager->setProperty(it.first,
-			       it.second
-			       );
+    //    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
+    for(auto const& vecIt : it.second)
+      m_ntupManager->pushProperty(it.first,//push for vector branches, use the same name and they will end up in the same branch
+				  vecIt
+				  );
   }
 
 
