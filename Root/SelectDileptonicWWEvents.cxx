@@ -121,6 +121,16 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   xAOD::ParticleAuxContainer * myparticlesaux = new xAOD::ParticleAuxContainer();
   myparticles->setStore(myparticlesaux);
 
+  STRONG_CHECK( store->record( selectedLeptons    , "selectedLeptons"    ) );//todo configurable if needed
+
+  STRONG_CHECK( store->record( selectedJets    , "selectedJets"    ) );//todo configurable if needed
+
+  STRONG_CHECK( store->record( myparticles    , "myparticles"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( myparticlesaux , "myparticlesaux."    ) );//todo configurable if needed
+
+
+
+
   xAOD::JetContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
@@ -196,9 +206,6 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
-  STRONG_CHECK( store->record( myparticles    , "myparticles"    ) );//todo configurable if needed
-  STRONG_CHECK( store->record( myparticlesaux , "myparticlesaux."    ) );//todo configurable if needed
-
 
   eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
