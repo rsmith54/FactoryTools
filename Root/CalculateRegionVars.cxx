@@ -141,6 +141,8 @@ EL::StatusCode CalculateRegionVars :: execute ()
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
   std::vector<double> jetPtVec;
 
+  printDebug();
+
   for (const auto& jet : *jets_nominal) {
       if ((int)jet->auxdata<char>("baseline") == 0) continue;
       if ((int)jet->auxdata<char>("passOR") != 1) continue;
@@ -148,6 +150,8 @@ EL::StatusCode CalculateRegionVars :: execute ()
 
       jetPtVec.push_back( jet->pt());
     }
+
+  printDebug();
 
   STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap   ));
   STRONG_CHECK   ( store->record( mymap    , "RegionVarsMap"   ));

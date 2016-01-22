@@ -136,7 +136,9 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)jet->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful jet
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
-    selectedJets->push_back(jet);
+
+    auto tmpparticle = new xAOD::Jet(*jet);
+    selectedJets->push_back(tmpparticle  );
   }
 
   for (const auto& mu : *muons_nominal) {
@@ -145,7 +147,9 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
     ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
-    selectedLeptons->push_back(mu);
+
+    auto tmpparticle = new xAOD::Muon(*mu);
+    selectedLeptons->push_back(tmpparticle  );
   }
 
   for (const auto& el : *electrons_nominal) {
@@ -154,7 +158,9 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
     ATH_MSG_VERBOSE( "el pt : " << el->pt() );
-    selectedLeptons->push_back(el);
+
+    auto tmpparticle = new xAOD::Electron(*el);
+    selectedLeptons->push_back(tmpparticle  );
   }
 
   int const nLeptons = selectedLeptons->size();
