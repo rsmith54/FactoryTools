@@ -2,6 +2,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
+#include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_lvlv.h"
@@ -56,19 +57,18 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
-  xAOD::JetContainer* jets_nominal(nullptr);
-  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
+  // xAOD::JetContainer* jets_nominal(nullptr);
+  // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
+
+  xAOD::ParticleContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
   std::vector<double> jetPtVec;
 
-  for (const auto& jet : *jets_nominal) {
-      if ((int)jet->auxdata<char>("baseline") == 0) continue;
-      if ((int)jet->auxdata<char>("passOR") != 1) continue;
-      if ((int)jet->auxdata<char>("signal") != 1) continue;
-
-      jetPtVec.push_back( jet->pt());
-    }
+  for( const auto& jet : *jets_nominal) {
+    jetPtVec.push_back( jet->pt());
+  }
 
   VecRegionVars   [ "jetPt"] = jetPtVec;
 
