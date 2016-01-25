@@ -10,8 +10,8 @@
 #include <unordered_map>
 #include <iostream>
 
-namespace xAOD{
-  class TStore;
+namespace EL{
+  class Worker;
 }
 
 class RegionVarCalculator {
@@ -21,7 +21,7 @@ public :
 
 
 public :
-  EL::StatusCode initialize(xAOD::TStore * store){return doInitialize( store );}
+  EL::StatusCode initialize(EL::Worker * worker){return doInitialize( worker );}
   //to be used per event
   EL::StatusCode calculate(std::unordered_map<std::string, double>              & RegionVars,
 			   std::unordered_map<std::string, std::vector<double> >& VecRegionVars
@@ -31,7 +31,7 @@ public :
 
 private :
   //todo probably clean this up
-  virtual EL::StatusCode doInitialize(xAOD::TStore * store){
+  virtual EL::StatusCode doInitialize(EL::Worker * worker){
     std::cout << "you called the base calculator function! Exiting" << std::endl;
     return EL::StatusCode::FAILURE;};
   virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>              & RegionVars,
@@ -39,9 +39,9 @@ private :
 {std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
 
 protected :
-  RegionVarCalculator() : m_store(nullptr) {};//this is to set this to nullptr in the constructor for the derived class
-  xAOD::TStore * m_store; //we need to give the store to the calculator for flexibility.
-  //This should be pointed to the EventLoop store in your alg which fills your map
+  RegionVarCalculator() : m_worker(nullptr) {};//this is to set this to nullptr in the constructor for the derived class
+  EL::Worker * m_worker; //we need to give the Worker to the calculator for flexibility.
+  //This should be pointed to the EventLoop Worker in your alg which fills your map
 
 public :
   // this is needed to distribute the algorithm to the workers

@@ -90,15 +90,13 @@ EL::StatusCode CalculateRegionVars :: initialize ()
   // you create here won't be available in the output if you have no
   // input events.
 
-  xAOD::TStore * store = wk()->xaodStore();
-
   ATH_MSG_INFO("You have configured a " << calculatorName << " calculator.  See the code for enum definitions. ");
   STRONG_CHECK( calculatorName != none);
 
   if(calculatorName == lvlvCalculator)
     {
       m_calculator = new RegionVarCalculator_lvlv;
-      STRONG_CHECK_SC( m_calculator->initialize(store));
+      STRONG_CHECK_SC( m_calculator->initialize(wk()));
     }
   // else if(calculatorName == zlCalculator){
   //   m_calculator  = new RegionVarCalculator_zl;

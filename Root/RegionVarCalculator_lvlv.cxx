@@ -1,4 +1,5 @@
 #include "EventLoop/StatusCode.h"
+#include "EventLoop/Worker.h"
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
@@ -11,18 +12,19 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(RegionVarCalculator_lvlv)
 
-EL::StatusCode RegionVarCalculator_lvlv::doInitialize(xAOD::TStore * store) {
-  if(m_store != nullptr){
+EL::StatusCode RegionVarCalculator_lvlv::doInitialize(xAOD::TStore * worker) {
+  if(m_worker != nullptr){
     std::cout << "You have called " << __PRETTY_FUNCTION__ << " more than once.  Exiting." << std::endl;
-    return EL::StatusCode::FAILURE;}
-  m_store = store;
+    return EL::StatusCode::FAILURE;
+  }
+  m_worker = worker;
 
   return EL::StatusCode::SUCCESS;
 }
 
 EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::string, double              >& RegionVars,
 						     std::unordered_map<std::string, std::vector<double> >& VecRegionVars){
-  xAOD::TStore * store = m_store;//this is just to be able to copy code :)
+  xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
 
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
@@ -47,7 +49,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::str
 EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
 							   std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/
-  xAOD::TStore * store = m_store;
+  xAOD::TStore * store = m_worker->xaodStore();
 
   //store->print();
 
