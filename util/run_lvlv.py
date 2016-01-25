@@ -5,10 +5,13 @@ import logging
 logging.basicConfig(level=logging.INFO)
 from optparse import OptionParser
 
+import os
+
 parser = OptionParser()
 parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
 parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
 parser.add_option("--gridDS", help      = "gridDS"  , default="")
+parser.add_option("--gridUser", help    = "gridUser"  , default=os.environ.get("USER")  )
 parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help     = "Run n events ", default = -1 )
@@ -137,10 +140,7 @@ elif (options.driver == "grid"):
     print "grid driver"
     logging.info("running on Grid")
     driver = ROOT.EL.PrunDriver()
-    driver.options().setString("nc_outputSampleName", "user.leejr.%in:name[2]%.%in:name[3]%");
-#    driver.options().setString(EL::Job::optGridNfilesPerJob, "1")
-#driver.options().setDouble("nc_disableAutoRetry", 1)
-#    driver.options().setDouble("nc_nFilesPerJob", 1)
+    driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%"%(options.gridUser)   );
     driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
     logging.info("submit job")
