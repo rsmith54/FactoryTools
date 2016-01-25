@@ -42,6 +42,16 @@ submit_dir/data-TEST_OUTPUTNAME/*.root
 by default when doing a test, where TEST_OUTPUTNAME is set in your submission script.  The file in submit_dir does not have your output trees!!!
 
 
+You can run on the grid with
+
+```
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --gridInputFile RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
+```
+
+This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date. 
+
+
+
 ## Merging Step
 
 Once you've run on the grid, download the tree output and the metadata output to some directory. Then you can use the new merging script to combine them with a new branch added that incorporates the cross section weighting. Simply run
