@@ -6,12 +6,17 @@ logging.basicConfig(level=logging.INFO)
 from optparse import OptionParser
 
 import os
+from datetime import date
 
 parser = OptionParser()
 parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
 parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
+
 parser.add_option("--gridDS", help      = "gridDS"  , default="")
+parser.add_option("--gridInputFile",help= "gridInputFile"  , default=""  )
 parser.add_option("--gridUser", help    = "gridUser"  , default=os.environ.get("USER")  )
+parser.add_option("--gridTag", help     = "gridTag", default=date.today().strftime("%m%d%y"))
+
 parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help     = "Run n events ", default = -1 )
@@ -51,8 +56,18 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
+if (options.gridInputFile or options.gridDS) and (options.driver!="grid"):
+    print ""
+    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    print "Are you sure you didn't mean to run this with --driver grid?"
+    raw_input("Press Enter to continue... or ctrl-c if you effed up...")
 
-if options.gridDS:
+if options.gridInputFile:
+    with open(options.gridInputFile,'r') as f:
+        for ds in f:
+            # print "Adding %s to SH"%ds.rstrip()
+            ROOT.SH.addGrid(sh_all, ds.rstrip() )
+elif options.gridDS:
     ROOT.SH.scanDQ2(sh_all, options.gridDS);
 else:
     mylist = ROOT.SH.DiskListLocal(options.dataDir)
@@ -140,7 +155,7 @@ elif (options.driver == "grid"):
     print "grid driver"
     logging.info("running on Grid")
     driver = ROOT.EL.PrunDriver()
-    driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%"%(options.gridUser)   );
+    driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(options.gridUser,options.gridTag)   );
     driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
     logging.info("submit job")
