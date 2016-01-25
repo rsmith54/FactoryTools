@@ -15,7 +15,7 @@ public :
 
 private :
   //todo probably clean this up
-  virtual EL::StatusCode doInitialize(xAOD::TStore * store);
+  virtual EL::StatusCode doInitialize(EL::Worker * worker);
   virtual EL::StatusCode doCalculate (std::unordered_map<std::string, double>               & RegionVars,
 				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
 
