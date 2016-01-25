@@ -80,7 +80,7 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
-algsToRun["mcEventInfo"]               = ROOT.MCEventVeto()
+algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
