@@ -12,7 +12,7 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(RegionVarCalculator_lvlv)
 
-EL::StatusCode RegionVarCalculator_lvlv::doInitialize(xAOD::TStore * worker) {
+EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
   if(m_worker != nullptr){
     std::cout << "You have called " << __PRETTY_FUNCTION__ << " more than once.  Exiting." << std::endl;
     return EL::StatusCode::FAILURE;
