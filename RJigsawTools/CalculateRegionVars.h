@@ -1,22 +1,23 @@
-#ifndef RJigsawTools_CalculateRJigsawVariables_H
-#define RJigsawTools_CalculateRJigsawVariables_H
+#ifndef RJigsawTools_CalculateRegionVars_H
+#define RJigsawTools_CalculateRegionVars_H
 
 #include <EventLoop/Algorithm.h>
 
-class RJigsawCalculator;
+class RegionVarCalculator;
 
-class CalculateRJigsawVariables : public EL::Algorithm
+class CalculateRegionVars : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
 public:
   // float cutValue;
 
-  enum RJigsawCalculatorName {
+  enum RegionCalculatorName {
     none           = 0,
     lvlvCalculator = 1,
     zlCalculator   = 2
   };
+
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -25,10 +26,10 @@ public:
   // Tree *myTree; //!
   // TH1 *myHist; //!
 
-  RJigsawCalculatorName  calculatorName;
+  RegionCalculatorName  calculatorName;
 
   // this is a standard constructor
-  CalculateRJigsawVariables ();
+  CalculateRegionVars ();
 
   // these are the functions inherited from Algorithm
   virtual EL::StatusCode setupJob (EL::Job& job);
@@ -42,12 +43,11 @@ public:
   virtual EL::StatusCode histFinalize ();
 
 private :
-  RJigsawCalculator     * m_calculator;//!
+  RegionVarCalculator  * m_calculator;//!
 
 public :
   // this is needed to distribute the algorithm to the workers
-  ClassDef(CalculateRJigsawVariables, 1);
-
+  ClassDef(CalculateRegionVars, 1);
 };
 
 #endif
