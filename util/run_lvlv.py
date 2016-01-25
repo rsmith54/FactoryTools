@@ -8,6 +8,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
 parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
+parser.add_option("--gridDS", help      = "gridDS"  , default="")
 parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help     = "Run n events ", default = -1 )
@@ -47,11 +48,13 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-#list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
-#list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
-list = ROOT.SH.DiskListLocal(options.dataDir)
 
-ROOT.SH.scanDir(sh_all,list, "*")
+if options.gridDS:
+    ROOT.SH.scanDQ2(sh_all, options.gridDS);
+else:
+    mylist = ROOT.SH.DiskListLocal(options.dataDir)
+    ROOT.SH.scanDir(sh_all,mylist, "*")
+
 
 sh_all.setMetaString ("nc_tree", "CollectionTree");
 
@@ -65,7 +68,7 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-outputFilename = "test_outputName"
+outputFilename = "trees"
 output = ROOT.EL.OutputStream(outputFilename);
 
 import collections
@@ -134,13 +137,13 @@ elif (options.driver == "grid"):
     print "grid driver"
     logging.info("running on Grid")
     driver = ROOT.EL.PrunDriver()
-    driver.options().setString("nc_outputSampleName", "user.rsmith.metNote.weekOne.v3.%in:name[2]%.%in:name[3]%");
+    driver.options().setString("nc_outputSampleName", "user.leejr.%in:name[2]%.%in:name[3]%");
 #    driver.options().setString(EL::Job::optGridNfilesPerJob, "1")
 #driver.options().setDouble("nc_disableAutoRetry", 1)
 #    driver.options().setDouble("nc_nFilesPerJob", 1)
     driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
     logging.info("submit job")
-    driver.submitOnly(job, options.submitDir+ options.whichAnalysis + "_mediumBad_" + options.dataDir)
+    driver.submitOnly(job, options.submitDir)
 
 
