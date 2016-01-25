@@ -7,7 +7,7 @@
 import ROOT
 import logging
 import shutil
-import os
+import os, sys
 import itertools
 import array
 
@@ -19,7 +19,7 @@ from optparse import OptionParser
 import atexit
 @atexit.register
 def quite_exit():
-    ROOT.gSystem.Exit(0)
+	ROOT.gSystem.Exit(0)
 
 
 logging.info("loading packages...")
@@ -35,7 +35,7 @@ lumi = 1000  ## in pb-1
 if len(sys.argv)==1:
 	search_directories = ["/afs/cern.ch/user/l/leejr/work/public/fromGrid/",]
 else:
-	search_directories = [str(sys.argv[i]) for i in xrange(1,len(sys.argv)]
+	search_directories = [str(sys.argv[i]) for i in xrange(1,len(sys.argv))]
 
 print search_directories
 
@@ -43,6 +43,7 @@ tmpOutputDirectory = "tmpOutput"
 outputDirectory = "output"
 treePrefix = "trees"
 
+selection = "1"
 
 def main():
 
@@ -85,7 +86,7 @@ def main():
 		sh_bg["top"]: "Top",
 		sh_bg["wjets"]: "WJets",
 		sh_bg["zjets"]: "ZJets",
-	    }
+		}
 
 	treesToProcess = []
 
@@ -116,9 +117,9 @@ def main():
 			mydir = tmpOutputDirectory
 
 			try:
-			    os.stat(mydir)
+				os.stat(mydir)
 			except:
-			    os.mkdir(mydir)       
+				os.mkdir(mydir)       
 
 			outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
 			filesToEventuallyHadd.append(outputSampleFileName)
@@ -128,7 +129,7 @@ def main():
 			for itree in treesToProcess:
 				mysamplehandler.setMetaString("nc_tree", itree)
 				mytree =  sample.makeTChain().Clone()
-				outputTree = addLeaves( mytree, getNormFactor(sample) )			
+				outputTree = addLeaves( mytree, getNormFactor(sample) , selection)
 				outputTree.Write()
 
 			print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
@@ -162,26 +163,28 @@ def getNormFactor(sample):
 
 
 
-def addLeaves(tree,normalization):
+def addLeaves(tree,normalization,selection="1"):
 
-   events = tree.GetEntries()
 
-   leaves = "normweight/F"
-   leafValues = array.array("d", [0.0])
-   newtree = tree.CloneTree(0)
+	events = tree.GetEntries()
 
-   newBranch = newtree.Branch( "normweight" , leafValues, leaves )
-   for i in range(events):
-      tree.GetEntry(i)
+	leaves = "normweight/F"
+	leafValues = array.array("d", [0.0])
+	# newtree = tree.CloneTree(0)
+	newtree = tree.CopyTree(selection)
 
-      leafValues[0] = normalization
+	newBranch = newtree.Branch( "normweight" , leafValues, leaves )
+	for i in range(events):
+		tree.GetEntry(i)
 
-      newtree.Fill()
+		leafValues[0] = normalization
 
-      if i % 5000 == 0:
-         print "%s of %s: %s" % (i,events,leafValues)
-   
-   return newtree
+		newtree.Fill()
+
+		if i % 5000 == 0:
+			print "%s of %s: %s" % (i,events,leafValues)
+
+	return newtree
 
 
 def attachCounters(sample):
@@ -217,5 +220,5 @@ def getListOfTreeNames(sample):
 
 
 if __name__ == "__main__":
-    main()
+	main()
 
