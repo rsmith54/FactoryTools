@@ -20,8 +20,11 @@ def discover(sh, search_directories, pattern="*trees*"):
 def addTags(sh_all):
 	for sample in sh_all:
 
-		short_name = sample.getMetaString("sample_name").split(".")[2:]
+		short_name = sample.getMetaString("sample_name").split(".")[3]
+		dsid = sample.getMetaString("sample_name").split(".")[2]
 		sample.setMetaString( "short_name" , sample.getMetaString("sample_name") )
+
+		print short_name
 
 		if "physics_" in short_name:
 			sample.addTag("data")
@@ -56,6 +59,8 @@ def addTags(sh_all):
 		if "Znunu" in short_name:
 			sample.addTag("zjets")
 		if "Sherpa_Wqq" in short_name:
+			sample.addTag("zjets")
+		if "_Zmumu_" in short_name:
 			sample.addTag("zjets")
 		if "ggH" in short_name:
 			sample.addTag("signal")

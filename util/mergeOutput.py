@@ -62,6 +62,8 @@ def main():
 	logging.info("adding my tags defined in discoverInput.py")
 	discoverInput.addTags(sh_all)
 
+	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
+
 	## Split up samplehandler into per-BG SH's based on tag metadata
 
 	sh_data = sh_all.find("data")
@@ -91,22 +93,22 @@ def main():
 	treesToProcess = []
 
 	for mysamplehandler in [	
-								sh_all,
+								# sh_all,
 								# sh_data,
 								# sh_bg["qcd"],
 								# sh_bg["top"],
 								# sh_bg["wjets"],
-								# sh_bg["zjets"] 
+								sh_bg["zjets"] 
 							]:
 
-		print mysamplehandler
+		# print mysamplehandler
 
 		filesToEventuallyHadd = []
 
 		for sample in mysamplehandler:
 
 			sample_name = sample.getMetaString("sample_name")
-			print sample_name
+			# print sample_name
 			dsid = sample_name.split(".")[2]
 
 			if len(treesToProcess) == 0:
@@ -141,8 +143,9 @@ def main():
 		try:
 			os.stat(mydir)
 		except:
-			os.mkdir(mydir)       
-		os.system('hadd -f %s/%s.root %s'%
+			os.mkdir(mydir)  
+		print 'hadd -O -f %s/%s.root %s'%(outputDirectory, outputFileNames[mysamplehandler], " ".join(filesToEventuallyHadd) )      
+		os.system('hadd -O -f %s/%s.root %s'%
 			(outputDirectory, outputFileNames[mysamplehandler], " ".join(filesToEventuallyHadd) ) 
 			)
 
@@ -168,20 +171,20 @@ def addLeaves(tree,normalization,selection="1"):
 
 	events = tree.GetEntries()
 
-	leaves = "normweight/F"
-	leafValues = array.array("d", [0.0])
+	leaves = "normweight/D"
+	leafValues = array.array("d", [0.])
 	# newtree = tree.CloneTree(0)
 	newtree = tree.CopyTree(selection)
 
 	newBranch = newtree.Branch( "normweight" , leafValues, leaves )
-	for i in range(events):
+	for i in xrange(events):
 		tree.GetEntry(i)
 
-		leafValues[0] = normalization
+		leafValues[0] = ROOT.Double(normalization)
 
 		newtree.Fill()
 
-		if i % 5000 == 0:
+		if i % 10000 == 0:
 			print "%s of %s: %s" % (i,events,leafValues)
 
 	return newtree
@@ -198,7 +201,7 @@ def attachCounters(sample):
 		assert len(sh_metadata) == 1
 		metadata_sample = sh_metadata[0]
 		for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-			print myfile 
+			# print myfile 
 			try:
 				m_nevt += myfile.Get("MetaData_EventCount").GetBinContent(1)
 				m_sumw += myfile.Get("MetaData_EventCount").GetBinContent(3)
@@ -212,7 +215,7 @@ def attachCounters(sample):
 
 def getListOfTreeNames(sample):
 	f = ROOT.TFile(sample.fileName(0) )
-	print f
+	# print f
 	listOfTrees = [key.GetName() for key in f.GetListOfKeys() if treePrefix in key.GetName()]
 	return listOfTrees
 
