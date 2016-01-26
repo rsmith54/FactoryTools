@@ -2,6 +2,7 @@
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 
+#include <PATInterfaces/SystematicRegistry.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 #include "xAODEventInfo/EventInfo.h"
@@ -23,7 +24,8 @@
 ClassImp(CalibrateST)
 
 CalibrateST :: CalibrateST () :
-m_objTool(nullptr)
+systName(notSetString()),
+  m_objTool(nullptr)
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -91,6 +93,7 @@ EL::StatusCode CalibrateST :: initialize ()
   // input events.
 
   xAOD::TEvent* event = wk()->xaodEvent();
+  xAOD::TStore* store = wk()->xaodStore();
 
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
@@ -101,9 +104,13 @@ EL::StatusCode CalibrateST :: initialize ()
   bool const isAtlfast = false;
 
   ST::SettingDataSource datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
-  m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" );
+  if( systName == notSetString()) {
+    ATH_MSG_ERROR( "you need to set the systematic string in your run script!");
+    return EL::StatusCode::FAILURE;
+  }
 
-  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource));
+  m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
+
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
 
   m_objTool->msg().setLevel( MSG::ERROR );//void return
@@ -113,6 +120,7 @@ EL::StatusCode CalibrateST :: initialize ()
   STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
 
   STRONG_CHECK( m_objTool->initialize());
+  STRONG_CHECK( m_objTool->applySystematicVariation(systName));//apply the systematic variation
 
   return EL::StatusCode::SUCCESS;
 }
@@ -128,6 +136,8 @@ EL::StatusCode CalibrateST :: execute ()
 
   xAOD::TStore * store = wk()->xaodStore();
   xAOD::TEvent * event = wk()->xaodEvent();
+
+  store->clear();//We must clear the store!!!
 
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
