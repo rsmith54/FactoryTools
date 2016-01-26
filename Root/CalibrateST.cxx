@@ -120,7 +120,9 @@ EL::StatusCode CalibrateST :: initialize ()
   STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
 
   STRONG_CHECK( m_objTool->initialize());
+  ATH_MSG_INFO( "applying systematic variation : " << systName ) ;
   STRONG_CHECK( m_objTool->applySystematicVariation(systName));//apply the systematic variation
+  ATH_MSG_INFO( "applied systematic variation" ) ;
 
   return EL::StatusCode::SUCCESS;
 }

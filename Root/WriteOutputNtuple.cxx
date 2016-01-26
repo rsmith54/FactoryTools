@@ -85,10 +85,13 @@ EL::StatusCode WriteOutputNtuple :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-  ATH_MSG_INFO("writing to output file " << outputName );
-  ATH_MSG_INFO("writing to output tree " << regionName );
+  ATH_MSG_INFO("writing to output file : " << outputName );
+  ATH_MSG_INFO("region name            : " << regionName );
+  ATH_MSG_INFO("systematic name        : " << systName );
+  ATH_MSG_INFO("writing to tree        : " << regionName + systName );
+
   m_ntupManager = new NtupManager;
-  m_ntupManager->initialize( outputName+regionName, wk()->getOutputFile(outputName));//todo make the treename smarter
+  m_ntupManager->initialize( outputName+"_"+regionName+"_"+systName, wk()->getOutputFile(outputName));//todo make the treename smarter
 
   return EL::StatusCode::SUCCESS;
 }
