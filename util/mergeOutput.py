@@ -131,7 +131,7 @@ def main():
 			for itree in treesToProcess:
 				mysamplehandler.setMetaString("nc_tree", itree)
 				mytree =  sample.makeTChain().Clone()
-				outputTree = addLeaves( mytree, getNormFactor(sample) , selection)
+				outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
 				outputTree.Write()
 
 			print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
@@ -165,29 +165,42 @@ def getNormFactor(sample):
 	return m_eventscaling
 
 
+addBranchCode = """
+TTree * addBranch(TTree* tree, float normalization, TString selection="1"){
 
-def addLeaves(tree,normalization,selection="1"):
+		TTree * newtree = tree->CopyTree(selection);
+		double normweight = normalization;
+		TBranch * bnormweight = newtree->Branch("normweight",&normweight,"normweight/D");
+		int nevents = newtree->GetEntries();
 
+		for (Long64_t i=0;i<nevents;i++) {
+			newtree->GetEntry(i);
+			bnormweight->Fill();
+			if(i%10000==0) cout<< i << " of " << nevents << endl;
+		}
 
-	events = tree.GetEntries()
+		return newtree;
+}
+"""
 
-	leaves = "normweight/D"
-	leafValues = array.array("d", [0.])
-	# newtree = tree.CloneTree(0)
-	newtree = tree.CopyTree(selection)
+ROOT.gInterpreter.Declare(addBranchCode)
 
-	newBranch = newtree.Branch( "normweight" , leafValues, leaves )
-	for i in xrange(events):
-		tree.GetEntry(i)
-
-		leafValues[0] = ROOT.Double(normalization)
-
-		newtree.Fill()
-
-		if i % 10000 == 0:
-			print "%s of %s: %s" % (i,events,leafValues)
-
-	return newtree
+# This python function is replaced by the c++ function above for speed
+# def addLeaves(tree,normalization,selection="1"):
+# 	return 0
+# 	events = tree.GetEntries()
+# 	leaves = "normweight/D"
+# 	leafValues = array.array("d", [0.])
+# 	# newtree = tree.CloneTree(0)
+# 	newtree = tree.CopyTree(selection)
+# 	newBranch = newtree.Branch( "normweight" , leafValues, leaves )
+# 	for i in xrange(events):
+# 		tree.GetEntry(i)
+# 		leafValues[0] = ROOT.Double(normalization)
+# 		newtree.Fill()
+# 		if i % 10000 == 0:
+# 			print "%s of %s: %s" % (i,events,leafValues)
+# 	return newtree
 
 
 def attachCounters(sample):
