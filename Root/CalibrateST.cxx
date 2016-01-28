@@ -104,11 +104,11 @@ EL::StatusCode CalibrateST :: initialize ()
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" );
 
   STRONG_CHECK( m_objTool->setProperty("DataSource", datasource));
-  STRONG_CHECK( m_objTool->setProperty("JetInputType", xAOD::JetInput::EMTopo) );
-  STRONG_CHECK( m_objTool->setProperty("EleId", "TightLH") );
-  STRONG_CHECK( m_objTool->setProperty("EleIdBaseline", "LooseAndBLayerLH") );
-  STRONG_CHECK( m_objTool->setProperty("TauId", "Tight") );
-  STRONG_CHECK( m_objTool->setProperty("EleIsoWP", "GradientLoose") );
+  // STRONG_CHECK( m_objTool->setProperty("JetInputType", xAOD::JetInput::EMTopo) );
+  // STRONG_CHECK( m_objTool->setProperty("EleId", "TightLH") );
+  // STRONG_CHECK( m_objTool->setProperty("EleIdBaseline", "LooseAndBLayerLH") );
+  // STRONG_CHECK( m_objTool->setProperty("TauId", "Tight") );
+  // STRONG_CHECK( m_objTool->setProperty("EleIsoWP", "GradientLoose") );
   STRONG_CHECK( m_objTool->setProperty("METDoTrkSyst", false) );
   STRONG_CHECK( m_objTool->setProperty("METDoCaloSyst", false) );
 

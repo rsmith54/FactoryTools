@@ -123,6 +123,23 @@ EL::StatusCode RegionVarCalculator_zl::doTriggerPassThroughCalculations(std::uno
 
 // Put Trigger Decisions here
 
+  xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
+
+  const xAOD::EventInfo* eventInfo = nullptr;
+  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+
+  auto passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+
+  RegionVars["pass_xe100"]              = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100") != passTrigs.end();
+  RegionVars["pass_xe70"]               = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe70") != passTrigs.end();
+  RegionVars["pass_j30_xe60_razor170"]  = std::find(passTrigs.begin(), passTrigs.end(), "HLT_j30_xe60_razor170") != passTrigs.end();
+  RegionVars["pass_j30_xe60_razor185"]  = std::find(passTrigs.begin(), passTrigs.end(), "HLT_j30_xe60_razor185") != passTrigs.end();
+  RegionVars["pass_j30_xe60_razor195"]  = std::find(passTrigs.begin(), passTrigs.end(), "HLT_j30_xe60_razor195") != passTrigs.end();
+
+  RegionVars["pass_2J15_XE55"]  = std::find(passTrigs.begin(), passTrigs.end(), "L1_2J15_XE55") != passTrigs.end();
+
+
+
   return EL::StatusCode::SUCCESS;}
 
 EL::StatusCode RegionVarCalculator_zl::doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
