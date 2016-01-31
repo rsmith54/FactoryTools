@@ -18,6 +18,11 @@
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 
 
+#include "xAODMissingET/MissingETContainer.h"
+#include "xAODMissingET/MissingETAuxContainer.h"
+#include "xAODTrigMissingET/TrigMissingETContainer.h"
+#include "xAODTrigMissingET/TrigMissingETAuxContainer.h"
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(TriggerPassThrough)
 
@@ -104,19 +109,29 @@ EL::StatusCode TriggerPassThrough :: execute ()
   //todo add some preselection here!
 
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent * event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
+  std::vector< std::string > const & passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+
+  std::cout << "triggerpassthrough test" << std::endl;  
+  std::cout << passTrigs.size() << std::endl;  
+  if(passTrigs.size()){std::cout << passTrigs[0] << std::endl;  }
+  
+
+
+
+  // STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
 
   std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
   selectedLeptons.first->setStore(selectedLeptons.second);
   std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
   selectedJets.first->setStore(selectedJets.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedRJigsawParticles   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
   selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
-
 
 
   STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
@@ -128,6 +143,31 @@ EL::StatusCode TriggerPassThrough :: execute ()
   STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
 
 
+  const xAOD::MissingETContainer * metcont = nullptr;
+  STRONG_CHECK( event->retrieve(metcont, "MET_Reference_AntiKt4EMTopo") );
+  xAOD::MissingETContainer*    newMetContainer    = new xAOD::MissingETContainer();
+  xAOD::MissingETAuxContainer* newMetAuxContainer = new xAOD::MissingETAuxContainer();
+  newMetContainer->setStore(newMetAuxContainer);
+  //everything other than MET is stored by default using the ST call with true
+  STRONG_CHECK( store->record( newMetContainer    , "STCalibMET"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux.") );//todo configurable if needed
+
+
+  const xAOD::TrigMissingETContainer * trigmetcont = nullptr;
+  STRONG_CHECK( event->retrieve(trigmetcont, "HLT_xAOD__TrigMissingETContainer_TrigEFMissingET" ) );
+
+
+  xAOD::MissingET * tmpmet = new xAOD::MissingET( (*trigmetcont)[0]->ex(), 
+    (*trigmetcont)[0]->ey(), 
+    (*trigmetcont)[0]->sumEt(), 
+    "FinalTrk" );
+  newMetContainer->push_back(tmpmet);
+
+  // *newMetContainer = *metcont;
+
+
+
+
 
   // xAOD::IParticleContainer * selectedLeptons = new xAOD::IParticleContainer();
   // xAOD::IParticleContainer * selectedJets = new xAOD::IParticleContainer();
@@ -136,44 +176,46 @@ EL::StatusCode TriggerPassThrough :: execute ()
   // xAOD::ParticleAuxContainer * myparticlesaux = new xAOD::ParticleAuxContainer();
   // myparticles->setStore(myparticlesaux);
 
-  xAOD::JetContainer* jets_nominal(nullptr);
-  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
+  const xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(event->retrieve(jets_nominal, "AntiKt4EMTopoJets"));
 
-  xAOD::MuonContainer* muons_nominal(nullptr);
-  STRONG_CHECK(store->retrieve(muons_nominal, "STCalibMuons"));
+  // const xAOD::MuonContainer* muons_nominal(nullptr);
+  // STRONG_CHECK(event->retrieve(muons_nominal, "Muons"));
 
-  xAOD::ElectronContainer* electrons_nominal(nullptr);
-  STRONG_CHECK(store->retrieve(electrons_nominal, "STCalibElectrons"));
+  // const xAOD::ElectronContainer* electrons_nominal(nullptr);
+  // STRONG_CHECK(event->retrieve(electrons_nominal, "Electrons"));
 
   for (const auto& jet : *jets_nominal) {
-    if ((int)jet->auxdata<char>("baseline") == 0) continue;
-    if ((int)jet->auxdata<char>("passOR") != 1) continue;
-    if ((int)jet->auxdata<char>("signal") != 1) continue;
+    // if ((int)jet->auxdata<char>("baseline") == 0) continue;
+    // if ((int)jet->auxdata<char>("passOR") != 1) continue;
+    // if ((int)jet->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
+    if(jet->p4().Pt() < 40000) continue;
+    if(fabs(jet->p4().Eta()) > 3.2 ) continue;
     auto tmpparticle = new xAOD::Particle();
     selectedJets.first->push_back(tmpparticle);
     tmpparticle->setP4(jet->p4());
   }
 
-  for (const auto& mu : *muons_nominal) {
-    if ((int)mu->auxdata<char>("baseline") == 0) continue;
-    if ((int)mu->auxdata<char>("passOR") != 1) continue;
-    if ((int)mu->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful muon
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle);
-    tmpparticle->setP4(mu->p4());
-  }
+  // for (const auto& mu : *muons_nominal) {
+  //   // if ((int)mu->auxdata<char>("baseline") == 0) continue;
+  //   // if ((int)mu->auxdata<char>("passOR") != 1) continue;
+  //   // if ((int)mu->auxdata<char>("signal") != 1) continue;
+  //   // If I've gotten this far, I have a signal, isolated, beautiful muon
+  //   auto tmpparticle = new xAOD::Particle();
+  //   selectedLeptons.first->push_back(tmpparticle);
+  //   tmpparticle->setP4(mu->p4());
+  // }
 
-  for (const auto& el : *electrons_nominal) {
-    if ((int)el->auxdata<char>("baseline") == 0) continue;
-    if ((int)el->auxdata<char>("passOR") != 1) continue;
-    if ((int)el->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful el
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle);
-    tmpparticle->setP4(el->p4());
-  }
+  // for (const auto& el : *electrons_nominal) {
+  //   // if ((int)el->auxdata<char>("baseline") == 0) continue;
+  //   // if ((int)el->auxdata<char>("passOR") != 1) continue;
+  //   // if ((int)el->auxdata<char>("signal") != 1) continue;
+  //   // If I've gotten this far, I have a signal, isolated, beautiful el
+  //   auto tmpparticle = new xAOD::Particle();
+  //   selectedLeptons.first->push_back(tmpparticle);
+  //   tmpparticle->setP4(el->p4());
+  // }
 
   int const nLeptons = selectedLeptons.first->size();
 
@@ -184,7 +226,7 @@ EL::StatusCode TriggerPassThrough :: execute ()
 
   std::string regionName = "";
 
-  auto  getRegionName = [](int nLeptons){ std::string regionName = "";
+  auto  getRegionName = [](int nLeptons){ std::string regionName = "TriggerPassThrough";
 					  if(nLeptons == 0){regionName = "TriggerPassThrough";}
 					  return regionName;};//todo >2 leptons in the SR? pretty rare though
 
@@ -202,6 +244,8 @@ EL::StatusCode TriggerPassThrough :: execute ()
     selectedRJigsawParticles.first->push_back(tmpparticle  );
     tmpparticle->setP4( myjet->p4() );
   }
+
+
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 

@@ -28,9 +28,10 @@ EL::StatusCode RegionVarCalculator_zl::doInitialize(EL::Worker * worker) {
 EL::StatusCode RegionVarCalculator_zl::doCalculate(std::unordered_map<std::string, double              >& RegionVars,
 						     std::unordered_map<std::string, std::vector<double> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
+  xAOD::TEvent * event = m_worker->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   std::string const & regionName = eventInfo->auxdecor< std::string >("regionName");
 
@@ -57,7 +58,7 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::unordered_map<std:
   //
 
   const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   RegionVars["runNumber"]   = eventInfo->runNumber();
   RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
@@ -86,8 +87,8 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::unordered_map<std:
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = (*metcont)["Final"]->met();
+  std::cout << "MET : " << (*metcont)[m_metName]->met() << std::endl;
+  RegionVars     ["met"]   = (*metcont)[m_metName]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -122,13 +123,18 @@ EL::StatusCode RegionVarCalculator_zl::doTriggerPassThroughCalculations(std::uno
 {
 
 // Put Trigger Decisions here
-
-  xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
+  xAOD::TEvent * event = m_worker->xaodEvent();
+  xAOD::TStore * store = m_worker->xaodStore();
 
   const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
-  auto passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+  std::vector< std::string > const & passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+
+  std::cout << "test" << std::endl;  
+  std::cout << passTrigs.size() << std::endl;  
+  if(passTrigs.size()){std::cout << passTrigs[0] << std::endl;  }
+  
 
   RegionVars["pass_xe100"]              = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100") != passTrigs.end();
   RegionVars["pass_xe70"]               = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe70") != passTrigs.end();
@@ -137,6 +143,7 @@ EL::StatusCode RegionVarCalculator_zl::doTriggerPassThroughCalculations(std::uno
   RegionVars["pass_j30_xe60_razor195"]  = std::find(passTrigs.begin(), passTrigs.end(), "HLT_j30_xe60_razor195") != passTrigs.end();
 
   RegionVars["pass_2J15_XE55"]  = std::find(passTrigs.begin(), passTrigs.end(), "L1_2J15_XE55") != passTrigs.end();
+  RegionVars["pass_mu20"]  = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu20") != passTrigs.end();
 
 
 

@@ -19,6 +19,8 @@
 #include <iostream>
 #include "xAODParticleEvent/ParticleContainer.h"
 
+
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalculateRJigsawVariables)
 
@@ -120,10 +122,11 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent * event = wk()->xaodEvent();
 
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   xAOD::ParticleContainer* myparticles = 0;
   STRONG_CHECK(store->retrieve( myparticles, "myparticles"));
@@ -133,21 +136,24 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
 
-  STRONG_CHECK_SC(  m_calculator->clearEvent())
+  // ATH_MSG_DEBUG("Clearing event");
 
+  STRONG_CHECK_SC(  m_calculator->clearEvent() )
 
   xAOD::MissingETContainer * metcont = nullptr;
-  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
-  ATH_MSG_DEBUG("MET : " <<  (*metcont)["Final"]->met() );
+  STRONG_CHECK( store->retrieve(metcont, "STCalibMET") );
+  // ATH_MSG_DEBUG("About to print MET value");
+  ATH_MSG_DEBUG("MET : " <<  (*metcont)[m_metName]->met() );
 
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
-  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"])));//this syntax is annoying...
+  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)[m_metName])));//this syntax is annoying...
 
-  STRONG_CHECK   ( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
+  STRONG_CHECK   (  store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
   printDebug();
   return EL::StatusCode::SUCCESS;
+
 }
 
 

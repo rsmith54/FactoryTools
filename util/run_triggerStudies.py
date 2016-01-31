@@ -95,7 +95,7 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent_Trigger.config")
-algsToRun["calibrateST"]               = ROOT.CalibrateST()
+# algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["triggerPassThrough"]        = ROOT.TriggerPassThrough()
 
 #todo move the enums to a separate file since they are shared by multiple algs

@@ -92,6 +92,8 @@ EL::StatusCode CalibrateST :: initialize ()
 
   xAOD::TEvent* event = wk()->xaodEvent();
 
+
+
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
@@ -138,6 +140,14 @@ EL::StatusCode CalibrateST :: execute ()
 
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+
+
+  std::vector< std::string > const & passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+
+  std::cout << "test" << std::endl;  
+  std::cout << passTrigs.size() << std::endl;  
+  if(passTrigs.size()){std::cout << passTrigs[0] << std::endl;  }
+  
 
   // Get the nominal object containers from the event
   // Electrons
@@ -193,11 +203,11 @@ EL::StatusCode CalibrateST :: execute ()
   STRONG_CHECK( store->record( newMetContainer    , "STCalibMET"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux.") );//todo configurable if needed
 
-  std::pair< xAOD::EventInfo*, xAOD::ShallowAuxInfo* > eventInfo_shallowCopy = xAOD::shallowCopyObject( *eventInfo );
-  STRONG_CHECK( store->record( eventInfo_shallowCopy.first , "EventInfo" ) );
-  STRONG_CHECK( store->record( eventInfo_shallowCopy.second, "EventInfoAux." ) );
+  // std::pair< xAOD::EventInfo*, xAOD::ShallowAuxInfo* > eventInfo_shallowCopy = xAOD::shallowCopyObject( *eventInfo );
+  // STRONG_CHECK( store->record( eventInfo_shallowCopy.first , "EventInfo" ) );
+  // STRONG_CHECK( store->record( eventInfo_shallowCopy.second, "EventInfoAux." ) );
 
-  eventInfo_shallowCopy.second->setShallowIO(true);
+  // eventInfo_shallowCopy.second->setShallowIO(true);
 
   return EL::StatusCode::SUCCESS;
 }
