@@ -143,11 +143,11 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK( store->retrieve(metcont, "STCalibMET") );
   // ATH_MSG_DEBUG("About to print MET value");
-  ATH_MSG_DEBUG("MET : " <<  (*metcont)[m_metName]->met() );
+  ATH_MSG_DEBUG("MET : " <<  (*metcont)["FinalTrk"]->met() );
 
   std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
 
-  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)[m_metName])));//this syntax is annoying...
+  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["FinalTrk"])));//this syntax is annoying...
 
   STRONG_CHECK   (  store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
