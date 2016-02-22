@@ -131,7 +131,7 @@ EL::StatusCode RJigsawCalculator_lvlv::doInitialize() {
 }
 
 EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::unordered_map<std::string, double>& RJVars,
-						   xAOD::IParticleContainer& particles,
+						   xAOD::ParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
   if( particles.size() < 2 ){return EL::StatusCode::SUCCESS;}//todo figure out if this how we should handle this case
