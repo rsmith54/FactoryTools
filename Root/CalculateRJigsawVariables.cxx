@@ -10,6 +10,7 @@
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
 #include <RJigsawTools/RJigsawCalculator_zl.h>
+#include <RJigsawTools/RJigsawCalculator_compressed.h>
 #include <RJigsawTools/printDebug.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
@@ -94,12 +95,16 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   STRONG_CHECK( calculatorName != none);
 
   if(calculatorName == lvlvCalculator)
-    {
-      m_calculator = new RJigsawCalculator_lvlv;
-      STRONG_CHECK_SC( m_calculator->initialize());
-    }
+  {
+    m_calculator = new RJigsawCalculator_lvlv;
+    STRONG_CHECK_SC( m_calculator->initialize());
+  }
   else if(calculatorName == zlCalculator){
     m_calculator  = new RJigsawCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize()) ;
+  }  
+  else if(calculatorName == compressedCalculator){
+    m_calculator  = new RJigsawCalculator_compressed;
     STRONG_CHECK_SC( m_calculator->initialize()) ;
   }
   else {

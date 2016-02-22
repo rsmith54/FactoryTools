@@ -15,6 +15,7 @@
 #include <RJigsawTools/RegionVarCalculator_lvlv.h>
 
 #include <RJigsawTools/RJigsawCalculator.h>
+#include <RJigsawTools/RJigsawCalculator_compressed.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
 #include <RJigsawTools/RJigsawCalculator_zl.h>
 
@@ -51,6 +52,10 @@
 
 #ifdef __CINT__
 #pragma link C++ class RJigsawCalculator_lvlv+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class RJigsawCalculator_compressed+;
 #endif
 
 #ifdef __CINT__
