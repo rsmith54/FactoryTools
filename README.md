@@ -32,7 +32,7 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --dataDir /afs/cern.ch/user/l/leejr/work/lvlv_datasets #[point to a location of a DxAOD]
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --dataDir /afs/cern.ch/user/l/leejr/work/public/lvlv_datasets #[point to a location of a DxAOD]
 ```
 
 PLEASE NOTE : The output will be in
