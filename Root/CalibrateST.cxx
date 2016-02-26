@@ -113,7 +113,7 @@ EL::StatusCode CalibrateST :: initialize ()
 
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
 
-  m_objTool->msg().setLevel( MSG::ERROR );//void return
+  m_objTool->msg().setLevel( this->msg().level());
 
   TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
   STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );

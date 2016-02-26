@@ -24,8 +24,11 @@ parser.add_option('--verbosity', help   = "Run all algs at the selected verbosit
 #parser.add_option("--whichAnalysis", help="select analysis", choices=("noCut", "Zmumu" , "Zee", "Wenu","NONE"), default="NONE")
 #parser.add_option("--errorLevel", help="select error level", choices=("VERBOSE","DEBUG","WARNING","ERROR"), default="WARNING")
 
-
 (options, args) = parser.parse_args()
+
+ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
+# Initialize the xAOD infrastructure
+#ROOT.xAOD.Init()
 
 import atexit
 @atexit.register
@@ -48,6 +51,9 @@ def setVerbosity ( alg , levelString ) :
 def setupST() :
     susyTools = ROOT.ST.SUSYObjDef_xAOD("getlist")
     #we need to ensure these settings are the same as those used by the CalibrateST alg
+    dataSource = ROOT.ST.AtlfastII
+    print dataSource, type(dataSource)
+    susyTools.setProperty(ROOT.ST.SettingDataSource)("DataSource"  , dataSource)
     susyTools.setProperty("METDoTrkSyst", True );
     susyTools.setProperty("METDoCaloSyst", False );
 
@@ -55,10 +61,10 @@ def setupST() :
     susyTools.initialize()
     return susyTools
 
+setupST()
+quiet_exit()
 
-ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
-# Initialize the xAOD infrastructure
-#ROOT.xAOD.Init()
+
 
 # create a new sample handler to describe the data files we use
 logging.info("creating new sample handler")
