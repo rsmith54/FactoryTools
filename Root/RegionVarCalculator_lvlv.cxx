@@ -63,17 +63,17 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-  RegionVars["runNumber"]   = eventInfo->runNumber();
-  RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
-  RegionVars["bcid"]        = eventInfo->bcid();
-  RegionVars["eventNumber"] = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
-  RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
+  RegionVars["runNumber"]                          = eventInfo->runNumber();
+  RegionVars["lumiBlock"]                          = eventInfo->lumiBlock();
+  RegionVars["bcid"]                               = eventInfo->bcid();
+  RegionVars["eventNumber"]                        = eventInfo->eventNumber();
+  RegionVars["mcChannelNumber"]                    = eventInfo->mcChannelNumber();
+  RegionVars["actualInteractionsPerCrossing"]      = eventInfo->actualInteractionsPerCrossing();
+  //  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
+
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
-  RegionVars["mcEventWeight"] = eventInfo->auxdecor< int >("mcEvtWeight");
-  RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
-
+  RegionVars["mcEventWeight"] = eventInfo->mcEventWeight();//->auxdecor< float >("mcEventWeight");
+  RegionVars["pileupWeight"]  = -1 ;eventInfo->auxdecor< float >("PileupWeight");
   //
   /////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
+  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
