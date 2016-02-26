@@ -116,6 +116,26 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
+  
+  xAOD::ParticleContainer* leptons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
+
+  std::vector<double> lepPtVec;
+  std::vector<double> lepEtaVec;
+  std::vector<double> lepPhiVec;
+  std::vector<double> lepEVec;
+
+  for( const auto& lep : *leptons_nominal) {
+    lepPtVec.push_back( lep->pt());
+    lepEtaVec.push_back( lep->p4().Eta() );
+    lepPhiVec.push_back( lep->p4().Phi() );
+    lepEVec.push_back( lep->p4().E() );
+  }
+
+  VecRegionVars[ "lepPt" ]  = lepPtVec;
+  VecRegionVars[ "lepEta" ] = lepEtaVec;
+  VecRegionVars[ "lepPhi" ] = lepPhiVec;
+  VecRegionVars[ "lepE" ]   = lepEVec;
 
   return EL::StatusCode::SUCCESS;
 }
