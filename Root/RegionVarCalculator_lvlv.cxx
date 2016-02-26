@@ -90,7 +90,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
+  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
