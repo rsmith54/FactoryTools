@@ -82,7 +82,7 @@ algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
 
 for regionName in ["SR","CR1L","CR2L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()

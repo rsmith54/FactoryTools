@@ -9,6 +9,7 @@
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/RegionVarCalculator_lvlv.h>
+#include <RJigsawTools/RegionVarCalculator_zl.h>
 #include <RJigsawTools/CalculateRegionVars.h>
 
 #include <RJigsawTools/printDebug.h>
@@ -98,10 +99,10 @@ EL::StatusCode CalculateRegionVars :: initialize ()
       m_calculator = new RegionVarCalculator_lvlv;
       STRONG_CHECK_SC( m_calculator->initialize(wk()));
     }
-  // else if(calculatorName == zlCalculator){
-  //   m_calculator  = new RegionVarCalculator_zl;
-  //   STRONG_CHECK_SC( m_calculator->initialize()) ;
-  // }
+  else if(calculatorName == zlCalculator){
+    m_calculator  = new RegionVarCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize(wk()));
+  }
   else {
     ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
     return EL::StatusCode::FAILURE;

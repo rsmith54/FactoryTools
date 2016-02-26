@@ -13,6 +13,7 @@
 
 #include <RJigsawTools/RegionVarCalculator.h>
 #include <RJigsawTools/RegionVarCalculator_lvlv.h>
+#include <RJigsawTools/RegionVarCalculator_zl.h>
 
 #include <RJigsawTools/RJigsawCalculator.h>
 #include <RJigsawTools/RJigsawCalculator_compressed.h>
@@ -71,9 +72,12 @@
 #endif
 
 #ifdef __CINT__
-#pragma link C++ class SelectZeroLeptonEvents+;
+#pragma link C++ class RegionVarCalculator_zl+;
 #endif
 
+#ifdef __CINT__
+#pragma link C++ class SelectZeroLeptonEvents+;
+#endif
 
 #ifdef __CINT__
 #pragma link C++ class PreselectDileptonicWWEvents+;
