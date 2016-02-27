@@ -48,22 +48,18 @@ def setVerbosity ( alg , levelString ) :
         quiet_exit()
     alg.setMsgLevel(level)
 
-def setupST() :
+
+def getSystList() :
     susyTools = ROOT.ST.SUSYObjDef_xAOD("getlist")
-    #we need to ensure these settings are the same as those used by the CalibrateST alg
-    dataSource = ROOT.ST.AtlfastII
-    print dataSource, type(dataSource)
-    susyTools.setProperty(ROOT.ST.SettingDataSource)("DataSource"  , dataSource)
-    susyTools.setProperty("METDoTrkSyst", True );
-    susyTools.setProperty("METDoCaloSyst", False );
+    susyTools.setProperty(int)("DataSource", 0)
+    susyTools.setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf")
 
     logging.info("initializing SUSYTools")
     susyTools.initialize()
-    return susyTools
 
-setupST()
-quiet_exit()
-
+    registry = ROOT.CP.SystematicRegistry.getInstance()
+    recommendedSystematics = registry.recommendedSystematics()
+    return recommendedSystematics
 
 
 # create a new sample handler to describe the data files we use
@@ -100,7 +96,7 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-susyTools = setupST()
+#susyTools = setupST()
 
 import collections
 algsToRun = collections.OrderedDict()
@@ -114,26 +110,26 @@ algsToRun["basicEventSelection"].m_useMetaData  = False
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 #todo probably make this a function or something
-for syst in susyTools.getSystInfoList() :
-    algsToRun["calibrateST_" + syst.systset.name() ]               = ROOT.CalibrateST()
-    algsToRun["calibrateST_" + syst.systset.name() ].systName      = syst.systset.name()
+for syst in getSystList() :
+    algsToRun["calibrateST_" + syst.name() ]               = ROOT.CalibrateST()
+    algsToRun["calibrateST_" + syst.name() ].systName      = syst.name()
 
-    algsToRun["preselectDileptonicWW_" + syst.systset.name() ]     = ROOT.PreselectDileptonicWWEvents()
-    algsToRun["selectDileptonicWW_"    + syst.systset.name() ]     = ROOT.SelectDileptonicWWEvents()
-    algsToRun["postselectDileptonicWW_" + syst.systset.name() ]    = ROOT.PostselectDileptonicWWEvents()
+    algsToRun["preselectDileptonicWW_" + syst.name() ]     = ROOT.PreselectDileptonicWWEvents()
+    algsToRun["selectDileptonicWW_"    + syst.name() ]     = ROOT.SelectDileptonicWWEvents()
+    algsToRun["postselectDileptonicWW_" + syst.name() ]    = ROOT.PostselectDileptonicWWEvents()
 
 #todo move the enums to a separate file since they are shared by multiple algs
-    algsToRun["calculateRJigsawVariables_" + syst.systset.name() ]                = ROOT.CalculateRJigsawVariables()
-    algsToRun["calculateRJigsawVariables_" + syst.systset.name() ].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
-    algsToRun["calculateRegionVars_" + syst.systset.name() ]                      = ROOT.CalculateRegionVars()
-    algsToRun["calculateRegionVars_" + syst.systset.name() ].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
+    algsToRun["calculateRJigsawVariables_" + syst.name() ]                = ROOT.CalculateRJigsawVariables()
+    algsToRun["calculateRJigsawVariables_" + syst.name() ].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
+    algsToRun["calculateRegionVars_" + syst.name() ]                      = ROOT.CalculateRegionVars()
+    algsToRun["calculateRegionVars_" + syst.name() ].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
 
     for regionName in ["SR","CR1L","CR0L"]:
         tmpWriteOutputNtuple                     = ROOT.WriteOutputNtuple()
         tmpWriteOutputNtuple.outputName          = outputFilename
         tmpWriteOutputNtuple.regionName          = regionName
-        tmpWriteOutputNtuple.systName            = syst.systset.name()
-        algsToRun["writeOutputNtuple_"+regionName + syst.systset.name()] = tmpWriteOutputNtuple
+        tmpWriteOutputNtuple.systName            = syst.name()
+        algsToRun["writeOutputNtuple_"+regionName + syst.name()] = tmpWriteOutputNtuple
 
 job.outputAdd(output);
 
