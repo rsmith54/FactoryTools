@@ -111,18 +111,13 @@ EL::StatusCode CalibrateST :: initialize ()
 
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
 
+  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource) );
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
+
 
   m_objTool->msg().setLevel( this->msg().level());
 
-  TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
-  STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );
-  STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
-
   STRONG_CHECK( m_objTool->initialize());
-  ATH_MSG_INFO( "applying systematic variation : " << systName ) ;
-  STRONG_CHECK( m_objTool->applySystematicVariation(systName));//apply the systematic variation
-  ATH_MSG_INFO( "applied systematic variation" ) ;
 
   return EL::StatusCode::SUCCESS;
 }
@@ -135,6 +130,8 @@ EL::StatusCode CalibrateST :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
+
+  STRONG_CHECK( m_objTool->applySystematicVariation(systName));//apply the systematic variation
 
   xAOD::TStore * store = wk()->xaodStore();
   xAOD::TEvent * event = wk()->xaodEvent();
@@ -189,9 +186,9 @@ EL::StatusCode CalibrateST :: execute ()
 
 
   STRONG_CHECK(  m_objTool->OverlapRemoval(electrons_nominal,
-					 muons_nominal,
-					 jets_nominal
-					 )
+					   muons_nominal,
+					   jets_nominal
+					   )
 		 );
 
   //everything other than MET is stored by default using the ST call with true
