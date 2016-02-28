@@ -9,6 +9,7 @@
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/RegionVarCalculator_lvlv.h>
+#include <RJigsawTools/RegionVarCalculator_tls.h>
 #include <RJigsawTools/RegionVarCalculator_zl.h>
 #include <RJigsawTools/CalculateRegionVars.h>
 
@@ -101,6 +102,10 @@ EL::StatusCode CalculateRegionVars :: initialize ()
     }
   else if(calculatorName == zlCalculator){
     m_calculator  = new RegionVarCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize(wk()));
+  }
+  else if(calculatorName == tlsCalculator){
+    m_calculator  = new RegionVarCalculator_tls;
     STRONG_CHECK_SC( m_calculator->initialize(wk()));
   }
   else {

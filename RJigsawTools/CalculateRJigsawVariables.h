@@ -16,7 +16,8 @@ public:
     none           = 0,
     lvlvCalculator = 1,
     zlCalculator   = 2,
-    compressedCalculator   = 3
+    compressedCalculator   = 3,
+    tlsCalculator  = 4
   };
 
   // variables that don't get filled at submission time should be
