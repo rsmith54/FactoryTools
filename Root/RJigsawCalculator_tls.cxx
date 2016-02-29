@@ -242,7 +242,8 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   TVector3 ETMiss(met.mpx() , met.mpy(), 0.) ;
 
   vector<TLorentzVector> Jets;//translate to the code from Chris
-
+  vector<TLorentzVector> Electrons;
+  vector<TLorentzVector> Muons;
 
   for(auto particle : particles){
     TLorentzVector tmpPart;
@@ -251,12 +252,22 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
 			 particle->p4().Phi(),
 			 particle->p4().E()
 			 );
-    Jets.push_back(tmpPart);
+    if(abs(particle->pdgId())==11){Electrons.push_back(tmpPart);}
+    else if(abs(particle->pdgId())==13){Muons.push_back(tmpPart);}
+    else {Jets.push_back(tmpPart);}
   }
 
   vector<RFKey> jetID;
   for(int i = 0; i < int(Jets.size()); i++){
     jetID.push_back(VIS->AddLabFrameFourVector(Jets[i]));
+  }
+  vector<RFKey> electronID;
+  for(int i = 0; i < int(Electrons.size()); i++){
+    electronID.push_back(VIS->AddLabFrameFourVector(Electrons[i]));
+  }
+  vector<RFKey> muonID;
+  for(int i = 0; i < int(Muons.size()); i++){
+    muonID.push_back(VIS->AddLabFrameFourVector(Muons[i]));
   }
   INV->SetLabFrameThreeVector(ETMiss);
   if(!LAB->AnalyzeEvent()) cout << "Something went wrong..." << endl;
@@ -271,10 +282,22 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
 
   double HT = 0.;
   vector<RFKey> jetID_bkg;
+  vector<RFKey> electronID_bkg;
+  vector<RFKey> muonID_bkg;
   for(int i = 0; i < int(Jets.size()); i++){
     Jets[i].SetPtEtaPhiM(Jets[i].Pt(),0.0,Jets[i].Phi(),Jets[i].M());
     jetID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Jets[i]));
     HT += Jets[i].Pt();
+  }
+  for(int i = 0; i < int(Electrons.size()); i++){
+    Electrons[i].SetPtEtaPhiM(Electrons[i].Pt(),0.0,Electrons[i].Phi(),Electrons[i].M());
+    electronID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
+    HT += Electrons[i].Pt();
+  }
+  for(int i = 0; i < int(Muons.size()); i++){
+    Muons[i].SetPtEtaPhiM(Muons[i].Pt(),0.0,Muons[i].Phi(),Muons[i].M());
+    muonID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
+    HT += Muons[i].Pt();
   }
   INV_bkg->SetLabFrameThreeVector(ETMiss);
   if(!LAB_bkg->AnalyzeEvent()) cout << "Something went wrong..." << endl;
