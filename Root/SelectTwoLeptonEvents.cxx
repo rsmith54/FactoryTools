@@ -152,6 +152,7 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     auto tmpparticle = new xAOD::Particle();
     selectedJets.first->push_back(tmpparticle  );
     tmpparticle->setP4(jet->p4());
+    tmpparticle->setPdgId(6);
   }
 
   for (const auto& mu : *muons_nominal) {
@@ -164,6 +165,8 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
     tmpparticle->setP4(mu->p4());
+    if (mu->charge() < 0){tmpparticle->setPdgId(13);}
+    else {tmpparticle->setPdgId(-13);}
   }
 
   for (const auto& el : *electrons_nominal) {
@@ -176,6 +179,8 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
     tmpparticle->setP4(el->p4());
+    if (el->charge() < 0){tmpparticle->setPdgId(11);}
+    else {tmpparticle->setPdgId(-11);}
   }
 
   int const nLeptons = selectedLeptons.first->size();

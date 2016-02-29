@@ -867,6 +867,5 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   RJVars["sangle"]    = m_sangle;
   RJVars["dangle"]    = m_dangle;
 
-
   return EL::StatusCode::SUCCESS;
 }
