@@ -94,7 +94,8 @@ algsToRun = collections.OrderedDict()
 
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
+algsToRun["basicEventSelection"].m_useMetaData  = False
+#algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
