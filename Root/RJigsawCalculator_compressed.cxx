@@ -94,7 +94,7 @@ EL::StatusCode RJigsawCalculator_compressed::doInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_compressed::doCalculate(std::unordered_map<std::string, double>& RJVars,
+EL::StatusCode RJigsawCalculator_compressed::doCalculate(std::map<std::string, double>& RJVars,
                xAOD::ParticleContainer& particles,
                xAOD::MissingET& met
                ){

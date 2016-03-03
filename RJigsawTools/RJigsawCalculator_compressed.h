@@ -40,7 +40,7 @@ private :
 private :
   virtual EL::StatusCode doInitialize();
   virtual EL::StatusCode doClearEvent();
-  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>& RJVars,
+  virtual EL::StatusCode doCalculate(std::map<std::string, double>& RJVars,
                                      xAOD::ParticleContainer& particles,
                                      xAOD::MissingET& met
                                      );

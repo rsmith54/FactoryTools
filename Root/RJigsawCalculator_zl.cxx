@@ -230,7 +230,7 @@ EL::StatusCode RJigsawCalculator_zl::doInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_zl::doCalculate(std::unordered_map<std::string, double>& RJVars,
+EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& RJVars,
 						   xAOD::ParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){

@@ -7,7 +7,7 @@
 #include "xAODBase/IParticleContainer.h"
 #include "xAODMissingET/MissingET.h"
 
-#include <unordered_map>
+#include <map>
 #include <iostream>
 
 namespace EL{
@@ -23,8 +23,8 @@ public :
 public :
   EL::StatusCode initialize(EL::Worker * worker){return doInitialize( worker );}
   //to be used per event
-  EL::StatusCode calculate(std::unordered_map<std::string, double>              & RegionVars,
-			   std::unordered_map<std::string, std::vector<double> >& VecRegionVars
+  EL::StatusCode calculate(std::map<std::string, double>              & RegionVars,
+			   std::map<std::string, std::vector<double> >& VecRegionVars
 			   //This is somewhat for simplicity, to be able to write out vectors of i.e. jet pts
 			   ){return doCalculate( RegionVars, VecRegionVars);}
 
@@ -34,8 +34,8 @@ private :
   virtual EL::StatusCode doInitialize(EL::Worker * worker){
     std::cout << "you called the base calculator function! Exiting" << std::endl;
     return EL::StatusCode::FAILURE;};
-  virtual EL::StatusCode doCalculate(std::unordered_map<std::string, double>              & RegionVars,
-                                     std::unordered_map<std::string, std::vector<double> >& VecRegionVars)
+  virtual EL::StatusCode doCalculate(std::map<std::string, double>              & RegionVars,
+                                     std::map<std::string, std::vector<double> >& VecRegionVars)
 {std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
 
 protected :

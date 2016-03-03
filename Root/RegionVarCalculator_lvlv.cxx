@@ -25,8 +25,8 @@ EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::string, double              >& RegionVars,
-						     std::unordered_map<std::string, std::vector<double> >& VecRegionVars){
+EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, double              >& RegionVars,
+						     std::map<std::string, std::vector<double> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
 
   const xAOD::EventInfo* eventInfo = nullptr;
@@ -49,8 +49,8 @@ EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::str
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
-							   std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string, double>& RegionVars,
+							   std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
@@ -141,16 +141,16 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
 }
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
-							  std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_lvlv::doSRCalculations(std::map<std::string, double>& RegionVars,
+							  std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,
-							    std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_lvlv::doCR1LCalculations(std::map<std::string, double>& RegionVars,
+							    std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR0LCalculations(std::unordered_map<std::string, double>& RegionVars,
-							    std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_lvlv::doCR0LCalculations(std::map<std::string, double>& RegionVars,
+							    std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
