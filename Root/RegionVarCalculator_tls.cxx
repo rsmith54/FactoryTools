@@ -51,7 +51,7 @@ EL::StatusCode RegionVarCalculator_tls::doCalculate(std::unordered_map<std::stri
 
 EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
 							   std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
-{/*todo*/
+{
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
@@ -124,18 +124,21 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std
   std::vector<double> lepEtaVec;
   std::vector<double> lepPhiVec;
   std::vector<double> lepEVec;
+  std::vector<double> lepPdgidVec;
 
   for( const auto& lep : *leptons_nominal) {
     lepPtVec.push_back( lep->pt());
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
     lepEVec.push_back( lep->p4().E() );
+    lepPdgidVec.push_back( lep->pdgId() );
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;
   VecRegionVars[ "lepEta" ] = lepEtaVec;
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
+  VecRegionVars[ "lepPdgidVec" ]   = lepPdgidVec;
 
   return EL::StatusCode::SUCCESS;
 }
@@ -143,7 +146,21 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std
 
 EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
 							  std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
-{/*todo*/return EL::StatusCode::SUCCESS;}
+{
+
+  xAOD::TStore * store = m_worker->xaodStore();
+  xAOD::ParticleContainer* leptons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
+
+  // auto ptSort = [](xAOD::Particle const & a , xAOD::Particle const & b){return a.pt() > b.pt();};
+  // std::sort(leptons_nominal->begin(),leptons_nominal->end(), ptSort);
+  // assert(leptons_nominal->at(0)->pt() > leptons_nominal->at(1)->pt());
+
+  RegionVars[ "isSS" ]  = leptons_nominal->at(0)->pdgId()*leptons_nominal->at(1)->pdgId() > 0;
+  RegionVars[ "isSF" ]  = abs(leptons_nominal->at(0)->pdgId()) == abs(leptons_nominal->at(1)->pdgId());
+
+  return EL::StatusCode::SUCCESS;
+}
 
 
 EL::StatusCode RegionVarCalculator_tls::doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,

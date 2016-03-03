@@ -320,25 +320,40 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   // compressed
   float const m_Idepth = S_bkg->GetFrameDepth(*I_bkg);
 
-  float m_temp_HT1CM     = 0.;
-  float m_temp_PIoHT1CM  = 0.;
-  float m_temp_cosS      = 0.;
-  float m_temp_NVS       = 0.;
-  float m_temp_RPT_HT1CM = 0.;
-  float m_temp_MS = 0;
+  float m_temp_HT1CM     = -1.;
+  float m_temp_PIoHT1CM  = -1.;
+  float m_temp_cosS      = -1.;
+  float m_temp_NVS       = -1.;
+  float m_temp_NLepS     = -1.;
+  float m_temp_NVISR     = -1.;
+  float m_temp_NLepISR   = -1.;
+  float m_temp_RPT_HT1CM = -1.;
+  float m_temp_MS        = -1.;
 
   if(m_Idepth < 2){
-    m_temp_HT1CM = 0.;
-    m_temp_PIoHT1CM = 0.;
-    m_temp_cosS = 0.;
-    m_temp_NVS = 0;
-    m_temp_RPT_HT1CM = 0.;
+    m_temp_HT1CM = -1.;
+    m_temp_PIoHT1CM = -1.;
+    m_temp_cosS = -1.;
+    m_temp_NVS = -1.;
+    m_temp_NLepS     = -1.;
+    m_temp_NVISR = -1.;
+    m_temp_NLepISR     = -1.;
+    m_temp_RPT_HT1CM = -1.;
+    m_temp_MS = -1.
   } else {
     const RestFrame& fS = S_bkg->GetFrameAtDepth(1, *I_bkg);
     m_temp_HT1CM = fS.GetTransverseMomentum(*S_bkg);
     m_temp_MS = fS.GetMass();
 
     m_temp_NVS = fS.GetNDescendants()-1;
+
+    for(int j = 0; j < electronID_bkg.size(); j++){
+      if( VIS->GetFrame(electronID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+    }
+    for(int j = 0; j < muonID_bkg.size(); j++){
+      if( VIS->GetFrame(muonID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+    }
+
 
     TLorentzVector vPV = fS.GetFourVector(*S_bkg) - I_bkg->GetFourVector(*S_bkg);
     TLorentzVector vPI = I_bkg->GetFourVector(*S_bkg);
@@ -817,16 +832,16 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   RJVars["R_H2PP_H5PP"] = m_R_H2PP_H5PP;
   RJVars["minR_pTj2i_HT3PPi"] = m_minR_pTj2i_HT3PPi;
   RJVars["maxR_H1PPi_H2PPi"] = m_maxR_H1PPi_H2PPi;
-  RJVars["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
-  RJVars["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
+  // RJVars["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
+  // RJVars["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
 
   RJVars["RPZ_HT3PP"] = m_RPZ_HT3PP;
   RJVars["RPZ_HT5PP"] = m_RPZ_HT5PP;
-  RJVars["RPZ_HT9PP"] = m_RPZ_HT9PP;
+  // RJVars["RPZ_HT9PP"] = m_RPZ_HT9PP;
 
   RJVars["RPT_HT3PP"] = m_RPT_HT3PP;
   RJVars["RPT_HT5PP"] = m_RPT_HT5PP;
-  RJVars["RPT_HT9PP"] = m_RPT_HT9PP;
+  // RJVars["RPT_HT9PP"] = m_RPT_HT9PP;
 
   //  RJVars[ "PP_Mass"           ] = m_MPP;
   RJVars[ "PP_InvGamma"       ] = m_PP_VisShape;
@@ -837,9 +852,9 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   RJVars[ "PP_VisShape"       ] = m_PP_VisShape;
   RJVars[ "PP_MDeltaR"        ] = m_MDR;
 
-  RJVars[ "P1_Mass"           ] = Pa->GetMass();
+  // RJVars[ "P1_Mass"           ] = Pa->GetMass();
   RJVars[ "P1_CosTheta"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
-  RJVars[ "P2_Mass"           ] = Pb->GetMass();
+  // RJVars[ "P2_Mass"           ] = Pb->GetMass();
   RJVars[ "P2_CosTheta"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
   RJVars[ "I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
   RJVars[ "I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
@@ -868,22 +883,22 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::unordered_map<std::string
   RJVars["H3PP"]      = m_H3PP;
   RJVars["H4PP"]      = m_H4PP;
   RJVars["H6PP"]      = m_H6PP;
-  RJVars["H10PP"]     = m_H10PP;
+  // RJVars["H10PP"]     = m_H10PP;
 
-  RJVars["HT10PP"]     = m_HT10PP;
+  // RJVars["HT10PP"]     = m_HT10PP;
 
   RJVars["H2Pa"]      = m_H2Pa;
   RJVars["H2Pb"]      = m_H2Pb;
   RJVars["H3Pa"]      = m_H3Pa;
   RJVars["H3Pb"]      = m_H3Pb;
-  RJVars["H4Pa"]      = m_H4Pa;
-  RJVars["H4Pb"]      = m_H4Pb;
-  RJVars["H5Pa"]      = m_H5Pa;
-  RJVars["H5Pb"]      = m_H5Pb;
-  RJVars["H2Ca"]      = m_H2Ca;
-  RJVars["H2Cb"]      = m_H2Cb;
-  RJVars["H3Ca"]      = m_H3Ca;
-  RJVars["H3Cb"]      = m_H3Cb;
+  // RJVars["H4Pa"]      = m_H4Pa;
+  // RJVars["H4Pb"]      = m_H4Pb;
+  // RJVars["H5Pa"]      = m_H5Pa;
+  // RJVars["H5Pb"]      = m_H5Pb;
+  // RJVars["H2Ca"]      = m_H2Ca;
+  // RJVars["H2Cb"]      = m_H2Cb;
+  // RJVars["H3Ca"]      = m_H3Ca;
+  // RJVars["H3Cb"]      = m_H3Cb;
   RJVars["HT4PP"]     = m_HT4PP; //m_HT4PP;
   RJVars["HT6PP"]     = m_HT6PP; //m_HT6PP;
   //  RJVars["minH3P"]    = m_minH3P; //m_minH3P;
