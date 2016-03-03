@@ -16,10 +16,10 @@ source RJigsawTools/util/setup.sh
 Now we can checkout our dependencies using the following :
 
 ```
-git clone https://github.com/lawrenceleejr/Ext_RestFrames.git
+git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
 rc checkout_pkg atlasoff/PhysicsAnalysis/TopPhys/QuickAna/tags/QuickAna-00-00-94 QuickAna
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-17 CommonTools
-git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 00-03-27; cd ..;
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-18 CommonTools
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 00-03-31; cd ..;
 ```
 
 And of course do a normal rc set up procedure
@@ -32,8 +32,10 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --dataDir /afs/cern.ch/user/l/leejr/work/public/lvlv_datasets #[point to a location of a DxAOD]
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/lvlv_datasets/
 ```
+
+The inputDS option is smart.  You can give supply a local directory, txt file with a list of grid datasets, or a pattern which matches a grid pattern.  If you use the grid options, obviously you need panda stuff setup, which is setup by the setup script.
 
 PLEASE NOTE : The output will be in
 ```
@@ -45,12 +47,10 @@ by default when doing a test, where TEST_OUTPUTNAME is set in your submission sc
 You can run on the grid with
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --gridInputFile RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --inputDS RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
 ```
 
-This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date. 
-
-
+This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
 
 ## Merging Step
 
@@ -60,9 +60,4 @@ Once you've run on the grid, download the tree output and the metadata output to
 python mergeOutput.py [path to datasets from grid]
 ```
 
-And it will produce combined files containing the trees. One just needs to weight by the branch normweight. The assignment of dataset types is done in discoverInput.py where tags are added to samples based on their names. Then all of one kind of process are combined. 
-
-
-
-
-
+And it will produce combined files containing the trees. One just needs to weight by the branch normweight. The assignment of dataset types is done in discoverInput.py where tags are added to samples based on their names. Then all of one kind of process are combined.
