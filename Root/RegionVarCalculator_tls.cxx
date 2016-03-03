@@ -6,16 +6,16 @@
 #include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
-#include "RJigsawTools/RegionVarCalculator_lvlv.h"
+#include "RJigsawTools/RegionVarCalculator_tls.h"
 #include "RJigsawTools/strongErrorCheck.h"
 
 #include <xAODAnaHelpers/HelperFunctions.h>
 
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(RegionVarCalculator_lvlv)
+ClassImp(RegionVarCalculator_tls)
 
-EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
+EL::StatusCode RegionVarCalculator_tls::doInitialize(EL::Worker * worker) {
   if(m_worker != nullptr){
     std::cout << "You have called " << __PRETTY_FUNCTION__ << " more than once.  Exiting." << std::endl;
     return EL::StatusCode::FAILURE;
@@ -25,7 +25,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::string, double              >& RegionVars,
+EL::StatusCode RegionVarCalculator_tls::doCalculate(std::unordered_map<std::string, double              >& RegionVars,
 						     std::unordered_map<std::string, std::vector<double> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
 
@@ -49,7 +49,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::unordered_map<std::str
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std::string, double>& RegionVars,
 							   std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
@@ -63,17 +63,17 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-  RegionVars["runNumber"]                          = eventInfo->runNumber();
-  RegionVars["lumiBlock"]                          = eventInfo->lumiBlock();
-  RegionVars["bcid"]                               = eventInfo->bcid();
-  RegionVars["eventNumber"]                        = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"]                    = eventInfo->mcChannelNumber();
-  RegionVars["actualInteractionsPerCrossing"]      = eventInfo->actualInteractionsPerCrossing();
-  //  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
+  RegionVars["runNumber"]   = eventInfo->runNumber();
+  RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
+  RegionVars["bcid"]        = eventInfo->bcid();
+  RegionVars["eventNumber"] = eventInfo->eventNumber();
+  RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
+  RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-  RegionVars["mcEventWeight"] = eventInfo->mcEventWeight();//->auxdecor< float >("mcEventWeight");
-  RegionVars["pileupWeight"]  = -1 ;eventInfo->auxdecor< float >("PileupWeight");
+
+  RegionVars["mcEventWeight"] = eventInfo->auxdecor< int >("mcEvtWeight");
+  RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
+
   //
   /////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
+  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
@@ -141,16 +141,16 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::unordered_map<st
 }
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::unordered_map<std::string, double>& RegionVars,
 							  std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_tls::doCR1LCalculations(std::unordered_map<std::string, double>& RegionVars,
 							    std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR0LCalculations(std::unordered_map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_tls::doCR0LCalculations(std::unordered_map<std::string, double>& RegionVars,
 							    std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}

@@ -1,32 +1,29 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
+#include <RJigsawTools/PostselectTwoLeptonEvents.h>
 
-// Infrastructure include(s):
+#include <AsgTools/MsgStream.h>
+#include <AsgTools/MsgStreamMacros.h>
+
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include <RJigsawTools/CalculateRJigsawVariables.h>
-#include <RJigsawTools/RJigsawCalculator_lvlv.h>
-#include <RJigsawTools/RJigsawCalculator_tls.h>
-#include <RJigsawTools/RJigsawCalculator_zl.h>
-#include <RJigsawTools/RJigsawCalculator_compressed.h>
-#include <RJigsawTools/printDebug.h>
+#include <TSystem.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/strongErrorCheck.h>
-#include <unordered_map>
-#include <iostream>
-#include "xAODParticleEvent/ParticleContainer.h"
+
+
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(CalculateRJigsawVariables)
+ClassImp(PostselectTwoLeptonEvents)
 
-CalculateRJigsawVariables :: CalculateRJigsawVariables () :
-calculatorName(none),//user needs to choose their calculator name
-m_calculator(nullptr)
+
+
+PostselectTwoLeptonEvents :: PostselectTwoLeptonEvents ()
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -37,7 +34,8 @@ m_calculator(nullptr)
 }
 
 
-EL::StatusCode CalculateRJigsawVariables :: setupJob (EL::Job& job)
+
+EL::StatusCode PostselectTwoLeptonEvents :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -51,7 +49,7 @@ EL::StatusCode CalculateRJigsawVariables :: setupJob (EL::Job& job)
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: histInitialize ()
+EL::StatusCode PostselectTwoLeptonEvents :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -62,7 +60,7 @@ EL::StatusCode CalculateRJigsawVariables :: histInitialize ()
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: fileExecute ()
+EL::StatusCode PostselectTwoLeptonEvents :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -71,7 +69,7 @@ EL::StatusCode CalculateRJigsawVariables :: fileExecute ()
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: changeInput (bool firstFile)
+EL::StatusCode PostselectTwoLeptonEvents :: changeInput (bool firstFile)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -81,7 +79,7 @@ EL::StatusCode CalculateRJigsawVariables :: changeInput (bool firstFile)
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: initialize ()
+EL::StatusCode PostselectTwoLeptonEvents :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -91,31 +89,7 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-  ATH_MSG_INFO("You have configured a " << calculatorName << " calculator.  See the code for enum definitions. ");
 
-  STRONG_CHECK( calculatorName != none);
-
-  if(calculatorName == lvlvCalculator)
-  {
-    m_calculator = new RJigsawCalculator_lvlv;
-    STRONG_CHECK_SC( m_calculator->initialize());
-  }
-  else if(calculatorName == zlCalculator){
-    m_calculator  = new RJigsawCalculator_zl;
-    STRONG_CHECK_SC( m_calculator->initialize()) ;
-  }  
-  else if(calculatorName == tlsCalculator){
-    m_calculator  = new RJigsawCalculator_tls;
-    STRONG_CHECK_SC( m_calculator->initialize()) ;
-  }
-  else if(calculatorName == compressedCalculator){
-    m_calculator  = new RJigsawCalculator_compressed;
-    STRONG_CHECK_SC( m_calculator->initialize()) ;
-  }
-  else {
-    ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
-    return EL::StatusCode::FAILURE;
-  }
 
 
   return EL::StatusCode::SUCCESS;
@@ -123,46 +97,25 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: execute ()
+EL::StatusCode PostselectTwoLeptonEvents :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
-  xAOD::TStore * store = wk()->xaodStore();
 
+  xAOD::TStore * store = wk()->xaodStore();
 
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-  xAOD::ParticleContainer* myparticles = 0;
-  STRONG_CHECK(store->retrieve( myparticles, "myparticles"));
 
-  // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
-  ATH_MSG_DEBUG("Reading regionName : " <<  eventInfo->auxdecor< std::string >("regionName")   );
-
-  if( eventInfo->auxdecor< std::string >("regionName") == "" ) return EL::StatusCode::SUCCESS;
-
-  STRONG_CHECK_SC(  m_calculator->clearEvent())
-
-
-  xAOD::MissingETContainer * metcont = nullptr;
-  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
-  ATH_MSG_DEBUG("MET : " <<  (*metcont)["Final"]->met() );
-
-  std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
-
-  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"])));//this syntax is annoying...
-
-  STRONG_CHECK   ( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
-
-  printDebug();
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: postExecute ()
+EL::StatusCode PostselectTwoLeptonEvents :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -172,7 +125,7 @@ EL::StatusCode CalculateRJigsawVariables :: postExecute ()
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: finalize ()
+EL::StatusCode PostselectTwoLeptonEvents :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -183,14 +136,16 @@ EL::StatusCode CalculateRJigsawVariables :: finalize ()
   // submission node after all your histogram outputs have been
   // merged.  This is different from histFinalize() in that it only
   // gets called on worker nodes that processed input events.
-  delete m_calculator;
+
+
+
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRJigsawVariables :: histFinalize ()
+EL::StatusCode PostselectTwoLeptonEvents :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker

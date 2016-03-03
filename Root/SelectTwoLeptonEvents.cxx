@@ -1,7 +1,7 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <RJigsawTools/SelectZeroLeptonEvents.h>
+#include <RJigsawTools/SelectTwoLeptonEvents.h>
 
 #include <AsgTools/MsgStream.h>
 #include <AsgTools/MsgStreamMacros.h>
@@ -16,14 +16,14 @@
 
 #include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODParticleEvent/ParticleAuxContainer.h"
-
+#include <utility>
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(SelectZeroLeptonEvents)
+ClassImp(SelectTwoLeptonEvents)
 
 
 
-SelectZeroLeptonEvents :: SelectZeroLeptonEvents ()
+SelectTwoLeptonEvents :: SelectTwoLeptonEvents ()
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -35,7 +35,7 @@ SelectZeroLeptonEvents :: SelectZeroLeptonEvents ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: setupJob (EL::Job& job)
+EL::StatusCode SelectTwoLeptonEvents :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -49,7 +49,7 @@ EL::StatusCode SelectZeroLeptonEvents :: setupJob (EL::Job& job)
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: histInitialize ()
+EL::StatusCode SelectTwoLeptonEvents :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -60,7 +60,7 @@ EL::StatusCode SelectZeroLeptonEvents :: histInitialize ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: fileExecute ()
+EL::StatusCode SelectTwoLeptonEvents :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -69,7 +69,7 @@ EL::StatusCode SelectZeroLeptonEvents :: fileExecute ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: changeInput (bool firstFile)
+EL::StatusCode SelectTwoLeptonEvents :: changeInput (bool firstFile)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -79,7 +79,7 @@ EL::StatusCode SelectZeroLeptonEvents :: changeInput (bool firstFile)
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: initialize ()
+EL::StatusCode SelectTwoLeptonEvents :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -94,7 +94,7 @@ EL::StatusCode SelectZeroLeptonEvents :: initialize ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: execute ()
+EL::StatusCode SelectTwoLeptonEvents :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
@@ -114,6 +114,7 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
 
+
   std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
   selectedLeptons.first->setStore(selectedLeptons.second);
   std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
@@ -121,13 +122,13 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
   selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
 
-  STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed                                                                                             
-  STRONG_CHECK( store->record( selectedLeptons.second , "selectedLeptonsAux."    ) );//todo configurable if needed                                                                                         
-  STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed                                                                                                
-  STRONG_CHECK( store->record( selectedJets.second    , "selectedJetsAux."    ) );//todo configurable if needed                                                                                            
+  STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedLeptons.second , "selectedLeptonsAux."    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedJets.second    , "selectedJetsAux."    ) );//todo configurable if needed
 
-  STRONG_CHECK( store->record( selectedRJigsawParticles.first  , "myparticles"    ) );//todo configurable if needed                                                                                        
-  STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed                                                                                     
+  STRONG_CHECK( store->record( selectedRJigsawParticles.first  , "myparticles"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
 
 
 
@@ -145,36 +146,41 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
     if ((int)jet->auxdata<char>("baseline") == 0) continue;
     if ((int)jet->auxdata<char>("passOR") != 1) continue;
     if ((int)jet->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful jet                                                                                                                                   
+    // If I've gotten this far, I have a signal, isolated, beautiful jet
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
 
     auto tmpparticle = new xAOD::Particle();
     selectedJets.first->push_back(tmpparticle  );
     tmpparticle->setP4(jet->p4());
+    tmpparticle->setPdgId(6);
   }
 
   for (const auto& mu : *muons_nominal) {
     if ((int)mu->auxdata<char>("baseline") == 0) continue;
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
     if ((int)mu->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful muon                                                                                                                                  
+    // If I've gotten this far, I have a signal, isolated, beautiful muon
     ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
 
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
     tmpparticle->setP4(mu->p4());
+    if (mu->charge() < 0){tmpparticle->setPdgId(13);}
+    else {tmpparticle->setPdgId(-13);}
   }
 
   for (const auto& el : *electrons_nominal) {
     if ((int)el->auxdata<char>("baseline") == 0) continue;
     if ((int)el->auxdata<char>("passOR") != 1) continue;
     if ((int)el->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful el                                                                                                                                    
+    // If I've gotten this far, I have a signal, isolated, beautiful el
     ATH_MSG_VERBOSE( "el pt : " << el->pt() );
 
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
     tmpparticle->setP4(el->p4());
+    if (el->charge() < 0){tmpparticle->setPdgId(11);}
+    else {tmpparticle->setPdgId(-11);}
   }
 
   int const nLeptons = selectedLeptons.first->size();
@@ -187,30 +193,30 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   std::string regionName = "";
 
   auto  getRegionName = [](int nLeptons){ std::string regionName = "";
-					  if(nLeptons == 0){regionName = "SR";}
+					  if(nLeptons == 2){regionName = "SR";}
 					  if(nLeptons == 1){regionName = "CR1L";}
-					  if(nLeptons == 2){regionName = "CR2L";}
+					  if(nLeptons == 0){regionName = "CR0L";}
 					  return regionName;};//todo >2 leptons in the SR? pretty rare though
 
-  //Here we should add the particles that we want in the calculation to myparticles                                                                                                                        
-  //for( const auto& mylepton: *selectedLeptons.first){
-  //  xAOD::Particle *tmpparticle = new xAOD::Particle;
-  //  selectedRJigsawParticles.first->push_back(tmpparticle  );
-  //  tmpparticle->setP4( mylepton->p4() );
-  //}
 
-  // // What happens if we add the jets into the calculation?                                                                                                                                              
+  //Here we should add the particles that we want in the calculation to myparticles
+  for( const auto& mylepton: *selectedLeptons.first){
+    xAOD::Particle *tmpparticle = new xAOD::Particle;
+    selectedRJigsawParticles.first->push_back(tmpparticle  );
+    tmpparticle->setP4( mylepton->p4() );
+  }
+
+  // // What happens if we add the jets into the calculation?
   for( const auto& myjet: *selectedJets.first){
     xAOD::Particle *tmpparticle = new xAOD::Particle;
     selectedRJigsawParticles.first->push_back(tmpparticle  );
     tmpparticle->setP4( myjet->p4() );
   }
 
-
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
-  
+
   eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
 
@@ -219,7 +225,7 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: postExecute ()
+EL::StatusCode SelectTwoLeptonEvents :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -229,7 +235,7 @@ EL::StatusCode SelectZeroLeptonEvents :: postExecute ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: finalize ()
+EL::StatusCode SelectTwoLeptonEvents :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -245,7 +251,7 @@ EL::StatusCode SelectZeroLeptonEvents :: finalize ()
 
 
 
-EL::StatusCode SelectZeroLeptonEvents :: histFinalize ()
+EL::StatusCode SelectTwoLeptonEvents :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker

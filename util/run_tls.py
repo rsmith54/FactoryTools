@@ -5,9 +5,18 @@ import logging
 logging.basicConfig(level=logging.INFO)
 from optparse import OptionParser
 
+import os
+from datetime import date
+
 parser = OptionParser()
 parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
-parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/zl_datasets/")
+parser.add_option("--dataDir", help     = "dir to search for input"  , default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
+
+parser.add_option("--gridDS", help      = "gridDS"  , default="")
+parser.add_option("--gridInputFile",help= "gridInputFile"  , default=""  )
+parser.add_option("--gridUser", help    = "gridUser"  , default=os.environ.get("USER")  )
+parser.add_option("--gridTag", help     = "gridTag", default=date.today().strftime("%m%d%y"))
+
 parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
 parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
 parser.add_option('--nevents', help     = "Run n events ", default = -1 )
@@ -47,11 +56,23 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-#list = ROOT.SH.DiskListLocal("/afs/cern.ch/work/r/rsmith/lvlv_datasets")
-#list = ROOT.SH.DiskListLocal("/data/users/rsmith/lvlv_datasets")
-list = ROOT.SH.DiskListLocal(options.dataDir)
+if (options.gridInputFile or options.gridDS) and (options.driver!="grid"):
+    print ""
+    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    print "Are you sure you didn't mean to run this with --driver grid?"
+    raw_input("Press Enter to continue... or ctrl-c if you effed up...")
 
-ROOT.SH.scanDir(sh_all,list, "*")
+if options.gridInputFile:
+    with open(options.gridInputFile,'r') as f:
+        for ds in f:
+            # print "Adding %s to SH"%ds.rstrip()
+            ROOT.SH.addGrid(sh_all, ds.rstrip() )
+elif options.gridDS:
+    ROOT.SH.scanDQ2(sh_all, options.gridDS);
+else:
+    mylist = ROOT.SH.DiskListLocal(options.dataDir)
+    ROOT.SH.scanDir(sh_all,mylist, "*")
+
 
 sh_all.setMetaString ("nc_tree", "CollectionTree");
 
@@ -65,7 +86,7 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-outputFilename = "test_outputName_zl"
+outputFilename = "trees"
 output = ROOT.EL.OutputStream(outputFilename);
 
 import collections
@@ -74,21 +95,25 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
+algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
+
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
-algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
-algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
-# algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+algsToRun["preselectTwoLepton"]     = ROOT.PreselectTwoLeptonEvents()
+algsToRun["selectTwoLepton"]        = ROOT.SelectTwoLeptonEvents()
+algsToRun["postselectTwoLepton"]    = ROOT.PostselectTwoLeptonEvents()
 
-algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
+#todo move the enums to a separate file since they are shared by multiple algs
+algsToRun["calculateRJigsawVariables"]                = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.tlsCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.tlsCalculator
 
-for regionName in ["SR","CR1L","CR2L"]:
+for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
+
 
 job.outputAdd(output);
 for name,alg in algsToRun.iteritems() :
@@ -130,13 +155,10 @@ elif (options.driver == "grid"):
     print "grid driver"
     logging.info("running on Grid")
     driver = ROOT.EL.PrunDriver()
-    driver.options().setString("nc_outputSampleName", "user.rsmith.metNote.weekOne.v3.%in:name[2]%.%in:name[3]%");
-#    driver.options().setString(EL::Job::optGridNfilesPerJob, "1")
-#driver.options().setDouble("nc_disableAutoRetry", 1)
-#    driver.options().setDouble("nc_nFilesPerJob", 1)
+    driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(options.gridUser,options.gridTag)   );
     driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
     logging.info("submit job")
-    driver.submitOnly(job, options.submitDir+ options.whichAnalysis + "_mediumBad_" + options.dataDir)
+    driver.submitOnly(job, options.submitDir)
 
 
