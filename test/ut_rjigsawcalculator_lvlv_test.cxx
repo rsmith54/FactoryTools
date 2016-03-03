@@ -10,7 +10,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-#include <unordered_map>
+#include <map>
 #include <xAODMissingET/MissingET.h>
 #include <xAODJet/JetContainer.h>
 #include <xAODParticleEvent/ParticleContainer.h>
@@ -40,7 +40,7 @@ TEST_F (RJigsawCalculator_lvlv_Test, clearEventTest)
   RJigsawCalculator_lvlv calc;
   calc.initialize();
 
-  std::unordered_map<std::string, double> mymap;
+  std::map<std::string, double> mymap;
   xAOD::ParticleContainer jets;
   xAOD::MissingET met;
 

@@ -17,7 +17,7 @@
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/strongErrorCheck.h>
-#include <unordered_map>
+#include <map>
 #include <iostream>
 #include "xAODParticleEvent/ParticleContainer.h"
 
@@ -150,7 +150,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
   ATH_MSG_DEBUG("MET : " <<  (*metcont)["Final"]->met() );
 
-  std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
+  std::map<std::string,double> * mymap = new std::map<std::string,double>;
 
   STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"])));//this syntax is annoying...
 
