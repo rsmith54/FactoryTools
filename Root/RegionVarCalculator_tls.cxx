@@ -90,7 +90,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
+  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
@@ -116,7 +116,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::unordered_map<std
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
-  
+
   xAOD::ParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 

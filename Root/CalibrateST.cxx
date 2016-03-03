@@ -103,14 +103,10 @@ EL::StatusCode CalibrateST :: initialize ()
   ST::SettingDataSource datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" );
 
-  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource));
+  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource)) ;
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
 
   m_objTool->msg().setLevel( MSG::ERROR );//void return
-
-  TauAnalysisTools::TauSmearingTool * tauSmearingTool = new TauAnalysisTools::TauSmearingTool("TauSmearingTool");
-  STRONG_CHECK( tauSmearingTool->setProperty("SkipTruthMatchCheck" , true)  );
-  STRONG_CHECK( m_objTool->setProperty("TauSmearingTool", ToolHandle<TauAnalysisTools::ITauSmearingTool>(tauSmearingTool) ) );
 
   STRONG_CHECK( m_objTool->initialize());
 
