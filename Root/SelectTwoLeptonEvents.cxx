@@ -152,7 +152,7 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     auto tmpparticle = new xAOD::Particle();
     selectedJets.first->push_back(tmpparticle  );
     tmpparticle->setP4(jet->p4());
-    tmpparticle->setPdgId(6);
+    tmpparticle->setPdgId(1);
   }
 
   for (const auto& mu : *muons_nominal) {
@@ -204,6 +204,7 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     xAOD::Particle *tmpparticle = new xAOD::Particle;
     selectedRJigsawParticles.first->push_back(tmpparticle  );
     tmpparticle->setP4( mylepton->p4() );
+    tmpparticle->setPdgId( mylepton->pdgId() );
   }
 
   // // What happens if we add the jets into the calculation?
@@ -211,6 +212,7 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     xAOD::Particle *tmpparticle = new xAOD::Particle;
     selectedRJigsawParticles.first->push_back(tmpparticle  );
     tmpparticle->setP4( myjet->p4() );
+    tmpparticle->setPdgId( myjet->pdgId() );
   }
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );

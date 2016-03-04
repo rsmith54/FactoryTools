@@ -62,6 +62,18 @@ private :
   RestFrames::SetMassInvJigsaw       *     InvMass_bkg      ;
   RestFrames::SetRapidityInvJigsaw   *     InvRapidity_bkg  ;
 
+
+  RestFrames::LabRecoFrame           *   LAB_ISR;
+  RestFrames::DecayRecoFrame         *   CM_ISR;
+  RestFrames::DecayRecoFrame         *   S_ISR;
+  RestFrames::VisibleRecoFrame       *   ISR_ISR;
+  RestFrames::VisibleRecoFrame       *   V_ISR;
+  RestFrames::InvisibleRecoFrame     *   I_ISR;
+  RestFrames::InvisibleGroup         *   INV_ISR;
+  RestFrames::CombinatoricGroup      *   VIS_ISR;
+  RestFrames::SetMassInvJigsaw       *   InvMass_ISR;
+  RestFrames::MinMassesCombJigsaw    *   SplitVis_ISR;
+
 private :
   virtual EL::StatusCode doInitialize();
   virtual EL::StatusCode doClearEvent();

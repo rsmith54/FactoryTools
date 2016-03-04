@@ -55,7 +55,7 @@ algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVar
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
 algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.tlsCalculator
 
-for regionName in ["SR","CR1L","CR0L"]:
+for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
