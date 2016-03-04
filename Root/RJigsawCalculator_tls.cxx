@@ -64,7 +64,18 @@ LAB(nullptr),
   INV_bkg          (nullptr),
   VIS_bkg          (nullptr),
   InvMass_bkg      (nullptr),
-  InvRapidity_bkg  (nullptr)
+  InvRapidity_bkg  (nullptr),
+  // ISR-identifying regions
+  LAB_ISR          (nullptr),     
+  CM_ISR           (nullptr),    
+  S_ISR            (nullptr),   
+  ISR_ISR          (nullptr),     
+  V_ISR            (nullptr),   
+  I_ISR            (nullptr),   
+  INV_ISR          (nullptr),     
+  VIS_ISR          (nullptr),     
+  InvMass_ISR      (nullptr),         
+  SplitVis_ISR     (nullptr)        
 {}
 
 RJigsawCalculator_tls :: ~RJigsawCalculator_tls() {
@@ -100,12 +111,23 @@ RJigsawCalculator_tls :: ~RJigsawCalculator_tls() {
   delete    VIS_bkg          ;
   delete    InvMass_bkg      ;
   delete    InvRapidity_bkg  ;
+  delete  LAB_ISR      ;     
+  delete  CM_ISR       ;    
+  delete  S_ISR        ;   
+  delete  ISR_ISR      ;     
+  delete  V_ISR        ;   
+  delete  I_ISR        ;   
+  delete  INV_ISR      ;     
+  delete  VIS_ISR      ;     
+  delete  InvMass_ISR  ;         
+  delete  SplitVis_ISR ;  
 }
 
 EL::StatusCode RJigsawCalculator_tls::doClearEvent() {
 
   if(! LAB    ->ClearEvent()){return EL::StatusCode::FAILURE;}
   if(! LAB_bkg->ClearEvent()){return EL::StatusCode::FAILURE;}
+  if(! LAB_ISR->ClearEvent()){return EL::StatusCode::FAILURE;}
 
   return EL::StatusCode::SUCCESS;
 }
@@ -227,6 +249,45 @@ EL::StatusCode RJigsawCalculator_tls::doInitialize() {
 
   LAB_bkg->InitializeAnalysis();
 
+
+  // ISR tree
+  LAB_ISR = new LabRecoFrame("LAB_ISR","lab");
+  CM_ISR = new DecayRecoFrame("CM_ISR","CM");
+  S_ISR = new DecayRecoFrame("S_ISR","S");
+  ISR_ISR = new VisibleRecoFrame("ISR_ISR","ISR");
+  V_ISR = new VisibleRecoFrame("V_ISR","Vis");
+  I_ISR = new InvisibleRecoFrame("I_ISR","Inv");
+
+  LAB_ISR->SetChildFrame(*CM_ISR);
+  CM_ISR->AddChildFrame(*ISR_ISR);
+  CM_ISR->AddChildFrame(*S_ISR);
+  S_ISR->AddChildFrame(*V_ISR);
+  S_ISR->AddChildFrame(*I_ISR);
+
+  LAB_ISR->InitializeTree();
+
+  INV_ISR = new InvisibleGroup("INV_ISR","Invisible System");
+  INV_ISR->AddFrame(*I_ISR);
+
+  VIS_ISR = new CombinatoricGroup("VIS_ISR","Visible Objects");
+  VIS_ISR->AddFrame(*ISR_ISR);
+  VIS_ISR->SetNElementsForFrame(*ISR_ISR,1,false);
+  VIS_ISR->AddFrame(*V_ISR);
+  VIS_ISR->SetNElementsForFrame(*V_ISR,0,false);
+
+  InvMass_ISR = new SetMassInvJigsaw("InvMass_ISR", "Invisible system mass Jigsaw");
+  INV_ISR->AddJigsaw(*InvMass_ISR);
+
+  SplitVis_ISR = new MinMassesCombJigsaw("SplitVis_ISR","Minimize M_{ISR} and M_{S} Jigsaw");
+  VIS_ISR->AddJigsaw(*SplitVis_ISR);
+  // "0" group (ISR)
+  SplitVis_ISR->AddFrame(*ISR_ISR, 0);
+  // "1" group (V + I)
+  SplitVis_ISR->AddFrame(*V_ISR,1);
+  SplitVis_ISR->AddFrame(*I_ISR,1);
+
+  LAB_ISR->InitializeAnalysis();
+  
   return EL::StatusCode::SUCCESS;
 }
 
@@ -258,19 +319,41 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   }
 
   vector<RFKey> jetID;
+  vector<RFKey> jetID_bkg;
+  vector<RFKey> jetID_ISR;
   for(int i = 0; i < int(Jets.size()); i++){
     jetID.push_back(VIS->AddLabFrameFourVector(Jets[i]));
+    Jets[i].SetPtEtaPhiM(Jets[i].Pt(),0.0,Jets[i].Phi(),Jets[i].M());
+    jetID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Jets[i]));
+    jetID_ISR.push_back(VIS_ISR->AddLabFrameFourVector(Jets[i]));
   }
   vector<RFKey> electronID;
+  vector<RFKey> electronID_bkg;
+  vector<RFKey> electronID_ISR;
   for(int i = 0; i < int(Electrons.size()); i++){
     electronID.push_back(VIS->AddLabFrameFourVector(Electrons[i]));
+    Electrons[i].SetPtEtaPhiM(Electrons[i].Pt(),0.0,Electrons[i].Phi(),Electrons[i].M());
+    electronID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
+    electronID_ISR.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
   }
   vector<RFKey> muonID;
+  vector<RFKey> muonID_bkg;
+  vector<RFKey> muonID_ISR;
   for(int i = 0; i < int(Muons.size()); i++){
     muonID.push_back(VIS->AddLabFrameFourVector(Muons[i]));
+    Muons[i].SetPtEtaPhiM(Muons[i].Pt(),0.0,Muons[i].Phi(),Muons[i].M());
+    muonID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
+    muonID_ISR.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
   }
   INV->SetLabFrameThreeVector(ETMiss);
+  INV_bkg->SetLabFrameThreeVector(ETMiss);
+  INV_ISR->SetLabFrameThreeVector(ETMiss);
+
   if(!LAB->AnalyzeEvent()) cout << "Something went wrong..." << endl;
+  if(!LAB_bkg->AnalyzeEvent()) cout << "Something went wrong..." << endl;
+  if(!LAB_ISR->AnalyzeEvent()) cout << "Something went wrong..." << endl;
+
+
 
   //  float const m_NJet = Jets.size();
   float const m_NJ1a = VIS->GetNElementsInFrame(*V1a);
@@ -279,29 +362,6 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float const m_NJ2b = VIS->GetNElementsInFrame(*V2b);
   float const m_NJa = m_NJ1a+m_NJ2a;
   float const m_NJb = m_NJ1b+m_NJ2b;
-
-  double HT = 0.;
-  vector<RFKey> jetID_bkg;
-  vector<RFKey> electronID_bkg;
-  vector<RFKey> muonID_bkg;
-  for(int i = 0; i < int(Jets.size()); i++){
-    Jets[i].SetPtEtaPhiM(Jets[i].Pt(),0.0,Jets[i].Phi(),Jets[i].M());
-    jetID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Jets[i]));
-    HT += Jets[i].Pt();
-  }
-  for(int i = 0; i < int(Electrons.size()); i++){
-    Electrons[i].SetPtEtaPhiM(Electrons[i].Pt(),0.0,Electrons[i].Phi(),Electrons[i].M());
-    electronID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
-    HT += Electrons[i].Pt();
-  }
-  for(int i = 0; i < int(Muons.size()); i++){
-    Muons[i].SetPtEtaPhiM(Muons[i].Pt(),0.0,Muons[i].Phi(),Muons[i].M());
-    muonID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
-    HT += Muons[i].Pt();
-  }
-  INV_bkg->SetLabFrameThreeVector(ETMiss);
-  if(!LAB_bkg->AnalyzeEvent()) cout << "Something went wrong..." << endl;
-
 
 
   // QCD clean-up
@@ -324,48 +384,47 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float m_temp_PIoHT1CM  = -1.;
   float m_temp_cosS      = -1.;
   float m_temp_NVS       = -1.;
-  float m_temp_NLepS     = -1.;
-  float m_temp_NVISR     = -1.;
-  float m_temp_NLepISR   = -1.;
+  float m_temp_NLepS     = 0.;
   float m_temp_RPT_HT1CM = -1.;
   float m_temp_MS        = -1.;
 
-  if(m_Idepth < 2){
+  m_temp_NVS = VIS_ISR->GetNElementsInFrame(*V_ISR);
+
+  for(int j = 0; j < electronID_bkg.size(); j++){
+    if( VIS->GetFrame(electronID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+  }
+  for(int j = 0; j < muonID_bkg.size(); j++){
+    if( VIS->GetFrame(muonID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+  }
+
+  if(m_temp_NVS < 1){
     m_temp_HT1CM = -1.;
     m_temp_PIoHT1CM = -1.;
     m_temp_cosS = -1.;
     m_temp_NVS = -1.;
     m_temp_NLepS     = -1.;
-    m_temp_NVISR = -1.;
-    m_temp_NLepISR     = -1.;
     m_temp_RPT_HT1CM = -1.;
-    m_temp_MS = -1.
+    m_temp_MS = -1.;
   } else {
-    const RestFrame& fS = S_bkg->GetFrameAtDepth(1, *I_bkg);
-    m_temp_HT1CM = fS.GetTransverseMomentum(*S_bkg);
-    m_temp_MS = fS.GetMass();
 
-    m_temp_NVS = fS.GetNDescendants()-1;
+    TVector3 vP_ISR = ISR_ISR->GetFourVector(*CM_ISR).Vect();
+    TVector3 vP_I   = I_ISR->GetFourVector(*CM_ISR).Vect();
 
-    for(int j = 0; j < electronID_bkg.size(); j++){
-      if( VIS->GetFrame(electronID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
-    }
-    for(int j = 0; j < muonID_bkg.size(); j++){
-      if( VIS->GetFrame(muonID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
-    }
+    m_temp_HT1CM = vP_ISR.Mag();
+    m_temp_MS = S_ISR->GetMass();
+
+    if(m_temp_HT1CM > 0.)
+      m_temp_PIoHT1CM = fabs(vP_I.Dot(vP_ISR.Unit())) / m_temp_HT1CM;
+    else
+      m_temp_PIoHT1CM = 0.;
 
 
-    TLorentzVector vPV = fS.GetFourVector(*S_bkg) - I_bkg->GetFourVector(*S_bkg);
-    TLorentzVector vPI = I_bkg->GetFourVector(*S_bkg);
+    m_temp_cosS  = S_ISR->GetCosDecayAngle();
+    // m_dphiCMI = CM_ISR->GetDeltaPhiBoostVisible();
 
-    double PS = (vPV+vPI).P();
-    double PIdot = max(0.,vPI.Vect().Dot((vPV+vPI).Vect().Unit()));
-    m_temp_PIoHT1CM = PIdot / PS;
-
-    m_temp_cosS  = -1.*fS.GetCosDecayAngle(*I_bkg);
-
-    TLorentzVector PCM = S_bkg->GetFourVector();
+    TLorentzVector PCM = CM_ISR->GetFourVector();
     m_temp_RPT_HT1CM = PCM.Pt() / ( PCM.Pt() + m_temp_HT1CM );
+
   }
 
   float const m_HT1CM     = m_temp_HT1CM     ;
@@ -790,6 +849,30 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float const m_RPT_HT3PP = m_pTCM / (m_pTCM + m_HT3PP);
   float const m_RPT_HT5PP = m_pTCM / (m_pTCM + m_HT5PP);
   float const m_RPT_HT9PP = m_pTCM / (m_pTCM + m_HT9PP);
+
+
+  //Lepton tracking
+  int temp_Nlep_a = 0;
+  int temp_Nlep_b = 0;
+
+  for(int j = 0; j < electronID.size(); j++){
+    const RestFrame & eframe = VIS->GetFrame(electronID.at(j) );
+    if(V1a->IsSame(eframe) || V2a->IsSame(eframe)){temp_Nlep_a++;}
+    if(V1b->IsSame(eframe) || V2b->IsSame(eframe)){temp_Nlep_b++;}
+  }
+  for(int j = 0; j < muonID.size(); j++){
+    const RestFrame & muframe = VIS->GetFrame(muonID.at(j) );
+    if(V1a->IsSame(muframe) || V2a->IsSame(muframe)){temp_Nlep_a++;}
+    if(V1b->IsSame(muframe) || V2b->IsSame(muframe)){temp_Nlep_b++;}
+  }
+
+                                                                                                                                                                     //float const m_Nlep_b = temp_Nlep_b;                                                                                                                                                                     
+  int m_sameHemi_lep = 0;
+  if(temp_Nlep_a == 2||temp_Nlep_b ==2){m_sameHemi_lep = 1;}
+
+
+  RJVars[ "isSameHemi" ] = m_sameHemi_lep;
+  RJVars[ "NLepS" ] = m_temp_NLepS;
 
   RJVars[ "HT1CM"]     = m_HT1CM;
   RJVars[ "PIoHT1CM"]  = m_PIoHT1CM;

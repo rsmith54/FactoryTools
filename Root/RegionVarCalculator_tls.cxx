@@ -146,13 +146,15 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
 
 
 EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, double>& RegionVars,
-							  std::unordered_map<std::string, std::vector<double> > & VecRegionVars)
+							  std::map<std::string, std::vector<double> > & VecRegionVars)
 {
 
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::ParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
+  // If we go to a >= 2 lepton SR, we're going to need to sort these collections but we will want to be
+  // smart and careful about it given the way collections are handled in the store
   // auto ptSort = [](xAOD::Particle const & a , xAOD::Particle const & b){return a.pt() > b.pt();};
   // std::sort(leptons_nominal->begin(),leptons_nominal->end(), ptSort);
   // assert(leptons_nominal->at(0)->pt() > leptons_nominal->at(1)->pt());
