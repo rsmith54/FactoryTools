@@ -2,6 +2,8 @@ import os
 import logging
 import shutil
 import ROOT
+import basicEventSelectionConfig
+
 from optparse import OptionParser
 
 from datetime import date
@@ -65,7 +67,7 @@ def overwriteSubmitDir (submitDir, doOverwrite) :
             shutil.rmtree(submitDir)
         else :
             logging.info( "Exiting.  If you want to overwrite the previous submitDir, use --doOverwrite")
-            commonquiet_exit()
+            quiet_exit()
 
 def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") , gridTag = date.today().strftime("%m%d%y")) :
     logging.info("creating driver")
@@ -90,3 +92,10 @@ def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") ,
         driver.submitOnly(job, submitDir)
     else :
         logging.info( "you gave an illegal driver name.  Not submitting.")
+
+
+def configBasicEventSelection(alg , configDict = basicEventSelectionConfig.basicEventSelectionDict ) :
+    for key, value in configDict.iteritems() :
+        if not hasattr(alg, key) :
+            raise AttributeError(key)
+        setattr(alg, key, value )

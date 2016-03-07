@@ -14,7 +14,7 @@ parser = commonOptions.parseCommonOptions()
 #print options
 
 ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
-
+import basicEventSelectionConfig
 # create a new sample handler to describe the data files we use
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
@@ -40,7 +40,7 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-algsToRun["basicEventSelection"].m_useMetaData  = False
+commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
 #algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
