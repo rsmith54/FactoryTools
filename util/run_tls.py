@@ -2,6 +2,7 @@ import ROOT
 # Workaround to fix threadlock issues with GUI
 ROOT.PyConfig.StartGuiThread = False
 import logging
+import basicEventSelectionConfig
 logging.basicConfig(level=logging.INFO)
 
 import commonOptions
@@ -40,7 +41,7 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-algsToRun["basicEventSelection"].m_useMetaData  = False
+basicEventSelectionConfig.config(algsToRun["basicEventSelection"])
 #algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
