@@ -65,7 +65,7 @@ def overwriteSubmitDir (submitDir, doOverwrite) :
             shutil.rmtree(submitDir)
         else :
             logging.info( "Exiting.  If you want to overwrite the previous submitDir, use --doOverwrite")
-            commonquiet_exit()
+            quiet_exit()
 
 def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") , gridTag = date.today().strftime("%m%d%y")) :
     logging.info("creating driver")
