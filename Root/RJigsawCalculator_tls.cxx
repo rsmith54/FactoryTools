@@ -316,9 +316,12 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
     else {Jets.push_back(tmpPart);}
   }
 
-  auto ptSort = [](TLorentzVector const & a , TLorentzVector const & b){return a.Pt() > b.Pt();};
-  std::sort(Leptons.begin(),Leptons.end(), ptSort);
-  assert(Leptons.at(0).Pt() > Leptons.at(1).Pt());
+  if(Leptons.size()>1){
+    auto ptSort = [](TLorentzVector const & a , TLorentzVector const & b){return a.Pt() > b.Pt();};
+    std::sort(Leptons.begin(), Leptons.end(), ptSort);
+    assert(Leptons.at(0).Pt() > Leptons.at(1).Pt());
+  }
+
 
   vector<RFKey> jetID;
   vector<RFKey> jetID_bkg;
