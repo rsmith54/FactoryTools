@@ -334,7 +334,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
     electronID.push_back(VIS->AddLabFrameFourVector(Electrons[i]));
     Electrons[i].SetPtEtaPhiM(Electrons[i].Pt(),0.0,Electrons[i].Phi(),Electrons[i].M());
     electronID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
-    electronID_ISR.push_back(VIS_bkg->AddLabFrameFourVector(Electrons[i]));
+    electronID_ISR.push_back(VIS_ISR->AddLabFrameFourVector(Electrons[i]));
   }
   vector<RFKey> muonID;
   vector<RFKey> muonID_bkg;
@@ -343,7 +343,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
     muonID.push_back(VIS->AddLabFrameFourVector(Muons[i]));
     Muons[i].SetPtEtaPhiM(Muons[i].Pt(),0.0,Muons[i].Phi(),Muons[i].M());
     muonID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
-    muonID_ISR.push_back(VIS_bkg->AddLabFrameFourVector(Muons[i]));
+    muonID_ISR.push_back(VIS_ISR->AddLabFrameFourVector(Muons[i]));
   }
   INV->SetLabFrameThreeVector(ETMiss);
   INV_bkg->SetLabFrameThreeVector(ETMiss);
@@ -387,14 +387,15 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float m_temp_NLepS     = 0.;
   float m_temp_RPT_HT1CM = -1.;
   float m_temp_MS        = -1.;
+  float m_temp_dphiCMV   = -1.;
 
   m_temp_NVS = VIS_ISR->GetNElementsInFrame(*V_ISR);
 
-  for(int j = 0; j < electronID_bkg.size(); j++){
-    if( VIS->GetFrame(electronID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+  for(int j = 0; j < electronID_ISR.size(); j++){
+    if( VIS->GetFrame(electronID_ISR.at(j) ) == *V_ISR ) m_temp_NLepS++;
   }
-  for(int j = 0; j < muonID_bkg.size(); j++){
-    if( VIS->GetFrame(muonID_bkg.at(j) ) == S_bkg->GetFrameAtDepth(2, *V_bkg) ) m_temp_NLepS++;
+  for(int j = 0; j < muonID_ISR.size(); j++){
+    if( VIS->GetFrame(muonID_ISR.at(j) ) == *V_ISR ) m_temp_NLepS++;
   }
 
   if(m_temp_NVS < 1){
@@ -420,7 +421,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 
 
     m_temp_cosS  = S_ISR->GetCosDecayAngle();
-    // m_dphiCMI = CM_ISR->GetDeltaPhiBoostVisible();
+    m_temp_dphiCMV = CM_ISR->GetDeltaPhiBoostVisible();
 
     TLorentzVector PCM = CM_ISR->GetFourVector();
     m_temp_RPT_HT1CM = PCM.Pt() / ( PCM.Pt() + m_temp_HT1CM );
@@ -433,6 +434,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float const m_NVS       = m_temp_NVS       ;
   float const m_RPT_HT1CM = m_temp_RPT_HT1CM ;
   float const m_MS        = m_temp_MS;
+  float const m_dphiCMV   = m_temp_dphiCMV;
 
 
   // signal variables
@@ -880,6 +882,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   RJVars[ "NVS"]       = m_NVS;
   RJVars[ "RPT_HT1CM"] = m_RPT_HT1CM;
   RJVars[ "MS"]        = m_MS;
+  RJVars[ "dphiCMV"]   = m_dphiCMV;
 
   RJVars[ "ddphiP"]      = m_ddphiP;
   RJVars[ "sdphiP"] = m_sdphiP;
