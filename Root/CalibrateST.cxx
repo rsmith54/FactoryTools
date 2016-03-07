@@ -103,10 +103,10 @@ EL::StatusCode CalibrateST :: initialize ()
   bool const isData = !(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ));
   bool const isAtlfast = false;
 
-  //  ST::SettingDataSource datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
-  int datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
+  ST::SettingDataSource datasource = (isData ? ST::Data : (isAtlfast ? ST::AtlfastII : ST::FullSim));
   if( systName == notSetString()) {
     ATH_MSG_ERROR( "you need to set the systematic string in your run script!");
+    ATH_MSG_ERROR( "If you wish to run without systematics, set the systName to \"\"");
     return EL::StatusCode::FAILURE;
   }
 
