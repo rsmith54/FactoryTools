@@ -40,9 +40,11 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
+commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["calibrateST" ].systName      = ""
 algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
 algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
 algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
@@ -57,7 +59,10 @@ for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
+    tmpWriteOutputNtuple.systName            = ""
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
+
+if options.doSystematics : commonOptions.doSystematics(algsToRun)
 
 job.outputAdd(output);
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)
