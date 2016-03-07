@@ -3,4 +3,4 @@ localSetupDQ2Client
 localSetupFAX
 localSetupPyAMI
 localSetupROOT
-rcSetup SUSY,2.3.44a
+rcSetup Base,2.3.45

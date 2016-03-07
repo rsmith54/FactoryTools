@@ -6,7 +6,7 @@ Once you have the RJigsawTools package with
 git clone https://github.com/rsmith54/RJigsawTools.git
 ```
 
-you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`.  `CommonTools` also depends on `QuickAna`.
+you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release (todo update when not true anymore).
 First setup RootCore :
 
 ```
@@ -17,7 +17,7 @@ Now we can checkout our dependencies using the following :
 
 ```
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
-rc checkout_pkg atlasoff/PhysicsAnalysis/TopPhys/QuickAna/tags/QuickAna-00-00-94 QuickAna
+rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-07-42 SUSYTools
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-18 CommonTools
 git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 00-03-31; cd ..;
 ```
