@@ -40,7 +40,7 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-basicEventSelectionConfig.config(algsToRun["basicEventSelection"])
+commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
 #algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 

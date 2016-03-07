@@ -1,1 +1,0 @@
-/afs/cern.ch/user/r/rsmith/testarea/tls/RootCoreBin/user_scripts/xAODAnaHelpers/xAH_config.py

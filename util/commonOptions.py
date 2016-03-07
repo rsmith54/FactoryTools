@@ -2,6 +2,8 @@ import os
 import logging
 import shutil
 import ROOT
+import basicEventSelectionConfig
+
 from optparse import OptionParser
 
 from datetime import date
@@ -90,3 +92,17 @@ def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") ,
         driver.submitOnly(job, submitDir)
     else :
         logging.info( "you gave an illegal driver name.  Not submitting.")
+
+
+def configBasicEventSelection(alg , configDict = basicEventSelectionConfig.basicEventSelectionDict ) :
+    #todo add ability to change individual pieces of the dictionary
+    if os.path.islink('xAH_config.py') :
+        os.unlink('xAH_config.py')
+    os.symlink('$ROOTCOREBIN/user_scripts/xAODHelpers/xAH_config.py', 'xAH_config.py')
+
+    from xAH_config import xAH_config
+
+
+    c = xAH_config()
+    c.setalg("BasicEventSelection", configDict)
+
