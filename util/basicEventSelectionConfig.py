@@ -1,6 +1,7 @@
 basicEventSelectionDict = {
     "m_applyGRLCut" : True,
-    "m_GRLxml" : "$ROOTCOREBIN/data/xAODAnaHelpers/data15_13TeV.periodAllYear_HEAD_DQDefects-00-01-02_PHYS_StandardGRL_Atlas_Ready.xml",
+    "m_GRLxml" : "$ROOTCOREBIN/data/SUSYTools/GRL/Moriond2016/data15_13TeV.periodAllYear_DetStatus-v73-pro19-08_DQDefects-00-01-02_PHYS_StandardGRL_All_Good_25ns.xml",
+    "m_useMetaData" : False,
     "m_cleanPowheg" : True,
     "m_doPUreweighting" : False,
     "m_lumiCalcFileNames" : "",
