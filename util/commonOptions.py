@@ -2,6 +2,9 @@ import os
 import logging
 import shutil
 import ROOT
+from copy import copy
+from copy import deepcopy
+
 import basicEventSelectionConfig
 
 from optparse import OptionParser
@@ -20,6 +23,7 @@ def parseCommonOptions() :
     parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
     parser.add_option('--nevents', help     = "Run n events ", default = -1 )
     parser.add_option('--verbosity', help   = "Run all algs at the selected verbosity.",choices=("info", "warning","error", "debug", "verbose"), default="error")
+    parser.add_option('--doSystematics', help = "Do systematics.  This will take *MUCH* longer!",action="store_true", default=False)
     return parser
 
 import atexit
@@ -99,3 +103,31 @@ def configBasicEventSelection(alg , configDict = basicEventSelectionConfig.basic
         if not hasattr(alg, key) :
             raise AttributeError(key)
         setattr(alg, key, value )
+
+def getSystList(dataSource = 1) :
+    if( dataSource == 0 ) : return []#for data, just run once with no systematics
+
+    susyTools = ROOT.ST.SUSYObjDef_xAOD("getlist")
+    susyTools.setDataSource(dataSource)
+    susyTools.setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf")
+
+    logging.info("initializing SUSYTools")
+
+    susyTools.initialize()
+
+    registry = ROOT.CP.SystematicRegistry.getInstance()
+    recommendedSystematics = registry.recommendedSystematics()
+    return recommendedSystematics
+
+def doSystematics(algsToRun, nonSystAlgs = ["basicEventSelection", "mcEventVeto"] ) :
+    '''This function will get the list of systematics from an initialized SUSYTools instance.  For each algorithm in algsToRun, it will add a copy of that algorithm to the algsToRun with an additional string for the systematic.  It will apply the systematic to those algorithms which have systName as a member of the class.  By default, we will skip running systematics on the algorithms : ''' , nonSystAlgs ,  '''.'''
+    tmpAlgsToRun = copy(algsToRun)
+
+    for syst in getSystList() :
+        for algname, alg in algsToRun.iteritems() :
+            if algname not in nonSystAlgs :
+                tmpAlgsToRun[algname + '_' + syst.name() ] = deepcopy(alg)
+                if hasattr(alg,"systName") :
+                    setattr(alg, "systName" , syst.name())
+
+    algsToRun.update(tmpAlgsToRun)

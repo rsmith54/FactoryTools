@@ -14,6 +14,7 @@ parser = commonOptions.parseCommonOptions()
 #print options
 
 ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
+import basicEventSelectionConfig
 
 # create a new sample handler to describe the data files we use
 logging.info("creating new sample handler")
@@ -32,35 +33,41 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
-outputFilename = "trees"
-output = ROOT.EL.OutputStream(outputFilename);
-
 #here we add the algorithms we want to run over
 import collections
 algsToRun = collections.OrderedDict()
 
-algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-algsToRun["basicEventSelection"].m_useMetaData  = False
-algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
-algsToRun["calibrateST"]               = ROOT.CalibrateST()
+outputFilename = "trees"
+output = ROOT.EL.OutputStream(outputFilename);
 
-algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
-algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
-algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
+commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
+
+algsToRun["calibrateST" ]               = ROOT.CalibrateST()
+algsToRun["calibrateST" ].systName      = ""
+
+algsToRun["preselectDileptonicWW"  ]    = ROOT.PreselectDileptonicWWEvents()
+algsToRun["selectDileptonicWW"     ]    = ROOT.SelectDileptonicWWEvents()
+algsToRun["postselectDileptonicWW" ]    = ROOT.PostselectDileptonicWWEvents()
 
 #todo move the enums to a separate file since they are shared by multiple algs
-algsToRun["calculateRJigsawVariables"]                = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
-algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
+algsToRun["calculateRJigsawVariables" ]                = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables" ].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
+algsToRun["calculateRegionVars" ]                      = ROOT.CalculateRegionVars()
+algsToRun["calculateRegionVars" ].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
 
 for regionName in ["SR","CR1L","CR0L"]:
-    tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
-    tmpWriteOutputNtuple.outputName            = outputFilename
-    tmpWriteOutputNtuple.regionName            = regionName
-    algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
+    tmpWriteOutputNtuple                     = ROOT.WriteOutputNtuple()
+    tmpWriteOutputNtuple.outputName          = outputFilename
+    tmpWriteOutputNtuple.regionName          = regionName
+    tmpWriteOutputNtuple.systName            = ""
+    algsToRun["writeOutputNtuple"+regionName] = tmpWriteOutputNtuple
+
+if options.doSystematics : commonOptions.doSystematics(algsToRun)
 
 job.outputAdd(output);
+
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)
 
 if options.nevents > 0 :

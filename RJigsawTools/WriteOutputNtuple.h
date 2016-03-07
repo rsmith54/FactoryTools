@@ -17,8 +17,9 @@ public:
   // float cutValue;
 
   std::string outputName;
-
   std::string regionName;
+  std::string systName  ;
+
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
