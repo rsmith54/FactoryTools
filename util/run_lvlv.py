@@ -64,7 +64,7 @@ for regionName in ["SR","CR1L","CR0L"]:
     tmpWriteOutputNtuple.systName            = ""
     algsToRun["writeOutputNtuple"+regionName] = tmpWriteOutputNtuple
 
-commonOptions.doSystematics(algsToRun)
+if options.doSystematics : commonOptions.doSystematics(algsToRun)
 
 job.outputAdd(output);
 

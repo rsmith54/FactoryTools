@@ -23,6 +23,7 @@ def parseCommonOptions() :
     parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
     parser.add_option('--nevents', help     = "Run n events ", default = -1 )
     parser.add_option('--verbosity', help   = "Run all algs at the selected verbosity.",choices=("info", "warning","error", "debug", "verbose"), default="error")
+    parser.add_option('--doSystematics', help = "Do systematics.  This will take *MUCH* longer!",action="store_true", default=False)
     return parser
 
 import atexit
