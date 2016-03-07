@@ -25,7 +25,7 @@ basicEventSelectionDict = {
     "m_checkDuplicatesMC" : True,
 }
 
-def config(alg , configDict = basicEventSelctionDict ) :
+def config(alg , configDict = basicEventSelectionDict ) :
     c = xAH_config()
     c.setalg("BasicEventSelection", configDict)
 

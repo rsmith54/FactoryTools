@@ -2,7 +2,6 @@ import ROOT
 # Workaround to fix threadlock issues with GUI
 ROOT.PyConfig.StartGuiThread = False
 import logging
-import basicEventSelectionConfig
 logging.basicConfig(level=logging.INFO)
 
 import commonOptions
@@ -15,7 +14,7 @@ parser = commonOptions.parseCommonOptions()
 #print options
 
 ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
-
+import basicEventSelectionConfig
 # create a new sample handler to describe the data files we use
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
