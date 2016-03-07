@@ -1,5 +1,5 @@
-#ifndef REGION_VARIABLE_CALCULATOR_LVLV_H
-#define REGION_VARIABLE_CALCULATOR_LVLV_H
+#ifndef REGION_VARIABLE_CALCULATOR_TLS_H
+#define REGION_VARIABLE_CALCULATOR_TLS_H
 //author : Russell Smith
 //date   : January 2015
 
@@ -9,7 +9,7 @@
 #include <map>
 #include <iostream>
 
-class RegionVarCalculator_lvlv : public RegionVarCalculator {
+class RegionVarCalculator_tls : public RegionVarCalculator {
 
 public :
 
@@ -34,10 +34,10 @@ private :
 
 public :
   // this is needed to distribute the algorithm to the workers
-  ClassDef(RegionVarCalculator_lvlv, 1);
+  ClassDef(RegionVarCalculator_tls, 1);
 
 };
 
-#endif //REGION_VARIABLE_CALCULATOR_LVLV_H
+#endif //REGION_VARIABLE_CALCULATOR_TLS_H
 
 //  LocalWords:  ifndef

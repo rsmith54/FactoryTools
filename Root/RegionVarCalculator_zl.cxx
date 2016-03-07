@@ -6,16 +6,16 @@
 #include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
-#include "RJigsawTools/RegionVarCalculator_lvlv.h"
+#include "RJigsawTools/RegionVarCalculator_zl.h"
 #include "RJigsawTools/strongErrorCheck.h"
 
 #include <xAODAnaHelpers/HelperFunctions.h>
 
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(RegionVarCalculator_lvlv)
+ClassImp(RegionVarCalculator_zl)
 
-EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
+EL::StatusCode RegionVarCalculator_zl::doInitialize(EL::Worker * worker) {
   if(m_worker != nullptr){
     std::cout << "You have called " << __PRETTY_FUNCTION__ << " more than once.  Exiting." << std::endl;
     return EL::StatusCode::FAILURE;
@@ -25,7 +25,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, double              >& RegionVars,
+EL::StatusCode RegionVarCalculator_zl::doCalculate(std::map<std::string, double              >& RegionVars,
 						     std::map<std::string, std::vector<double> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
 
@@ -42,14 +42,14 @@ EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, doubl
   else if ( regionName == "CR1L") {return EL::StatusCode(doAllCalculations (RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS &&
 							 doCR1LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
 
-  else if ( regionName == "CR0L") {return EL::StatusCode(doAllCalculations (RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS &&
-							 doCR0LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
+  else if ( regionName == "CR2L") {return EL::StatusCode(doAllCalculations (RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS &&
+							 doCR2LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
 
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, double>& RegionVars,
 							   std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
@@ -63,17 +63,17 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-  RegionVars["runNumber"]                          = eventInfo->runNumber();
-  RegionVars["lumiBlock"]                          = eventInfo->lumiBlock();
-  RegionVars["bcid"]                               = eventInfo->bcid();
-  RegionVars["eventNumber"]                        = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"]                    = eventInfo->mcChannelNumber();
-  RegionVars["actualInteractionsPerCrossing"]      = eventInfo->actualInteractionsPerCrossing();
-  //  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
+  RegionVars["runNumber"]   = eventInfo->runNumber();
+  RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
+  RegionVars["bcid"]        = eventInfo->bcid();
+  RegionVars["eventNumber"] = eventInfo->eventNumber();
+  RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
+  RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-  RegionVars["mcEventWeight"] = eventInfo->mcEventWeight();//->auxdecor< float >("mcEventWeight");
-  RegionVars["pileupWeight"]  = -1 ;eventInfo->auxdecor< float >("PileupWeight");
+
+  RegionVars["mcEventWeight"] = eventInfo->auxdecor< int >("mcEvtWeight");
+  RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
+
   //
   /////////////////////////////////////////////////////////////////////
 
@@ -116,7 +116,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
-  
+
   xAOD::ParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
@@ -141,16 +141,16 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
 }
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doSRCalculations(std::map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_zl::doSRCalculations(std::map<std::string, double>& RegionVars,
 							  std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR1LCalculations(std::map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, double>& RegionVars,
 							    std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
-EL::StatusCode RegionVarCalculator_lvlv::doCR0LCalculations(std::map<std::string, double>& RegionVars,
+EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, double>& RegionVars,
 							    std::map<std::string, std::vector<double> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}

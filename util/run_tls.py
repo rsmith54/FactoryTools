@@ -40,24 +40,27 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
+algsToRun["basicEventSelection"].m_useMetaData  = False
+#algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
-algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
-algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
-algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+algsToRun["preselectTwoLepton"]     = ROOT.PreselectTwoLeptonEvents()
+algsToRun["selectTwoLepton"]        = ROOT.SelectTwoLeptonEvents()
+algsToRun["postselectTwoLepton"]    = ROOT.PostselectTwoLeptonEvents()
 
 #todo move the enums to a separate file since they are shared by multiple algs
 algsToRun["calculateRJigsawVariables"]                = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.compressedCalculator
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.tlsCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.tlsCalculator
 
 for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
+
 
 job.outputAdd(output);
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)

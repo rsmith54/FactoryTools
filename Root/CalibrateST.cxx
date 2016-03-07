@@ -110,14 +110,14 @@ EL::StatusCode CalibrateST :: initialize ()
     return EL::StatusCode::FAILURE;
   }
 
+
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
 
-  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource) );
+  STRONG_CHECK( m_objTool->setProperty("DataSource", datasource)) ;
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
 
 
   m_objTool->msg().setLevel( this->msg().level());
-
   STRONG_CHECK( m_objTool->initialize());
 
   return EL::StatusCode::SUCCESS;
