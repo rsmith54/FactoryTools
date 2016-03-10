@@ -41,19 +41,21 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName      = ""
-algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
-algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
-# algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()
+algsToRun["selectDileptonicWW"]        = ROOT.SelectDileptonicWWEvents()
+algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
 
-algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
+#todo move the enums to a separate file since they are shared by multiple algs
+algsToRun["calculateRJigsawVariables"]                = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.compressedCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
 
-for regionName in ["SR","CR1L","CR2L"]:
+for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName

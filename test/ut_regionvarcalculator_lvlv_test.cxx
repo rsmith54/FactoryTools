@@ -14,7 +14,7 @@
 
 #include <RJigsawTools/strongErrorCheck.h>
 
-#include <unordered_map>
+#include <map>
 #include <xAODMissingET/MissingET.h>
 #include <xAODJet/JetContainer.h>
 
@@ -53,11 +53,11 @@ TEST_F (RegionVarCalculator_lvlv_Test, calcTest)
   RegionVarCalculator_lvlv calc;
   calc.initialize(worker );
 
-  std::unordered_map<std::string, double> mymap;
+  std::map<std::string, double> mymap;
   xAOD::JetContainer jets;
   xAOD::MissingET met;
 
-  std::unordered_map<std::string, std::vector<double> > myVecMap;
+  std::map<std::string, std::vector<double> > myVecMap;
 
   EXPECT_TRUE( calc.calculate(mymap, myVecMap) == EL::StatusCode::SUCCESS ) ;//the first event is fine no matter what
 }

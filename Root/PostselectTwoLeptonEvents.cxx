@@ -1,31 +1,29 @@
-// Infrastructure include(s):
+#include <EventLoop/Job.h>
+#include <EventLoop/StatusCode.h>
+#include <EventLoop/Worker.h>
+#include <RJigsawTools/PostselectTwoLeptonEvents.h>
+
+#include <AsgTools/MsgStream.h>
+#include <AsgTools/MsgStreamMacros.h>
+
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include <EventLoop/Job.h>
-#include <EventLoop/StatusCode.h>
-#include <EventLoop/Worker.h>
+#include <TSystem.h>
+
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/RegionVarCalculator_lvlv.h>
-#include <RJigsawTools/RegionVarCalculator_tls.h>
-#include <RJigsawTools/RegionVarCalculator_zl.h>
-#include <RJigsawTools/CalculateRegionVars.h>
-
-#include <RJigsawTools/printDebug.h>
 #include <RJigsawTools/strongErrorCheck.h>
 
 
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(CalculateRegionVars)
+ClassImp(PostselectTwoLeptonEvents)
 
 
 
-CalculateRegionVars :: CalculateRegionVars () :
-calculatorName(none),//user needs to choose their calculator name
-m_calculator(nullptr)
+PostselectTwoLeptonEvents :: PostselectTwoLeptonEvents ()
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -37,7 +35,7 @@ m_calculator(nullptr)
 
 
 
-EL::StatusCode CalculateRegionVars :: setupJob (EL::Job& job)
+EL::StatusCode PostselectTwoLeptonEvents :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -51,7 +49,7 @@ EL::StatusCode CalculateRegionVars :: setupJob (EL::Job& job)
 
 
 
-EL::StatusCode CalculateRegionVars :: histInitialize ()
+EL::StatusCode PostselectTwoLeptonEvents :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -62,7 +60,7 @@ EL::StatusCode CalculateRegionVars :: histInitialize ()
 
 
 
-EL::StatusCode CalculateRegionVars :: fileExecute ()
+EL::StatusCode PostselectTwoLeptonEvents :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -71,7 +69,7 @@ EL::StatusCode CalculateRegionVars :: fileExecute ()
 
 
 
-EL::StatusCode CalculateRegionVars :: changeInput (bool firstFile)
+EL::StatusCode PostselectTwoLeptonEvents :: changeInput (bool firstFile)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -81,7 +79,7 @@ EL::StatusCode CalculateRegionVars :: changeInput (bool firstFile)
 
 
 
-EL::StatusCode CalculateRegionVars :: initialize ()
+EL::StatusCode PostselectTwoLeptonEvents :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -92,57 +90,32 @@ EL::StatusCode CalculateRegionVars :: initialize ()
   // you create here won't be available in the output if you have no
   // input events.
 
-  ATH_MSG_INFO("You have configured a " << calculatorName << " calculator.  See the code for enum definitions. ");
-  STRONG_CHECK( calculatorName != none);
 
-  if(calculatorName == lvlvCalculator)
-    {
-      m_calculator = new RegionVarCalculator_lvlv;
-      STRONG_CHECK_SC( m_calculator->initialize(wk()));
-    }
-  else if(calculatorName == zlCalculator){
-    m_calculator  = new RegionVarCalculator_zl;
-    STRONG_CHECK_SC( m_calculator->initialize(wk()));
-  }
-  else if(calculatorName == tlsCalculator){
-    m_calculator  = new RegionVarCalculator_tls;
-    STRONG_CHECK_SC( m_calculator->initialize(wk()));
-  }
-  else {
-    ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
-    return EL::StatusCode::FAILURE;
-  }
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRegionVars :: execute ()
+EL::StatusCode PostselectTwoLeptonEvents :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
 
-  printDebug();
-
   xAOD::TStore * store = wk()->xaodStore();
 
-  std::map<std::string,double>               * mymap    = new std::map<std::string,double>;
-  std::map<std::string,std::vector<double> > * myvecmap = new std::map<std::string,std::vector<double> >;
+  const xAOD::EventInfo* eventInfo = 0;
+  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
 
-  printDebug();
-  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap   ));
-  STRONG_CHECK   ( store->record( mymap    , "RegionVarsMap"   ));
-  STRONG_CHECK   ( store->record( myvecmap , "VecRegionVarsMap"));
-  printDebug();
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRegionVars :: postExecute ()
+EL::StatusCode PostselectTwoLeptonEvents :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -152,7 +125,7 @@ EL::StatusCode CalculateRegionVars :: postExecute ()
 
 
 
-EL::StatusCode CalculateRegionVars :: finalize ()
+EL::StatusCode PostselectTwoLeptonEvents :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -163,12 +136,16 @@ EL::StatusCode CalculateRegionVars :: finalize ()
   // submission node after all your histogram outputs have been
   // merged.  This is different from histFinalize() in that it only
   // gets called on worker nodes that processed input events.
+
+
+
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRegionVars :: histFinalize ()
+EL::StatusCode PostselectTwoLeptonEvents :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker

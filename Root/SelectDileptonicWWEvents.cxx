@@ -205,11 +205,11 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   }
 
   // // What happens if we add the jets into the calculation?
-  // for( const auto& myjet: *selectedJets.first){
-  //   xAOD::Particle *tmpparticle = new xAOD::Particle;
-  //   myparticles->push_back(tmpparticle  );
-  //   tmpparticle->setP4( myjet->p4() );
-  // }
+  for( const auto& myjet: *selectedJets.first){
+    xAOD::Particle *tmpparticle = new xAOD::Particle;
+    selectedRJigsawParticles.first->push_back(tmpparticle  );
+    tmpparticle->setP4( myjet->p4() );
+  }
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 

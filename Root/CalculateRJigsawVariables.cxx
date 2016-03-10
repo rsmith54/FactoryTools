@@ -9,13 +9,15 @@
 
 #include <RJigsawTools/CalculateRJigsawVariables.h>
 #include <RJigsawTools/RJigsawCalculator_lvlv.h>
+#include <RJigsawTools/RJigsawCalculator_tls.h>
 #include <RJigsawTools/RJigsawCalculator_zl.h>
+#include <RJigsawTools/RJigsawCalculator_compressed.h>
 #include <RJigsawTools/printDebug.h>
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <RJigsawTools/strongErrorCheck.h>
-#include <unordered_map>
+#include <map>
 #include <iostream>
 #include "xAODParticleEvent/ParticleContainer.h"
 
@@ -96,12 +98,20 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   STRONG_CHECK( calculatorName != none);
 
   if(calculatorName == lvlvCalculator)
-    {
-      m_calculator = new RJigsawCalculator_lvlv;
-      STRONG_CHECK_SC( m_calculator->initialize());
-    }
+  {
+    m_calculator = new RJigsawCalculator_lvlv;
+    STRONG_CHECK_SC( m_calculator->initialize());
+  }
   else if(calculatorName == zlCalculator){
     m_calculator  = new RJigsawCalculator_zl;
+    STRONG_CHECK_SC( m_calculator->initialize()) ;
+  }  
+  else if(calculatorName == tlsCalculator){
+    m_calculator  = new RJigsawCalculator_tls;
+    STRONG_CHECK_SC( m_calculator->initialize()) ;
+  }
+  else if(calculatorName == compressedCalculator){
+    m_calculator  = new RJigsawCalculator_compressed;
     STRONG_CHECK_SC( m_calculator->initialize()) ;
   }
   else {
@@ -145,7 +155,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // ATH_MSG_DEBUG("About to print MET value");
   ATH_MSG_DEBUG("MET : " <<  (*metcont)["FinalTrk"]->met() );
 
-  std::unordered_map<std::string,double> * mymap = new std::unordered_map<std::string,double>;
+  std::map<std::string,double> * mymap = new std::map<std::string,double>;
 
   STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["FinalTrk"])));//this syntax is annoying...
 

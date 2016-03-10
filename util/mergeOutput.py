@@ -21,6 +21,9 @@ import atexit
 def quite_exit():
 	ROOT.gSystem.Exit(0)
 
+# from multiprocessing import Pool
+import multiprocessing as mp
+
 
 logging.info("loading packages...")
 ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
@@ -31,123 +34,165 @@ ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
 ##
 ##
 
-lumi = 1000  ## in pb-1
-if len(sys.argv)==1:
-	search_directories = ["/afs/cern.ch/user/l/leejr/work/public/fromGrid/",]
-else:
-	search_directories = [str(sys.argv[i]) for i in xrange(1,len(sys.argv))]
 
+parser = OptionParser()
+parser.add_option("--inDir", help   = "dir with output", default="/afs/cern.ch/user/l/leejr/work/public/fromGrid/")
+parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
+parser.add_option("--selection", help     = "selection string for skimming", default="1"  )
+
+(options, args) = parser.parse_args()
+
+# lumi = 1000  ## in pb-1
+# if len(sys.argv)==1:
+# 	search_directories = ["/afs/cern.ch/user/l/leejr/work/public/fromGrid/",]
+# else:
+# 	search_directories = [str(sys.argv[i]) for i in xrange(1,len(sys.argv))]
+
+print options
+search_directories = [options.inDir]
 print search_directories
 
 tmpOutputDirectory = "tmpOutput"
 outputDirectory = "output"
 treePrefix = "trees"
 
-selection = "1"
+selection = options.selection
+ncores = min(int(options.nproc),mp.cpu_count())
+
+
+outputSampleNames = [
+	# "data",
+	# "signal",
+	"qcd",
+	"top",
+	"wjets",
+	"zjets",
+	"diboson",
+	"electroweak",
+]
+
+
+##
+##
+########### Gather input ######################################
+##
+##
+
+logging.info("creating new sample handler")
+sh_all = ROOT.SH.SampleHandler()
+
+discoverInput.discover(sh_all, search_directories, "*%s*"%treePrefix  )
+print len(sh_all)
+
+logging.info("adding my tags defined in discoverInput.py")
+discoverInput.addTags(sh_all)
+
+ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
+ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools/mc15_13TeV/")
+
+
+
 
 def main():
 
-	##
-	##
-	########### Gather input ######################################
-	##
-	##
+	if int(ncores)>1:
+		pool = mp.Pool(processes=ncores)
+		pool.map(processTheSH, outputSampleNames)
+		pool.close()
+		pool.join()
+	else:
+		for outputSampleName in outputSampleNames:
+			processTheSH(outputSampleName)
 
-	logging.info("creating new sample handler")
-	sh_all = ROOT.SH.SampleHandler()
+	return
 
-	discoverInput.discover(sh_all, search_directories, "*%s*"%treePrefix  )
-	print len(sh_all)
 
-	logging.info("adding my tags defined in discoverInput.py")
-	discoverInput.addTags(sh_all)
+def processTheSH( SHname ):
 
-	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
+	print SHname
 
 	## Split up samplehandler into per-BG SH's based on tag metadata
 
-	sh_data = sh_all.find("data")
-	sh_signal = sh_all.find("signal")
-	sh_bg = {}
-
-	sh_bg["qcd"] = sh_all.find("qcd")
-	sh_bg["top"] = sh_all.find("top")
-	sh_bg["wjets"] = sh_all.find("wjets")
-	sh_bg["zjets"] = sh_all.find("zjets")
-
-	######This will be done per samplehandler ############################
-	##
-	##
-
-	#Creation of output directory names
-	outputFileNames = {   
-		sh_all: "All",
-		sh_data: "Data",
-		sh_signal: "Signal",
-		sh_bg["qcd"]: "QCD",
-		sh_bg["top"]: "Top",
-		sh_bg["wjets"]: "WJets",
-		sh_bg["zjets"]: "ZJets",
-		}
+	sh = sh_all.find(SHname)
 
 	treesToProcess = []
 
-	for mysamplehandler in [	
-								# sh_all,
-								# sh_data,
-								# sh_bg["qcd"],
-								# sh_bg["top"],
-								# sh_bg["wjets"],
-								sh_bg["zjets"] 
-							]:
+	filesToEventuallyHadd = []
 
-		# print mysamplehandler
+	for sample in sh:
+		sample_name = sample.getMetaString("sample_name")
+		# print sample_name
+		dsid = sample_name.split(".")[2]
 
-		filesToEventuallyHadd = []
+		if len(treesToProcess) == 0:
+			treesToProcess = getListOfTreeNames(sample)
 
-		for sample in mysamplehandler:
+		attachCounters(sample)
 
-			sample_name = sample.getMetaString("sample_name")
-			# print sample_name
-			dsid = sample_name.split(".")[2]
+		mydir = tmpOutputDirectory
 
-			if len(treesToProcess) == 0:
-				treesToProcess = getListOfTreeNames(sample)
-
-			attachCounters(sample)
-
-			mydir = tmpOutputDirectory
-
-			try:
-				os.stat(mydir)
-			except:
-				os.mkdir(mydir)       
-
-			outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
-			filesToEventuallyHadd.append(outputSampleFileName)
-
-			outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")  
-
-			for itree in treesToProcess:
-				mysamplehandler.setMetaString("nc_tree", itree)
-				mytree =  sample.makeTChain().Clone()
-				outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
-				outputTree.Write()
-
-			print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
-
-			outputSampleFile.Close()
-
-
-		mydir = outputDirectory
 		try:
 			os.stat(mydir)
 		except:
-			os.mkdir(mydir)  
-		print 'hadd -O -f %s/%s.root %s'%(outputDirectory, outputFileNames[mysamplehandler], " ".join(filesToEventuallyHadd) )      
+			os.mkdir(mydir)       
+
+		outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
+		filesToEventuallyHadd.append(outputSampleFileName)
+
+		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")  
+
+		print "Starting"
+		print os.stat(outputSampleFileName).st_size 
+
+		for itree in treesToProcess:
+			sh.setMetaString("nc_tree", itree)
+			outputSampleFile.cd()
+			mytree =  sample.makeTChain().Clone(itree)
+			print mytree
+			print getNormFactor(sample)
+			# print selection
+			if mytree.GetEntries() and getNormFactor(sample):
+				try:
+					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
+				except:
+					continue
+				print outputTree.GetEntries()
+				outputTree.Write()
+				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
+			print os.stat(outputSampleFileName).st_size 
+
+		print os.stat(outputSampleFileName).st_size 
+		print "WRITING FILE...."
+		outputSampleFile.Write()
+		print os.stat(outputSampleFileName).st_size 
+		outputSampleFile.Close()
+		print os.stat(outputSampleFileName).st_size 
+
+
+
+
+	mydir = outputDirectory
+	try:
+		os.stat(mydir)
+	except:
+		os.mkdir(mydir)  
+	try:
+		os.stat(mydir+"/signal")
+	except:
+		os.mkdir(mydir+"/signal")  
+
+
+
+	if SHname!="signal":
 		os.system('hadd -O -f %s/%s.root %s'%
-			(outputDirectory, outputFileNames[mysamplehandler], " ".join(filesToEventuallyHadd) ) 
+			(outputDirectory, SHname, " ".join(filesToEventuallyHadd) ) 
 			)
+	else:
+		for myfile in filesToEventuallyHadd:
+			os.system('cp %s %s/signal/.'% (myfile,outputDirectory)  )
+
+	return
+
 
 
 
@@ -211,15 +256,15 @@ def attachCounters(sample):
 		#Go to the grid and get the metadata output
 		sh_metadata = ROOT.SH.SampleHandler()
 		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name").replace("trees","metadata") )
-		assert len(sh_metadata) == 1
-		metadata_sample = sh_metadata[0]
-		for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-			# print myfile 
-			try:
-				m_nevt += myfile.Get("MetaData_EventCount").GetBinContent(1)
-				m_sumw += myfile.Get("MetaData_EventCount").GetBinContent(3)
-			except:
-				pass
+		if len(sh_metadata) == 1:
+			metadata_sample = sh_metadata[0]
+			for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
+				# print myfile 
+				try:
+					m_nevt += myfile.Get("MetaData_EventCount").GetBinContent(1)
+					m_sumw += myfile.Get("MetaData_EventCount").GetBinContent(3)
+				except:
+					pass
 
 		sample.setMetaDouble("nc_nevt",m_nevt)
 		sample.setMetaDouble("nc_sumw",m_sumw)

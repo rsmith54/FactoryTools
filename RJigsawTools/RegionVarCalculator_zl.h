@@ -5,8 +5,7 @@
 
 #include "EventLoop/StatusCode.h"
 #include "RJigsawTools/RegionVarCalculator.h"
-
-#include <unordered_map>
+#include <map>
 #include <iostream>
 
 class RegionVarCalculator_zl : public RegionVarCalculator {
@@ -16,24 +15,23 @@ public :
 private :
   //todo probably clean this up
   virtual EL::StatusCode doInitialize(EL::Worker * worker);
-  virtual EL::StatusCode doCalculate (std::unordered_map<std::string, double>               & RegionVars,
-				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
+  virtual EL::StatusCode doCalculate (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doAllCalculations   (std::unordered_map<std::string, double>               & RegionVars,
-				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
+  EL::StatusCode doAllCalculations   (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doSRCalculations    (std::unordered_map<std::string, double>               & RegionVars,
-              std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
+  EL::StatusCode doSRCalculations    (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doTriggerPassThroughCalculations    (std::unordered_map<std::string, double>               & RegionVars,
-              std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
+  EL::StatusCode doTriggerPassThroughCalculations    (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doCR1LCalculations  (std::unordered_map<std::string, double>               & RegionVars,
-				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
+  EL::StatusCode doCR1LCalculations  (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
-  EL::StatusCode doCR0LCalculations  (std::unordered_map<std::string, double>               & RegionVars,
-				      std::unordered_map<std::string, std::vector<double> > & VecRegionVars);
-
+  EL::StatusCode doCR2LCalculations  (std::map<std::string, double>               & RegionVars,
+				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
 public :
   // this is needed to distribute the algorithm to the workers

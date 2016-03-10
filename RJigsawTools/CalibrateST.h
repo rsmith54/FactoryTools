@@ -20,7 +20,14 @@ public:
   // Tree *myTree; //!
   // TH1 *myHist; //!
 
-  ST::SUSYObjDef_xAOD *m_objTool; //!
+  const std::string& notSetString() {
+    static std::string const notSetString = "notSet";
+    return notSetString;
+  }
+
+  std::string systName;
+
+  ST::SUSYObjDef_xAOD *m_objTool;//!
 
   // this is a standard constructor
   CalibrateST ();

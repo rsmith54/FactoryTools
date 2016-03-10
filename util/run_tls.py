@@ -41,19 +41,23 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+#algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
+algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
+
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName      = ""
-algsToRun["preselectDileptonicWW"]     = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
-algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
-# algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+algsToRun["preselectTwoLepton"]     = ROOT.PreselectTwoLeptonEvents()
+algsToRun["selectTwoLepton"]        = ROOT.SelectTwoLeptonEvents()
+algsToRun["postselectTwoLepton"]    = ROOT.PostselectTwoLeptonEvents()
 
-algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
+#todo move the enums to a separate file since they are shared by multiple algs
+algsToRun["calculateRJigsawVariables"]                = ROOT.CalculateRJigsawVariables()
+algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.tlsCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.tlsCalculator
 
-for regionName in ["SR","CR1L","CR2L"]:
+for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
@@ -63,6 +67,7 @@ for regionName in ["SR","CR1L","CR2L"]:
 if options.doSystematics : commonOptions.doSystematics(algsToRun)
 
 job.outputAdd(output);
+
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)
 
 if options.nevents > 0 :
