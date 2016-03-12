@@ -105,9 +105,10 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   // If it hasn't been selected in any of the regions from any of the select algs, don't bother writing anything out
   // Note: You can put in a "post-pre-selection" which can cut on e.g. RJR vars and set the region to a blank string

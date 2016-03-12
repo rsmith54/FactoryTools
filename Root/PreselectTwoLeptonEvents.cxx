@@ -119,14 +119,12 @@ EL::StatusCode PreselectTwoLeptonEvents :: execute ()
   // code will go.
 
   //todo add some preselection here!
-
+  xAOD::TEvent* event = wk()->xaodEvent();
   xAOD::TStore * store = wk()->xaodStore();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
   eventInfo->auxdecor< std::string >("regionName") = "Preselected";
-
-
 
 
   if(eventInfo->auxdecor< std::string >("regionName") == "")  wk()->skipEvent();

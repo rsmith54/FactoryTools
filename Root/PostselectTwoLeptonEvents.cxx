@@ -105,9 +105,10 @@ EL::StatusCode PostselectTwoLeptonEvents :: execute ()
   // code will go.
 
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
 
   return EL::StatusCode::SUCCESS;

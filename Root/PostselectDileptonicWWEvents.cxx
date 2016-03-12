@@ -103,11 +103,11 @@ EL::StatusCode PostselectDileptonicWWEvents :: execute ()
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
-
+  xAOD::TEvent* event = wk()->xaodEvent();
   xAOD::TStore * store = wk()->xaodStore();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
 
   return EL::StatusCode::SUCCESS;

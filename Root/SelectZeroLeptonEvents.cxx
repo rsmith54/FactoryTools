@@ -104,9 +104,10 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   //todo add some preselection here!
 
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
   std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
