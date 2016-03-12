@@ -102,11 +102,11 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   // code will go.
 
   //todo add some preselection here!
-
-  xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
+  xAOD::TStore* store = wk()->xaodStore();
 
   const xAOD::EventInfo* eventInfo = 0;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
   std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");

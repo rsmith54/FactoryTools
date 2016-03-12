@@ -28,9 +28,10 @@ EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
 EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, double              >& RegionVars,
 						     std::map<std::string, std::vector<double> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
+  xAOD::TEvent* event = m_worker->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   std::string const & regionName = eventInfo->auxdecor< std::string >("regionName");
 
@@ -61,7 +62,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   //
 
   const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(store->retrieve( eventInfo, "EventInfo"));
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
   RegionVars["runNumber"]                          = eventInfo->runNumber();
   RegionVars["lumiBlock"]                          = eventInfo->lumiBlock();
@@ -72,7 +73,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   //  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
 
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-  RegionVars["mcEventWeight"] = eventInfo->mcEventWeight();//->auxdecor< float >("mcEventWeight");
+  RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
   RegionVars["pileupWeight"]  = -1 ;eventInfo->auxdecor< float >("PileupWeight");
   //
   /////////////////////////////////////////////////////////////////////

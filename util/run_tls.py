@@ -35,13 +35,13 @@ logging.info("creating algorithms")
 outputFilename = "trees"
 output = ROOT.EL.OutputStream(outputFilename);
 
+
 #here we add the algorithms we want to run over
 import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
-#algsToRun["basicEventSelection"].setConfig("$ROOTCOREBIN/data/RJigsawTools/baseEvent.config")
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 

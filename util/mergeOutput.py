@@ -255,14 +255,14 @@ def attachCounters(sample):
 
 		#Go to the grid and get the metadata output
 		sh_metadata = ROOT.SH.SampleHandler()
-		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name").replace("trees","metadata") )
+		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name").replace("trees","cutflow") )
 		if len(sh_metadata) == 1:
 			metadata_sample = sh_metadata[0]
 			for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-				# print myfile 
+				print myfile 
 				try:
-					m_nevt += myfile.Get("MetaData_EventCount").GetBinContent(1)
-					m_sumw += myfile.Get("MetaData_EventCount").GetBinContent(3)
+					m_nevt += myfile.Get("cutflow").GetBinContent(myfile.Get("cutflow").GetXaxis().FindBin("all"))
+					m_sumw += myfile.Get("cutflow_weighted").GetBinContent(myfile.Get("cutflow_weighted").GetXaxis().FindBin("all"))
 				except:
 					pass
 
