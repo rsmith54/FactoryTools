@@ -76,9 +76,9 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
   RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
 
+  RegionVars["elSF"] = eventInfo->auxdecor< float >("elSF");
+  RegionVars["muSF"] = eventInfo->auxdecor< float >("muSF");
 
-  std::cout <<  "mceventweight" << std::endl;
-  std::cout <<  RegionVars["mcEventWeight"] << std::endl;
 
 
   //
