@@ -206,12 +206,12 @@ EL::StatusCode CalibrateST :: execute ()
   // Lepton Scale Factors added as decorators to eventInfo object
 
   float muSF = 1.0;
-  if ( !isData ) muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
   eventInfo->auxdecor<float>("muSF") = muSF ;
 
 
   float elSF = 1.0;
-  if ( !isData ) elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
   eventInfo->auxdecor<float>("elSF") = elSF ;
 
 
