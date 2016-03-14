@@ -60,7 +60,7 @@ This default assumes your system username is the same as your grid/NICE name. If
 Once you've run on the grid, download the tree output and the metadata output to some directory. Then you can use the new merging script to combine them with a new branch added that incorporates the cross section weighting. Simply run
 
 ```
-python mergeOutput.py [path to datasets from grid]
+python mergeOutput.py --inDir [path to datasets from grid]
 ```
 
 And it will produce combined files containing the trees. One just needs to weight by the branch normweight. The assignment of dataset types is done in discoverInput.py where tags are added to samples based on their names. Then all of one kind of process are combined.
