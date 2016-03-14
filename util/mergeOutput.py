@@ -61,8 +61,8 @@ ncores = min(int(options.nproc),mp.cpu_count())
 
 
 outputSampleNames = [
-	# "data",
-	# "signal",
+	"data",
+	"signal",
 	"qcd",
 	"top",
 	"wjets",

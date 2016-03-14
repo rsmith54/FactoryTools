@@ -168,6 +168,9 @@ EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, d
   RegionVars[ "isSS" ]  = leptons_nominal->at(0)->pdgId()*leptons_nominal->at(1)->pdgId() > 0;
   RegionVars[ "isSF" ]  = abs(leptons_nominal->at(0)->pdgId()) == abs(leptons_nominal->at(1)->pdgId());
 
+  RegionVars[ "mll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).M();
+  RegionVars[ "ptll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).Pt();
+
   return EL::StatusCode::SUCCESS;
 }
 
