@@ -1,0 +1,13 @@
+diff --git Root/BasicEventSelection.cxx Root/BasicEventSelection.cxx
+index 259ae69..78b0cc4 100644
+--- Root/BasicEventSelection.cxx
++++ Root/BasicEventSelection.cxx
+@@ -597,7 +597,7 @@ EL::StatusCode BasicEventSelection :: execute ()
+   // Update Pile-Up Reweighting
+   //------------------------------------------------------------------------------------------
+   if ( m_isMC && m_doPUreweighting ) {
+-      m_pileuptool->apply( *eventInfo ); // NB: this call automatically decorates eventInfo with:
++    m_pileuptool->apply( *eventInfo , 1 ); // NB: this call automatically decorates eventInfo with:
+                                          //  1.) the PU weight ("PileupWeight")
+                                          //  2.) the corrected mu ("corrected_averageInteractionsPerCrossing")
+                                          //  3.) the random run number ("RandomRunNumber")
