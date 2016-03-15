@@ -163,6 +163,11 @@ EL::StatusCode CalibrateST :: execute ()
   xAOD::ShallowAuxContainer* jets_nominal_aux(nullptr);
   STRONG_CHECK( m_objTool->GetJets(jets_nominal, jets_nominal_aux, true) );
 
+  // Fat Jets
+  xAOD::JetContainer* fatjets_nominal(nullptr);
+  xAOD::ShallowAuxContainer* fatjets_nominal_aux(nullptr);
+  STRONG_CHECK( m_objTool->GetFatJets(fatjets_nominal, fatjets_nominal_aux, true, "CamKt12LCTopoJets") );
+
   // Taus
   xAOD::TauJetContainer* taus_nominal(nullptr);
   xAOD::ShallowAuxContainer* taus_nominal_aux(nullptr);
