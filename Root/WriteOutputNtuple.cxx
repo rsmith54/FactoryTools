@@ -131,13 +131,14 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   ATH_MSG_DEBUG("Storing map in output " << regionName  );
 
   std::map<std::string,double> * mymap = nullptr;
-  STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
-
-  for (auto const& it : *mymap ) {
-    ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
-    m_ntupManager->setProperty(it.first,
-			       it.second
-			       );
+  if(store->contains<std::map<std::string,double> >("RJigsawVarsMap") ){
+    STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
+    for (auto const& it : *mymap ) {
+      ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
+      m_ntupManager->setProperty(it.first,
+  			       it.second
+  			       );
+    }
   }
 
   std::map<std::string,double> * mymapRegionVars = nullptr;

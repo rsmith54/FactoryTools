@@ -15,10 +15,15 @@
 #include <RJigsawTools/SelectZeroLeptonEvents.h>
 //#include <RJigsawTools/PostselectDileptonicWWEvents.h>
 
+
+#include <RJigsawTools/PreselectDiFatJetEvents.h>
+#include <RJigsawTools/SelectDiFatJetEvents.h>
+
 #include <RJigsawTools/RegionVarCalculator.h>
 #include <RJigsawTools/RegionVarCalculator_lvlv.h>
 #include <RJigsawTools/RegionVarCalculator_zl.h>
 #include <RJigsawTools/RegionVarCalculator_tls.h>
+#include <RJigsawTools/RegionVarCalculator_b4j.h>
 
 #include <RJigsawTools/RJigsawCalculator.h>
 #include <RJigsawTools/RJigsawCalculator_compressed.h>
@@ -90,6 +95,10 @@
 #endif
 
 #ifdef __CINT__
+#pragma link C++ class RegionVarCalculator_b4j+;
+#endif
+
+#ifdef __CINT__
 #pragma link C++ class SelectZeroLeptonEvents+;
 #endif
 
@@ -99,6 +108,14 @@
 
 #ifdef __CINT__
 #pragma link C++ class SelectDileptonicWWEvents+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class PreselectDiFatJetEvents+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class SelectDiFatJetEvents+;
 #endif
 
 #ifdef __CINT__

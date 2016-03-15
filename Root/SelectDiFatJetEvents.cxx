@@ -1,32 +1,29 @@
-// Infrastructure include(s):
+#include <EventLoop/Job.h>
+#include <EventLoop/StatusCode.h>
+#include <EventLoop/Worker.h>
+#include <RJigsawTools/SelectDiFatJetEvents.h>
+
+#include <AsgTools/MsgStream.h>
+#include <AsgTools/MsgStreamMacros.h>
+
 #include "xAODRootAccess/Init.h"
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include <EventLoop/Job.h>
-#include <EventLoop/StatusCode.h>
-#include <EventLoop/Worker.h>
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/RegionVarCalculator_lvlv.h>
-#include <RJigsawTools/RegionVarCalculator_tls.h>
-#include <RJigsawTools/RegionVarCalculator_zl.h>
-#include <RJigsawTools/RegionVarCalculator_b4j.h>
-#include <RJigsawTools/CalculateRegionVars.h>
-
-#include <RJigsawTools/printDebug.h>
 #include <RJigsawTools/strongErrorCheck.h>
 
-
+#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODParticleEvent/ParticleAuxContainer.h"
+#include <utility>
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(CalculateRegionVars)
+ClassImp(SelectDiFatJetEvents)
 
 
 
-CalculateRegionVars :: CalculateRegionVars () :
-calculatorName(none),//user needs to choose their calculator name
-m_calculator(nullptr)
+SelectDiFatJetEvents :: SelectDiFatJetEvents ()
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -38,7 +35,7 @@ m_calculator(nullptr)
 
 
 
-EL::StatusCode CalculateRegionVars :: setupJob (EL::Job& job)
+EL::StatusCode SelectDiFatJetEvents :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -52,7 +49,7 @@ EL::StatusCode CalculateRegionVars :: setupJob (EL::Job& job)
 
 
 
-EL::StatusCode CalculateRegionVars :: histInitialize ()
+EL::StatusCode SelectDiFatJetEvents :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -63,7 +60,7 @@ EL::StatusCode CalculateRegionVars :: histInitialize ()
 
 
 
-EL::StatusCode CalculateRegionVars :: fileExecute ()
+EL::StatusCode SelectDiFatJetEvents :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -72,7 +69,7 @@ EL::StatusCode CalculateRegionVars :: fileExecute ()
 
 
 
-EL::StatusCode CalculateRegionVars :: changeInput (bool firstFile)
+EL::StatusCode SelectDiFatJetEvents :: changeInput (bool firstFile)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -82,7 +79,7 @@ EL::StatusCode CalculateRegionVars :: changeInput (bool firstFile)
 
 
 
-EL::StatusCode CalculateRegionVars :: initialize ()
+EL::StatusCode SelectDiFatJetEvents :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -92,62 +89,87 @@ EL::StatusCode CalculateRegionVars :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-
-  ATH_MSG_INFO("You have configured a " << calculatorName << " calculator.  See the code for enum definitions. ");
-  STRONG_CHECK( calculatorName != none);
-
-  if(calculatorName == lvlvCalculator)
-    {
-      m_calculator = new RegionVarCalculator_lvlv;
-      STRONG_CHECK_SC( m_calculator->initialize(wk()));
-    }
-  else if(calculatorName == zlCalculator){
-    m_calculator  = new RegionVarCalculator_zl;
-    STRONG_CHECK_SC( m_calculator->initialize(wk()));
-  }
-  else if(calculatorName == tlsCalculator){
-    m_calculator  = new RegionVarCalculator_tls;
-    STRONG_CHECK_SC( m_calculator->initialize(wk()));
-  }  
-  else if(calculatorName == b4jCalculator){
-    m_calculator  = new RegionVarCalculator_b4j;
-    STRONG_CHECK_SC( m_calculator->initialize(wk()));
-  }
-  else {
-    ATH_MSG_ERROR( "You failed to provide a proper calculator.  If you have created a new one, make sure to add it to the : " << __PRETTY_FUNCTION__ << " algorithm.");
-    return EL::StatusCode::FAILURE;
-  }
-
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRegionVars :: execute ()
+EL::StatusCode SelectDiFatJetEvents :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
 
-  printDebug();
+  //todo add some preselection here!
 
   xAOD::TStore * store = wk()->xaodStore();
+  xAOD::TEvent* event = wk()->xaodEvent();
 
-  std::map<std::string,double>               * mymap    = new std::map<std::string,double>;
-  std::map<std::string,std::vector<double> > * myvecmap = new std::map<std::string,std::vector<double> >;
+  const xAOD::EventInfo* eventInfo = 0;
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
-  printDebug();
-  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap   ));
-  STRONG_CHECK   ( store->record( mymap    , "RegionVarsMap"   ));
-  STRONG_CHECK   ( store->record( myvecmap , "VecRegionVarsMap"));
-  printDebug();
+  // If the event didn't pass the preselection alg, don't bother doing anything with it...
+  std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("Preselected?: " << preselectedRegionName  );
+
+  if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
+
+  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  selectedJets.first->setStore(selectedJets.second);
+  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
+  selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
+
+  STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedJets.second    , "selectedJetsAux."    ) );//todo configurable if needed
+
+  STRONG_CHECK( store->record( selectedRJigsawParticles.first  , "myparticles"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
+
+
+  xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "STCalibCamKt12LCTopoJets"));
+
+  for (const auto& jet : *jets_nominal) {
+    if ((int)jet->auxdata<char>("baseline") == 0) continue;
+    if ((int)jet->auxdata<char>("passOR") != 1) continue;
+    if ((int)jet->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful jet
+    ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
+
+    auto tmpparticle = new xAOD::Particle();
+    selectedJets.first->push_back(tmpparticle  );
+    tmpparticle->setP4(jet->p4());
+    tmpparticle->setPdgId(1);
+  }
+
+  //Let's just categorize from here maybe? But if we want different CRs in different algs,
+  // then we'd need to play with something in the store a little more smartly
+
+  std::string regionName = "";
+
+  auto  getRegionName = [](int nFatJets){ std::string regionName = "";
+					  if(nFatJets >= 2){regionName = "SR";}
+					  if(nFatJets == 1){regionName = "CR1J";}
+					  if(nFatJets == 0){regionName = "CR0J";}
+					  return regionName;};//todo >2 leptons in the SR? pretty rare though
+
+  int nFatJets = selectedJets.first->size();
+
+
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nFatJets)  );
+
+  ATH_MSG_DEBUG("Writing particle container for calculator to store");
+
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nFatJets) ;
+  ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode CalculateRegionVars :: postExecute ()
+EL::StatusCode SelectDiFatJetEvents :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -157,7 +179,7 @@ EL::StatusCode CalculateRegionVars :: postExecute ()
 
 
 
-EL::StatusCode CalculateRegionVars :: finalize ()
+EL::StatusCode SelectDiFatJetEvents :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -173,7 +195,7 @@ EL::StatusCode CalculateRegionVars :: finalize ()
 
 
 
-EL::StatusCode CalculateRegionVars :: histFinalize ()
+EL::StatusCode SelectDiFatJetEvents :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker
