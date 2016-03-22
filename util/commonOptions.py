@@ -14,7 +14,7 @@ from datetime import date
 def parseCommonOptions() :
     parser = OptionParser()
     parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
-    parser.add_option("--inputDS", help     = "You can pass either the directory locally, the file containing the list of grid datasets, or directly the name of a grid dataset. ", default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
+    parser.add_option("--inputDS", help     = "You can pass either the directory locally, the file containing the list of grid datasets, or directly the name of a grid dataset. ", default="/afs/cern.ch/work/l/larry/public/lvlv_datasets/")
 
     parser.add_option("--gridUser", help    = "gridUser"  , default= '')
     parser.add_option("--gridTag", help     = "gridTag"   , default= '')
