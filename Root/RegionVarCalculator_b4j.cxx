@@ -51,25 +51,13 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
-  //store->print();
-
   // Get relevant info from the EventInfo object /////////////////////
   //
 
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
-  RegionVars["runNumber"]   = eventInfo->runNumber();
-  RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
-  RegionVars["bcid"]        = eventInfo->bcid();
-  RegionVars["eventNumber"] = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
-  RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
-  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
-  RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
-  RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
-
+  doGeneralCalculations(RegionVars, VecRegionVars);
 
   //
   /////////////////////////////////////////////////////////////////////
@@ -109,7 +97,7 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
     mJJ = (jet4MomVec.at(0)+jet4MomVec.at(1)).M();
   }
 
-  RegionVars["mJJ"] = mJJ; 
+  RegionVars["mJJ"] = mJJ;
 
 
 

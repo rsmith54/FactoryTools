@@ -43,6 +43,8 @@ protected :
   EL::Worker * m_worker; //we need to give the Worker to the calculator for flexibility.
   //This should be pointed to the EventLoop Worker in your alg which fills your map
 
+  EL::StatusCode doGeneralCalculations(std::map<std::string, double>              & RegionVars,
+				       std::map<std::string, std::vector<double> >& VecRegionVars);
 public :
   // this is needed to distribute the algorithm to the workers
   ClassDef(RegionVarCalculator, 1);
