@@ -72,8 +72,8 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
 
-  RegionVars["mcEventWeight"] = eventInfo->auxdecor< int >("mcEventWeight");
-  RegionVars["pileupWeight"] = eventInfo->auxdecor< float >("PileupWeight");
+  RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
+  RegionVars["pileupWeight"]  = eventInfo->auxdecor< float >("PileupWeight");
 
   //
   /////////////////////////////////////////////////////////////////////
