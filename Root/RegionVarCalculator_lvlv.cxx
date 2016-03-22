@@ -56,27 +56,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
-  //store->print();
-
-  // Get relevant info from the EventInfo object /////////////////////
-  //
-
-  const xAOD::EventInfo* eventInfo = nullptr;
-  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
-
-  RegionVars["runNumber"]                          = eventInfo->runNumber();
-  RegionVars["lumiBlock"]                          = eventInfo->lumiBlock();
-  RegionVars["bcid"]                               = eventInfo->bcid();
-  RegionVars["eventNumber"]                        = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"]                    = eventInfo->mcChannelNumber();
-  RegionVars["actualInteractionsPerCrossing"]      = eventInfo->actualInteractionsPerCrossing();
-  //  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
-  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-  RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
-  RegionVars["pileupWeight"]  = -1 ;eventInfo->auxdecor< float >("PileupWeight");
-  //
-  /////////////////////////////////////////////////////////////////////
+  doGeneralCalculations(RegionVars, VecRegionVars);
 
   // Get relevant info from the vertex container //////////////////////
   //
@@ -91,16 +71,11 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
   RegionVars     ["met"]   = (*metcont)["Final"]->met();
-
-  // xAOD::JetContainer* jets_nominal(nullptr);
-  // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
   xAOD::ParticleContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
-  //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
   std::vector<double> jetPtVec;
   std::vector<double> jetEtaVec;
   std::vector<double> jetPhiVec;
@@ -117,7 +92,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
-  
+
   xAOD::ParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
