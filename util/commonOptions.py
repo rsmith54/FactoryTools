@@ -16,8 +16,8 @@ def parseCommonOptions() :
     parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
     parser.add_option("--inputDS", help     = "You can pass either the directory locally, the file containing the list of grid datasets, or directly the name of a grid dataset. ", default="/afs/cern.ch/work/r/rsmith/lvlv_datasets/")
 
-    parser.add_option("--gridUser", help    = "gridUser"  , default=os.environ.get("USER")  )
-    parser.add_option("--gridTag", help     = "gridTag", default=date.today().strftime("%m%d%y"))
+    parser.add_option("--gridUser", help    = "gridUser"  , default= '')
+    parser.add_option("--gridTag", help     = "gridTag"   , default= '')
 
     parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
     parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
@@ -44,7 +44,7 @@ def setVerbosity ( alg , levelString ) :
         commonOptions.quiet_exit()
     alg.setMsgLevel(level)
 
-def fillSampleHandler ( sh_all, inp , gridUser = os.environ.get("USER") , gridTag = date.today().strftime("%m%d%y")) :
+def fillSampleHandler ( sh_all, inp ) :
     """You can pass either the directory locally, the file containing the list of grid datasets, or directly the name of a grid dataset. """
     if os.path.isfile(inp) :
         with open(inp) as f :
@@ -73,7 +73,11 @@ def overwriteSubmitDir (submitDir, doOverwrite) :
             logging.info( "Exiting.  If you want to overwrite the previous submitDir, use --doOverwrite")
             quiet_exit()
 
-def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") , gridTag = date.today().strftime("%m%d%y")) :
+def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
+    if (gridUser or gridTag) and driverName != "grid" :
+        logging.error("You have specified a gridUser or gridTag but are not using the grid driver.  Exiting without submitting.")
+        quiet_exit()
+
     logging.info("creating driver")
     driver = None
     if (driverName == "direct"):
@@ -88,6 +92,8 @@ def submitJob (job , driverName , submitDir, gridUser = os.environ.get("USER") ,
         driver.submit(job, submitDir)
     elif (driverName == "grid"):
         logging.info( "grid driver")
+        if not gridUser : gridUser = os.environ.get("USER")
+        if not gridTag  : gridTag  = date.today().strftime("%m%d%y")
         driver = ROOT.EL.PrunDriver()
         driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(gridUser,gridTag)   );
         driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);

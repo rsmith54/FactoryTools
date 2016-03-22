@@ -51,7 +51,7 @@ by default when doing a test, where TEST_OUTPUTNAME is set in your submission sc
 You can run on the grid with
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --inputDS RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
+python RJigsawTools/util/run_lvlv.py  --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.

@@ -19,7 +19,7 @@ ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-commonOptions.fillSampleHandler(sh_all, options.inputDS, options.gridUser, options.gridTag)
+commonOptions.fillSampleHandler(sh_all, options.inputDS)
 
 sh_all.setMetaString ("nc_tree", "CollectionTree");
 #sh_all.printContent();
