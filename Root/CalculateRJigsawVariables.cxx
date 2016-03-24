@@ -103,7 +103,7 @@ EL::StatusCode CalculateRJigsawVariables :: initialize ()
   else if(calculatorName == zlCalculator){
     m_calculator  = new RJigsawCalculator_zl;
     STRONG_CHECK_SC( m_calculator->initialize()) ;
-  }  
+  }
   else if(calculatorName == tlsCalculator){
     m_calculator  = new RJigsawCalculator_tls;
     STRONG_CHECK_SC( m_calculator->initialize()) ;
@@ -130,7 +130,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
   xAOD::TStore * store = wk()->xaodStore();
-  xAOD::TEvent* event = wk()->xaodEvent();
+  xAOD::TEvent * event = wk()->xaodEvent();
 
 
   const xAOD::EventInfo* eventInfo = 0;
@@ -146,15 +146,17 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
 
   STRONG_CHECK_SC(  m_calculator->clearEvent())
 
-
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
-  ATH_MSG_DEBUG("MET : " <<  (*metcont)["Final"]->met() );
+
+  xAOD::MissingET & metfinal = *((*metcont)["Final"]);
+  metfinal *= .001;
+  ATH_MSG_DEBUG("MET : " <<  metfinal.met() );
+  //  std::cout << "MET : " <<  metfinal.met() << std::endl;
 
   std::map<std::string,double> * mymap = new std::map<std::string,double>;
 
-  STRONG_CHECK_SC(  m_calculator->calculate(*mymap, *myparticles, *((*metcont)["Final"])));//this syntax is annoying...
-
+  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myparticles, metfinal  ));//this syntax is annoying... *=.001 to switch to GeV
   STRONG_CHECK   ( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
   printDebug();
