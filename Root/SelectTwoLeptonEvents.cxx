@@ -131,9 +131,6 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
   STRONG_CHECK( store->record( selectedRJigsawParticles.first  , "myparticles"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
 
-
-
-
   xAOD::JetContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
@@ -151,8 +148,8 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
 
     auto tmpparticle = new xAOD::Particle();
-    selectedJets.first->push_back(tmpparticle  );
-    tmpparticle->setP4(jet->p4());
+    selectedJets.first->push_back( tmpparticle  );
+    tmpparticle->setP4(.001*jet->p4());
     tmpparticle->setPdgId(1);
   }
 
@@ -161,11 +158,19 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
-    ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
+    ATH_MSG_VERBOSE( "muon pt  : " << mu->pt() );
+    ATH_MSG_VERBOSE( "muon eta : " << mu->eta() );
+    ATH_MSG_VERBOSE( "muon phi : " << mu->phi() );
+    ATH_MSG_VERBOSE( "muon m   : " << mu->m() );
 
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(mu->p4());
+    tmpparticle->setP4(.001*mu->p4());
+    ATH_MSG_VERBOSE( "tmpmuon pt  : " << tmpparticle->pt() );
+    ATH_MSG_VERBOSE( "tmpmuon eta : " << tmpparticle->eta() );
+    ATH_MSG_VERBOSE( "tmpmuon phi : " << tmpparticle->phi() );
+    ATH_MSG_VERBOSE( "tmpmuon m   : " << tmpparticle->m() );
+
     if (mu->charge() < 0){tmpparticle->setPdgId(13);}
     else {tmpparticle->setPdgId(-13);}
   }
@@ -175,11 +180,19 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     if ((int)el->auxdata<char>("passOR") != 1) continue;
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
-    ATH_MSG_VERBOSE( "el pt : " << el->pt() );
+    ATH_MSG_VERBOSE( "el pt  : " << el->pt() );
+    ATH_MSG_VERBOSE( "el eta : " << el->eta() );
+    ATH_MSG_VERBOSE( "el phi : " << el->phi() );
+    ATH_MSG_VERBOSE( "el m   : " << el->m() );
 
     auto tmpparticle = new xAOD::Particle();
     selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(el->p4());
+    tmpparticle->setP4(.001*el->p4());
+    ATH_MSG_VERBOSE( "tmpelectron pt  : " << tmpparticle->pt() );
+    ATH_MSG_VERBOSE( "tmpelectron eta : " << tmpparticle->eta() );
+    ATH_MSG_VERBOSE( "tmpelectron phi : " << tmpparticle->phi() );
+    ATH_MSG_VERBOSE( "tmpelectron m   : " << tmpparticle->m() );
+
     if (el->charge() < 0){tmpparticle->setPdgId(11);}
     else {tmpparticle->setPdgId(-11);}
   }
