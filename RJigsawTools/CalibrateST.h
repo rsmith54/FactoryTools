@@ -26,6 +26,7 @@ public:
   }
 
   std::string systName;
+  std::string fatJetContainerName;
 
   ST::SUSYObjDef_xAOD *m_objTool;//!
 
