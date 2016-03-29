@@ -28,6 +28,7 @@
 
 #include "RJigsawTools/RJigsawCalculator_tls.h"
 #include "EventLoop/StatusCode.h"
+#include "xAODBase/ObjectType.h"
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(RJigsawCalculator_tls)
@@ -292,7 +293,7 @@ EL::StatusCode RJigsawCalculator_tls::doInitialize() {
 }
 
 EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>& RJVars,
-						   xAOD::ParticleContainer& particles,
+						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
   if( particles.size() < 2 ){return EL::StatusCode::SUCCESS;}//todo figure out if this how we should handle this case
@@ -312,8 +313,14 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 			 particle->p4().Phi(),
 			 particle->p4().E()
 			 );
-    if(abs(particle->pdgId())==11 || abs(particle->pdgId())==13){Leptons.push_back(tmpPart);}
-    else {Jets.push_back(tmpPart);}
+
+    if ((particle->type() == xAOD::Type::Electron) ||
+	 particle->type() == xAOD::Type::Muon    ){Leptons.push_back(tmpPart);}
+    else if(particle->type() == xAOD::Type::Jet  ){Jets.push_back(tmpPart);   }
+    else {
+      std::cout << "You passed an unknown type of object to your particle container.  Returning EL::StatusCode::FAILURE";
+      return EL::StatusCode::FAILURE;
+    }
   }
 
   if(Leptons.size()>1){

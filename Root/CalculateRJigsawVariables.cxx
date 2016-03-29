@@ -136,7 +136,7 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
-  xAOD::ParticleContainer* myparticles = 0;
+  xAOD::IParticleContainer* myparticles = 0;
   STRONG_CHECK(store->retrieve( myparticles, "myparticles"));
 
   // If it hasn't been selected in any of the regions from any of the select algs, don't bother calculating anything...
