@@ -95,7 +95,7 @@ EL::StatusCode RJigsawCalculator_compressed::doInitialize() {
 }
 
 EL::StatusCode RJigsawCalculator_compressed::doCalculate(std::map<std::string, double>& RJVars,
-               xAOD::ParticleContainer& particles,
+               xAOD::IParticleContainer& particles,
                xAOD::MissingET& met
                ){
   if( particles.size() < 2 ){return EL::StatusCode::SUCCESS;}//todo figure out if this how we should handle this case

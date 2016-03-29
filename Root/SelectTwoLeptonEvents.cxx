@@ -116,11 +116,11 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
 
 
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedLeptons.first->setStore(selectedLeptons.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedJets.first->setStore(selectedJets.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::IParticleContainer(SG::VIEW_ELEMENTS), nullptr);
   selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
 
   STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
@@ -130,9 +130,6 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
 
   STRONG_CHECK( store->record( selectedRJigsawParticles.first  , "myparticles"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
-
-
-
 
   xAOD::JetContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -150,10 +147,7 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     // If I've gotten this far, I have a signal, isolated, beautiful jet
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
 
-    auto tmpparticle = new xAOD::Particle();
-    selectedJets.first->push_back(tmpparticle  );
-    tmpparticle->setP4(jet->p4());
-    tmpparticle->setPdgId(1);
+    selectedJets.first->push_back( jet );
   }
 
   for (const auto& mu : *muons_nominal) {
@@ -161,27 +155,25 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
-    ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
+    ATH_MSG_VERBOSE( "muon pt  : " << mu->pt() );
+    ATH_MSG_VERBOSE( "muon eta : " << mu->eta() );
+    ATH_MSG_VERBOSE( "muon phi : " << mu->phi() );
+    ATH_MSG_VERBOSE( "muon m   : " << mu->m() );
 
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(mu->p4());
-    if (mu->charge() < 0){tmpparticle->setPdgId(13);}
-    else {tmpparticle->setPdgId(-13);}
+    selectedLeptons.first->push_back(mu );
   }
 
-  for (const auto& el : *electrons_nominal) {
-    if ((int)el->auxdata<char>("baseline") == 0) continue;
-    if ((int)el->auxdata<char>("passOR") != 1) continue;
-    if ((int)el->auxdata<char>("signal") != 1) continue;
-    // If I've gotten this far, I have a signal, isolated, beautiful el
-    ATH_MSG_VERBOSE( "el pt : " << el->pt() );
+  for (const auto& electron : *electrons_nominal) {
+    if ((int)electron->auxdata<char>("baseline") == 0) continue;
+    if ((int)electron->auxdata<char>("passOR") != 1) continue;
+    if ((int)electron->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful muon
+    ATH_MSG_VERBOSE( "electron pt  : " << electron->pt() );
+    ATH_MSG_VERBOSE( "electron eta : " << electron->eta() );
+    ATH_MSG_VERBOSE( "electron phi : " << electron->phi() );
+    ATH_MSG_VERBOSE( "electron m   : " << electron->m() );
 
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(el->p4());
-    if (el->charge() < 0){tmpparticle->setPdgId(11);}
-    else {tmpparticle->setPdgId(-11);}
+    selectedLeptons.first->push_back(electron );
   }
 
   int const nLeptons = selectedLeptons.first->size();
@@ -202,18 +194,13 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
 
   //Here we should add the particles that we want in the calculation to myparticles
   for( const auto& mylepton: *selectedLeptons.first){
-    xAOD::Particle *tmpparticle = new xAOD::Particle;
-    selectedRJigsawParticles.first->push_back(tmpparticle  );
-    tmpparticle->setP4( mylepton->p4() );
-    tmpparticle->setPdgId( mylepton->pdgId() );
+    selectedRJigsawParticles.first->push_back(mylepton  );
   }
 
   // // What happens if we add the jets into the calculation?
   for( const auto& myjet: *selectedJets.first){
-    xAOD::Particle *tmpparticle = new xAOD::Particle;
-    selectedRJigsawParticles.first->push_back(tmpparticle  );
-    tmpparticle->setP4( myjet->p4() );
-    tmpparticle->setPdgId( myjet->pdgId() );
+    selectedRJigsawParticles.first->push_back( myjet  );
+
   }
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );

@@ -137,7 +137,8 @@ EL::StatusCode CalibrateST :: execute ()
   xAOD::TStore * store = wk()->xaodStore();
   xAOD::TEvent * event = wk()->xaodEvent();
 
-  store->clear();//We must clear the store!!!
+  //  store->print();
+  store->clear();//We must clear the store when doing systematics so that we have a brand new setup.
 
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));

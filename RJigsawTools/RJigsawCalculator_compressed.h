@@ -41,7 +41,7 @@ private :
   virtual EL::StatusCode doInitialize();
   virtual EL::StatusCode doClearEvent();
   virtual EL::StatusCode doCalculate(std::map<std::string, double>& RJVars,
-                                     xAOD::ParticleContainer& particles,
+                                     xAOD::IParticleContainer& particles,
                                      xAOD::MissingET& met
                                      );
   // this is needed to distribute the algorithm to the workers

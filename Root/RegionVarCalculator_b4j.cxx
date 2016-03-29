@@ -76,7 +76,7 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = (*metcont)["Final"]->met();
+  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));

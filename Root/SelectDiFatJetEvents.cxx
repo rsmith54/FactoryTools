@@ -139,7 +139,7 @@ EL::StatusCode SelectDiFatJetEvents :: execute ()
 
     auto tmpparticle = new xAOD::Particle();
     selectedJets.first->push_back(tmpparticle  );
-    tmpparticle->setP4(jet->p4());
+    tmpparticle->setP4( 1*jet->p4() );
     tmpparticle->setPdgId(1);
   }
 

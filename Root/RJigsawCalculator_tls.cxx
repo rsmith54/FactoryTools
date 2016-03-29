@@ -28,6 +28,7 @@
 
 #include "RJigsawTools/RJigsawCalculator_tls.h"
 #include "EventLoop/StatusCode.h"
+#include "xAODBase/ObjectType.h"
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(RJigsawCalculator_tls)
@@ -66,16 +67,16 @@ LAB(nullptr),
   InvMass_bkg      (nullptr),
   InvRapidity_bkg  (nullptr),
   // ISR-identifying regions
-  LAB_ISR          (nullptr),     
-  CM_ISR           (nullptr),    
-  S_ISR            (nullptr),   
-  ISR_ISR          (nullptr),     
-  V_ISR            (nullptr),   
-  I_ISR            (nullptr),   
-  INV_ISR          (nullptr),     
-  VIS_ISR          (nullptr),     
-  InvMass_ISR      (nullptr),         
-  SplitVis_ISR     (nullptr)        
+  LAB_ISR          (nullptr),
+  CM_ISR           (nullptr),
+  S_ISR            (nullptr),
+  ISR_ISR          (nullptr),
+  V_ISR            (nullptr),
+  I_ISR            (nullptr),
+  INV_ISR          (nullptr),
+  VIS_ISR          (nullptr),
+  InvMass_ISR      (nullptr),
+  SplitVis_ISR     (nullptr)
 {}
 
 RJigsawCalculator_tls :: ~RJigsawCalculator_tls() {
@@ -111,16 +112,16 @@ RJigsawCalculator_tls :: ~RJigsawCalculator_tls() {
   delete    VIS_bkg          ;
   delete    InvMass_bkg      ;
   delete    InvRapidity_bkg  ;
-  delete  LAB_ISR      ;     
-  delete  CM_ISR       ;    
-  delete  S_ISR        ;   
-  delete  ISR_ISR      ;     
-  delete  V_ISR        ;   
-  delete  I_ISR        ;   
-  delete  INV_ISR      ;     
-  delete  VIS_ISR      ;     
-  delete  InvMass_ISR  ;         
-  delete  SplitVis_ISR ;  
+  delete  LAB_ISR      ;
+  delete  CM_ISR       ;
+  delete  S_ISR        ;
+  delete  ISR_ISR      ;
+  delete  V_ISR        ;
+  delete  I_ISR        ;
+  delete  INV_ISR      ;
+  delete  VIS_ISR      ;
+  delete  InvMass_ISR  ;
+  delete  SplitVis_ISR ;
 }
 
 EL::StatusCode RJigsawCalculator_tls::doClearEvent() {
@@ -287,12 +288,12 @@ EL::StatusCode RJigsawCalculator_tls::doInitialize() {
   SplitVis_ISR->AddFrame(*I_ISR,1);
 
   LAB_ISR->InitializeAnalysis();
-  
+
   return EL::StatusCode::SUCCESS;
 }
 
 EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>& RJVars,
-						   xAOD::ParticleContainer& particles,
+						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
   if( particles.size() < 2 ){return EL::StatusCode::SUCCESS;}//todo figure out if this how we should handle this case
@@ -312,8 +313,14 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 			 particle->p4().Phi(),
 			 particle->p4().E()
 			 );
-    if(abs(particle->pdgId())==11 || abs(particle->pdgId())==13){Leptons.push_back(tmpPart);}
-    else {Jets.push_back(tmpPart);}
+
+    if ((particle->type() == xAOD::Type::Electron) ||
+	 particle->type() == xAOD::Type::Muon    ){Leptons.push_back(tmpPart);}
+    else if(particle->type() == xAOD::Type::Jet  ){Jets.push_back(tmpPart);   }
+    else {
+      std::cout << "You passed an unknown type of object to your particle container.  Returning EL::StatusCode::FAILURE";
+      return EL::StatusCode::FAILURE;
+    }
   }
 
   if(Leptons.size()>1){
@@ -328,10 +335,12 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   vector<RFKey> jetID_ISR;
   for(int i = 0; i < int(Jets.size()); i++){
     jetID.push_back(VIS->AddLabFrameFourVector(Jets[i]));
+
     Jets[i].SetPtEtaPhiM(Jets[i].Pt(),0.0,Jets[i].Phi(),Jets[i].M());
     jetID_bkg.push_back(VIS_bkg->AddLabFrameFourVector(Jets[i]));
     jetID_ISR.push_back(VIS_ISR->AddLabFrameFourVector(Jets[i]));
   }
+
   vector<RFKey> leptonID;
   vector<RFKey> leptonID_bkg;
   vector<RFKey> leptonID_ISR;
@@ -357,6 +366,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   float const m_NJ2b = VIS->GetNElementsInFrame(*V2b);
   float const m_NJa = m_NJ1a+m_NJ2a;
   float const m_NJb = m_NJ1b+m_NJ2b;
+
 
 
   // QCD clean-up
@@ -445,7 +455,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
       m_temp_MTCM_L_0 = (vL_CM + vI_CM).M();
       boostLI = (vL_CM + vI_CM).BoostVector();
       vL_LI = vL_CM;
-      vL_LI.Boost(-boostLI); 
+      vL_LI.Boost(-boostLI);
       m_temp_cosLINV_0 = boostLI.Unit().Dot(vL_LI.Vect().Unit());
     }
     if(Leptons.size()>1){
@@ -454,7 +464,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
       m_temp_MTCM_L_1 = (vL_CM + vI_CM).M();
       boostLI = (vL_CM + vI_CM).BoostVector();
       vL_LI = vL_CM;
-      vL_LI.Boost(-boostLI); 
+      vL_LI.Boost(-boostLI);
       m_temp_cosLINV_1 = boostLI.Unit().Dot(vL_LI.Vect().Unit());
     }
 
@@ -470,12 +480,12 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 
 
 
-  float const m_dphiCML_0 = m_temp_dphiCML_0; 
+  float const m_dphiCML_0 = m_temp_dphiCML_0;
   float const m_MTCM_L_0  = m_temp_MTCM_L_0 ;
-  float const m_cosLINV_0 = m_temp_cosLINV_0; 
-  float const m_dphiCML_1 = m_temp_dphiCML_1; 
+  float const m_cosLINV_0 = m_temp_cosLINV_0;
+  float const m_dphiCML_1 = m_temp_dphiCML_1;
   float const m_MTCM_L_1  = m_temp_MTCM_L_1 ;
-  float const m_cosLINV_1 = m_temp_cosLINV_1; 
+  float const m_cosLINV_1 = m_temp_cosLINV_1;
 
 
   // signal variables
@@ -903,7 +913,7 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
     if(V1a->IsSame(lepframe) || V2a->IsSame(lepframe)){temp_Nlep_a++;}
     if(V1b->IsSame(lepframe) || V2b->IsSame(lepframe)){temp_Nlep_b++;}
   }
-                                                                                                                                                                     //float const m_Nlep_b = temp_Nlep_b;                                                                                                                                                                     
+                                                                                                                                                                     //float const m_Nlep_b = temp_Nlep_b;
   int m_sameHemi_lep = 0;
   if(temp_Nlep_a == 2||temp_Nlep_b ==2){m_sameHemi_lep = 1;}
 
@@ -919,12 +929,12 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   RJVars[ "MS"]        = m_MS;
   RJVars[ "dphiCMV"]   = m_dphiCMV;
 
-  RJVars[ "dphiCML_0" ] = m_dphiCML_0 ; 
-  RJVars[ "MTCM_L_0"  ] = m_MTCM_L_0  ; 
-  RJVars[ "cosLINV_0" ] = m_cosLINV_0 ; 
-  RJVars[ "dphiCML_1" ] = m_dphiCML_1 ; 
-  RJVars[ "MTCM_L_1"  ] = m_MTCM_L_1  ; 
-  RJVars[ "cosLINV_1" ] = m_cosLINV_1 ; 
+  RJVars[ "dphiCML_0" ] = m_dphiCML_0 ;
+  RJVars[ "MTCM_L_0"  ] = m_MTCM_L_0  ;
+  RJVars[ "cosLINV_0" ] = m_cosLINV_0 ;
+  RJVars[ "dphiCML_1" ] = m_dphiCML_1 ;
+  RJVars[ "MTCM_L_1"  ] = m_MTCM_L_1  ;
+  RJVars[ "cosLINV_1" ] = m_cosLINV_1 ;
 
 
 
@@ -1037,3 +1047,43 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 
   return EL::StatusCode::SUCCESS;
 }
+
+//function for debugging if need in the future :
+// if( m_H2PP > 10e8) {
+//   //todo clean this up, could be nice for debugging, probably move it to loop the map in here
+//   std::cout << "WARNING : event with 10 TEV H2PP" << std::endl;
+//   std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+
+//   std::cout << "MET : " << ETMiss.Pt() << std::endl;
+//   std::cout << "(vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P()" << (vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P() << std::endl;
+//   std::cout << "vP_V1aPP.P() : " << vP_V1aPP.P() << std::endl;
+//   std::cout << "vP_V2aPP.P() : " << vP_V2aPP.P() << std::endl;
+//   std::cout << "vP_V1bPP.P() : " << vP_V1bPP.P() << std::endl;
+//   std::cout << "vP_V2bPP.P() : " << vP_V2bPP.P() << std::endl;
+
+//   std::cout << "vP_V1aPP.Pt() : " << vP_V1aPP.Pt() << std::endl;
+//   std::cout << "vP_V2aPP.Pt() : " << vP_V2aPP.Pt() << std::endl;
+//   std::cout << "vP_V1bPP.Pt() : " << vP_V1bPP.Pt() << std::endl;
+//   std::cout << "vP_V2bPP.Pt() : " << vP_V2bPP.Pt() << std::endl;
+
+//   std::cout << "(vP_IaPP+vP_IbPP).P() : " << (vP_IaPP+vP_IbPP).P() << std::endl;
+
+//   int jetcounter = 0;
+//   for (auto &jet : Jets) {
+//     std::cout << "Jet " << jetcounter << " pT : " << jet.Perp() << std::endl;
+//     std::cout << "Jet " << jetcounter << " Eta : " << jet.Eta() << std::endl;
+//     std::cout << "Jet " << jetcounter << " Phi : " << jet.Phi() << std::endl;
+//     std::cout << "Jet " << jetcounter << " M : " << jet.M() << std::endl;
+//     jetcounter++;
+//   }
+
+
+//   int leptoncounter = 0;
+//   for (auto &lepton : Leptons) {
+//     std::cout << "Lepton " << leptoncounter << " pT : " << lepton.Perp() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " Eta : " << lepton.Eta() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " Phi : " << lepton.Phi() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " M : " << lepton.M() << std::endl;
+//     leptoncounter++;
+//   }
+// }
