@@ -19,7 +19,7 @@ def parseCommonOptions() :
     parser.add_option("--gridUser", help    = "gridUser"  , default= '')
     parser.add_option("--gridTag", help     = "gridTag"   , default= '')
 
-    parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "LSF","grid"), default="direct")
+    parser.add_option("--driver", help      = "select where to run", choices=("direct", "prooflite", "lsf","grid"), default="direct")
     parser.add_option('--doOverwrite', help = "Overwrite submit dir if it already exists",action="store_true", default=False)
     parser.add_option('--nevents', help     = "Run n events ", default = -1 )
     parser.add_option('--verbosity', help   = "Run all algs at the selected verbosity.",choices=("info", "warning","error", "debug", "verbose"), default="error")
@@ -84,6 +84,12 @@ def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
         logging.info( "direct driver")
         driver = ROOT.EL.DirectDriver()
         logging.info("submit job")
+        driver.submit(job, submitDir)
+    elif driverName == "lsf" :
+        driver = ROOT.EL.LSFDriver()
+        # ROOT.SH.scanNEvents(sh);
+        # sh.setMetaDouble(ROOT.EL.Job.optEventsPerWorker, 50000);
+        job.options().setString(ROOT.EL.Job.optSubmitFlags, "-q " + "1nh");
         driver.submit(job, submitDir)
     elif (driverName == "prooflite"):
         logging.info( "prooflite")
