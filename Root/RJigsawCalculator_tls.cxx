@@ -507,45 +507,6 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
   TLorentzVector vP_IbPb  = Ib->GetFourVector(*Pb);
 
   float const m_H2PP = (vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P() + (vP_IaPP+vP_IbPP).P();
-  if( m_H2PP > 10e5) {
-    //todo clean this up, could be nice for debugging, probably move it to loop the map in here
-    std::cout << "WARNING : event with 10 TEV H2PP" << std::endl;
-    std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
-
-    std::cout << "MET : " << ETMiss.Pt() << std::endl;
-    std::cout << "(vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P()" << (vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P() << std::endl;
-    std::cout << "vP_V1aPP.P() : " << vP_V1aPP.P() << std::endl;
-    std::cout << "vP_V2aPP.P() : " << vP_V2aPP.P() << std::endl;
-    std::cout << "vP_V1bPP.P() : " << vP_V1bPP.P() << std::endl;
-    std::cout << "vP_V2bPP.P() : " << vP_V2bPP.P() << std::endl;
-
-    std::cout << "vP_V1aPP.Pt() : " << vP_V1aPP.Pt() << std::endl;
-    std::cout << "vP_V2aPP.Pt() : " << vP_V2aPP.Pt() << std::endl;
-    std::cout << "vP_V1bPP.Pt() : " << vP_V1bPP.Pt() << std::endl;
-    std::cout << "vP_V2bPP.Pt() : " << vP_V2bPP.Pt() << std::endl;
-
-    std::cout << "(vP_IaPP+vP_IbPP).P() : " << (vP_IaPP+vP_IbPP).P() << std::endl;
-
-    int jetcounter = 0;
-    for (auto &jet : Jets) {
-      std::cout << "Jet " << jetcounter << " pT : " << jet.Perp() << std::endl;
-      std::cout << "Jet " << jetcounter << " Eta : " << jet.Eta() << std::endl;
-      std::cout << "Jet " << jetcounter << " Phi : " << jet.Phi() << std::endl;
-      std::cout << "Jet " << jetcounter << " M : " << jet.M() << std::endl;
-      jetcounter++;
-    }
-
-
-    int leptoncounter = 0;
-    for (auto &lepton : Leptons) {
-      std::cout << "Lepton " << leptoncounter << " pT : " << lepton.Perp() << std::endl;
-      std::cout << "Lepton " << leptoncounter << " Eta : " << lepton.Eta() << std::endl;
-      std::cout << "Lepton " << leptoncounter << " Phi : " << lepton.Phi() << std::endl;
-      std::cout << "Lepton " << leptoncounter << " M : " << lepton.M() << std::endl;
-      leptoncounter++;
-    }
-  }
-
   float const m_H3PP = (vP_V1aPP + vP_V2aPP).P() + (vP_V1bPP + vP_V2bPP).P() + (vP_IaPP + vP_IbPP).P();
   float const m_H4PP = (vP_V1aPP + vP_V2aPP).P() + (vP_V1bPP + vP_V2bPP).P() + vP_IaPP.P() + vP_IbPP.P();
   float const m_H5PP = vP_V1aPP.P() + vP_V2aPP.P() + vP_V1bPP.P() + vP_V2bPP.P() + (vP_IaPP + vP_IbPP).P();
@@ -1086,3 +1047,43 @@ EL::StatusCode RJigsawCalculator_tls::doCalculate(std::map<std::string, double>&
 
   return EL::StatusCode::SUCCESS;
 }
+
+//function for debugging if need in the future :
+// if( m_H2PP > 10e8) {
+//   //todo clean this up, could be nice for debugging, probably move it to loop the map in here
+//   std::cout << "WARNING : event with 10 TEV H2PP" << std::endl;
+//   std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+
+//   std::cout << "MET : " << ETMiss.Pt() << std::endl;
+//   std::cout << "(vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P()" << (vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P() << std::endl;
+//   std::cout << "vP_V1aPP.P() : " << vP_V1aPP.P() << std::endl;
+//   std::cout << "vP_V2aPP.P() : " << vP_V2aPP.P() << std::endl;
+//   std::cout << "vP_V1bPP.P() : " << vP_V1bPP.P() << std::endl;
+//   std::cout << "vP_V2bPP.P() : " << vP_V2bPP.P() << std::endl;
+
+//   std::cout << "vP_V1aPP.Pt() : " << vP_V1aPP.Pt() << std::endl;
+//   std::cout << "vP_V2aPP.Pt() : " << vP_V2aPP.Pt() << std::endl;
+//   std::cout << "vP_V1bPP.Pt() : " << vP_V1bPP.Pt() << std::endl;
+//   std::cout << "vP_V2bPP.Pt() : " << vP_V2bPP.Pt() << std::endl;
+
+//   std::cout << "(vP_IaPP+vP_IbPP).P() : " << (vP_IaPP+vP_IbPP).P() << std::endl;
+
+//   int jetcounter = 0;
+//   for (auto &jet : Jets) {
+//     std::cout << "Jet " << jetcounter << " pT : " << jet.Perp() << std::endl;
+//     std::cout << "Jet " << jetcounter << " Eta : " << jet.Eta() << std::endl;
+//     std::cout << "Jet " << jetcounter << " Phi : " << jet.Phi() << std::endl;
+//     std::cout << "Jet " << jetcounter << " M : " << jet.M() << std::endl;
+//     jetcounter++;
+//   }
+
+
+//   int leptoncounter = 0;
+//   for (auto &lepton : Leptons) {
+//     std::cout << "Lepton " << leptoncounter << " pT : " << lepton.Perp() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " Eta : " << lepton.Eta() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " Phi : " << lepton.Phi() << std::endl;
+//     std::cout << "Lepton " << leptoncounter << " M : " << lepton.M() << std::endl;
+//     leptoncounter++;
+//   }
+// }
