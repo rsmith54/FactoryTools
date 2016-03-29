@@ -165,9 +165,11 @@ EL::StatusCode CalibrateST :: execute ()
   STRONG_CHECK( m_objTool->GetJets(jets_nominal, jets_nominal_aux, true) );
 
   // Fat Jets
-  // xAOD::JetContainer* fatjets_nominal(nullptr);
-  // xAOD::ShallowAuxContainer* fatjets_nominal_aux(nullptr);
-  // STRONG_CHECK( m_objTool->GetFatJets(fatjets_nominal, fatjets_nominal_aux, true, "CamKt12LCTopoJets") );
+  if(fatJetContainerName != notSetString() && event->contains<xAOD::JetContainer>( fatJetContainerName ) ){
+    xAOD::JetContainer* fatjets_nominal(nullptr);
+    xAOD::ShallowAuxContainer* fatjets_nominal_aux(nullptr);
+    STRONG_CHECK( m_objTool->GetFatJets(fatjets_nominal, fatjets_nominal_aux, true, fatJetContainerName ) );
+  }
 
   // Taus
   xAOD::TauJetContainer* taus_nominal(nullptr);

@@ -62,21 +62,12 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   //
   /////////////////////////////////////////////////////////////////////
 
-  // Get relevant info from the vertex container //////////////////////
-  //
-
-  const xAOD::VertexContainer* vertices = nullptr;
-  STRONG_CHECK(event->retrieve( vertices, "PrimaryVertices"));
-  RegionVars["NPV"] = HelperFunctions::countPrimaryVertices(vertices, 2);
-
-  //
-  /////////////////////////////////////////////////////////////////////
-
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
+  RegionVars     ["met"]   = (*metcont)["Final"]->met();
+  RegionVars     ["met_phi"]   = (*metcont)["Final"]->phi();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));

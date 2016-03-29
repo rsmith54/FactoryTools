@@ -255,7 +255,7 @@ def attachCounters(sample):
 
 		#Go to the grid and get the metadata output
 		sh_metadata = ROOT.SH.SampleHandler()
-		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name").replace("trees","cutflow") )
+		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name") )
 		if len(sh_metadata) == 1:
 			metadata_sample = sh_metadata[0]
 			for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:

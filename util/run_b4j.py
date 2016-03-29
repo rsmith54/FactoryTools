@@ -47,6 +47,7 @@ algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName      = ""
+algsToRun["calibrateST" ].fatJetCollectionName      = "CamKt12LCTopoJets"
 algsToRun["preselectDiFatJet"]     = ROOT.PreselectDiFatJetEvents()
 algsToRun["selectDiFatJet"]        = ROOT.SelectDiFatJetEvents()
 
