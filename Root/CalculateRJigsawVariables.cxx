@@ -150,13 +150,12 @@ EL::StatusCode CalculateRJigsawVariables :: execute ()
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   xAOD::MissingET & metfinal = *((*metcont)["Final"]);
-  metfinal *= .001;
+  metfinal *= 1;
   ATH_MSG_DEBUG("MET : " <<  metfinal.met() );
-  //  std::cout << "MET : " <<  metfinal.met() << std::endl;
 
   std::map<std::string,double> * mymap = new std::map<std::string,double>;
 
-  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myparticles, metfinal  ));//this syntax is annoying... *=.001 to switch to GeV
+  STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myparticles, metfinal  ));//this syntax is annoying... *=1 to switch to GeV
   STRONG_CHECK   ( store->record( mymap , "RJigsawVarsMap" /*todo we should probably add a suffix for calculator type*/));
 
   printDebug();

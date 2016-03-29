@@ -76,7 +76,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = .001*(*metcont)["Final"]->met();
+  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -116,7 +116,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
     lepEVec.push_back( lep->p4().E() );
-    lepPdgidVec.push_back( lep->pdgId() );
+    lepPdgidVec.push_back( 0);
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;
@@ -143,8 +143,8 @@ EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, d
   // std::sort(leptons_nominal->begin(),leptons_nominal->end(), ptSort);
   // assert(leptons_nominal->at(0)->pt() > leptons_nominal->at(1)->pt());
 
-  RegionVars[ "isSS" ]  = leptons_nominal->at(0)->pdgId()*leptons_nominal->at(1)->pdgId() > 0;
-  RegionVars[ "isSF" ]  = abs(leptons_nominal->at(0)->pdgId()) == abs(leptons_nominal->at(1)->pdgId());
+  RegionVars[ "isSS" ]  = 0;//leptons_nominal->at(0)->pdgId()*leptons_nominal->at(1)->pdgId() > 0;
+  RegionVars[ "isSF" ]  = 0;//abs(leptons_nominal->at(0)->pdgId()) == abs(leptons_nominal->at(1)->pdgId());
 
   RegionVars[ "mll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).M();
   RegionVars[ "ptll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).Pt();
