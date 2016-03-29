@@ -4,8 +4,8 @@
 //date   : December 2015
 
 #include "EventLoop/StatusCode.h"
-// #include "xAODBase/IParticleContainer.h"
-#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODBase/IParticleContainer.h"
+//#include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODMissingET/MissingET.h"
 
 #include <map>
@@ -30,7 +30,7 @@ public :
   //to be used per event
   EL::StatusCode clearEvent(){m_clearEventCalled = CALLED;return doClearEvent();}
   EL::StatusCode calculate(std::map<std::string, double>& RJVars,
-			   xAOD::ParticleContainer& particles,
+			   xAOD::IParticleContainer& particles,
 			   xAOD::MissingET & met
 			   ){
     if(m_clearEventCalled == NOTCALLED){
@@ -48,7 +48,7 @@ private :
   virtual EL::StatusCode doInitialize(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
   virtual EL::StatusCode doClearEvent(){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
   virtual EL::StatusCode doCalculate(std::map<std::string, double>& RJVars,
-                                     xAOD::ParticleContainer& particles,
+                                     xAOD::IParticleContainer& particles,
                                      xAOD::MissingET& met
                                      ){std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
 

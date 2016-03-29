@@ -3,7 +3,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
-#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODBase/IParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_tls.h"
@@ -81,7 +81,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
-  xAOD::ParticleContainer* jets_nominal(nullptr);
+  xAOD::IParticleContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
@@ -102,7 +102,7 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
 
-  xAOD::ParticleContainer* leptons_nominal(nullptr);
+  xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
   std::vector<double> lepPtVec;
@@ -134,7 +134,7 @@ EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, d
 {
 
   xAOD::TStore * store = m_worker->xaodStore();
-  xAOD::ParticleContainer* leptons_nominal(nullptr);
+  xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
   // If we go to a >= 2 lepton SR, we're going to need to sort these collections but we will want to be
