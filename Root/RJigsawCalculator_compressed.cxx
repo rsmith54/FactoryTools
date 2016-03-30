@@ -184,13 +184,14 @@ EL::StatusCode RJigsawCalculator_compressed::doCalculate(std::map<std::string, d
   float const m_RPT_HT1CM = m_temp_RPT_HT1CM ;
   float const m_MS        = m_temp_MS;
 
+  auto toGeV = [](float a){return a*.001;};
 
-  RJVars[ "HT1CM"]     = m_HT1CM;
+  RJVars[ "HT1CM"]     = toGeV(m_HT1CM);
   RJVars[ "PIoHT1CM"]  = m_PIoHT1CM;
   RJVars[ "cosS"]      = m_cosS;
   RJVars[ "NVS"]       = m_NVS;
   RJVars[ "RPT_HT1CM"] = m_RPT_HT1CM;
-  RJVars[ "MS"]        = m_MS;
+  RJVars[ "MS"]        = toGeV(m_MS);
 
 
   return EL::StatusCode::SUCCESS;
