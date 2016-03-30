@@ -3,7 +3,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
-#include "xAODParticleEvent/ParticleContainer.h"
+//#include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_b4j.h"

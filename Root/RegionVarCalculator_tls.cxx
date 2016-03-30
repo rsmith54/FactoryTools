@@ -157,7 +157,6 @@ EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, d
     return 0;//check for failure
   };
 
-
   RegionVars[ "isSS" ]  = lepPdgId(leptons_nominal->at(0))*lepPdgId(leptons_nominal->at(1)) > 0;
   RegionVars[ "isSF" ]  = abs(lepPdgId(leptons_nominal->at(0))) == abs(lepPdgId(leptons_nominal->at(1)));
 

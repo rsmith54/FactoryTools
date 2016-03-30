@@ -14,7 +14,7 @@
 
 #include <RJigsawTools/strongErrorCheck.h>
 
-#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODBase/IParticleContainer.h"
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 #include <utility>
 
@@ -115,9 +115,9 @@ EL::StatusCode SelectDiFatJetEvents :: execute ()
 
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
 
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedJets.first->setStore(selectedJets.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::IParticleContainer(SG::VIEW_ELEMENTS), nullptr);
   selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
 
   STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed
@@ -137,10 +137,7 @@ EL::StatusCode SelectDiFatJetEvents :: execute ()
     // If I've gotten this far, I have a signal, isolated, beautiful jet
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
 
-    auto tmpparticle = new xAOD::Particle();
-    selectedJets.first->push_back(tmpparticle  );
-    tmpparticle->setP4( 1*jet->p4() );
-    tmpparticle->setPdgId(1);
+    selectedJets.first->push_back( jet  );
   }
 
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
