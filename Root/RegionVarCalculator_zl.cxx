@@ -68,11 +68,13 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   //
   /////////////////////////////////////////////////////////////////////
 
+  auto toGeV = [](float a){return a*.001;};
+
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
+  RegionVars     ["met"]   = toGeV((*metcont)["Final"]->met());
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -80,7 +82,6 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   xAOD::IParticleContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
-  auto toGeV = [](float a){return a*.001;};
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
   std::vector<double> jetPtVec;
   std::vector<double> jetEtaVec;
