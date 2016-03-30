@@ -200,12 +200,9 @@ EL::StatusCode SelectTwoLeptonEvents :: execute ()
   // // What happens if we add the jets into the calculation?
   for( const auto& myjet: *selectedJets.first){
     selectedRJigsawParticles.first->push_back( myjet  );
-
   }
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
-
-  ATH_MSG_DEBUG("Writing particle container for calculator to store");
 
   eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );

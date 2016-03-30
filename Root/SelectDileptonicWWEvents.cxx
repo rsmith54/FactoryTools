@@ -14,7 +14,7 @@
 
 #include <RJigsawTools/strongErrorCheck.h>
 
-#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODBase/IParticleContainer.h"
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 #include <utility>
 
@@ -115,11 +115,11 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
 
 
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedLeptons.first->setStore(selectedLeptons.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::ParticleContainer() , new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedJets.first->setStore(selectedJets.second);
-  std::pair<xAOD::ParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::ParticleContainer, new xAOD::ParticleAuxContainer);
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::IParticleContainer(SG::VIEW_ELEMENTS), nullptr);
   selectedRJigsawParticles.first->setStore(selectedRJigsawParticles.second);
 
   STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
@@ -148,10 +148,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)jet->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful jet
     ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
-
-    auto tmpparticle = new xAOD::Particle();
-    selectedJets.first->push_back(tmpparticle  );
-    tmpparticle->setP4(1*jet->p4());
+    selectedJets.first->push_back( jet  );
   }
 
   for (const auto& mu : *muons_nominal) {
@@ -160,10 +157,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
     ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
-
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(1*mu->p4());
+    selectedLeptons.first->push_back( mu  );
   }
 
   for (const auto& el : *electrons_nominal) {
@@ -172,10 +166,7 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
     ATH_MSG_VERBOSE( "el pt : " << el->pt() );
-
-    auto tmpparticle = new xAOD::Particle();
-    selectedLeptons.first->push_back(tmpparticle  );
-    tmpparticle->setP4(1*el->p4());
+    selectedLeptons.first->push_back(el  );
   }
 
   int const nLeptons = selectedLeptons.first->size();
@@ -196,16 +187,12 @@ EL::StatusCode SelectDileptonicWWEvents :: execute ()
 
   //Here we should add the particles that we want in the calculation to myparticles
   for( const auto& mylepton: *selectedLeptons.first){
-    xAOD::Particle *tmpparticle = new xAOD::Particle;
-    selectedRJigsawParticles.first->push_back(tmpparticle  );
-    tmpparticle->setP4( mylepton->p4() );
+    selectedRJigsawParticles.first->push_back(mylepton);
   }
 
   // // What happens if we add the jets into the calculation?
   for( const auto& myjet: *selectedJets.first){
-    xAOD::Particle *tmpparticle = new xAOD::Particle;
-    selectedRJigsawParticles.first->push_back(tmpparticle  );
-    tmpparticle->setP4( myjet->p4() );
+    selectedRJigsawParticles.first->push_back(myjet );
   }
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );

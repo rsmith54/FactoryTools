@@ -3,7 +3,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
-#include "xAODParticleEvent/ParticleContainer.h"
+//#include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_b4j.h"
@@ -64,6 +64,8 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
 
   // Get relevant info from the vertex container //////////////////////
   //
+  auto toGeV = [](float a){return a*.001;};
+
 
   const xAOD::VertexContainer* vertices = nullptr;
   STRONG_CHECK(event->retrieve( vertices, "PrimaryVertices"));
@@ -76,7 +78,7 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
+  RegionVars     ["met"]   = toGeV((*metcont)["Final"]->met());
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -97,7 +99,7 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
     mJJ = (jet4MomVec.at(0)+jet4MomVec.at(1)).M();
   }
 
-  RegionVars["mJJ"] = mJJ;
+  RegionVars["mJJ"] = toGeV(mJJ);
 
 
 
@@ -113,10 +115,10 @@ EL::StatusCode RegionVarCalculator_b4j::doAllCalculations(std::map<std::string, 
   std::vector<double> jetDip12Vec;
 
   for( const auto& jet : *jets_nominal) {
-    jetPtVec.push_back( jet->pt());
+    jetPtVec.push_back( toGeV(jet->pt()));
     jetEtaVec.push_back( jet->p4().Eta() );
     jetPhiVec.push_back( jet->p4().Phi() );
-    jetEVec.push_back( jet->p4().E() );
+    jetEVec.push_back( toGeV(jet->p4().E()) );
 
     jetTau1Vec.push_back(  jet->getAttribute<double>("Tau1")    );
     jetTau2Vec.push_back(  jet->getAttribute<double>("Tau2")    );

@@ -183,8 +183,7 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::map<std::string, double>
   double const MH = H_R->GetMass();
   double const MW = Wa_R->GetMass();
 
-  RJVars["mH"] = MH;
-  RJVars["mW"] = MW;
+  auto toGeV = [](float a){return a*.001;};
 
   TLorentzVector pll = vecParticles.at(0)+vecParticles.at(1);
   pll.SetPz(0);
@@ -193,7 +192,10 @@ EL::StatusCode RJigsawCalculator_lvlv::doCalculate(std::map<std::string, double>
   double secondterm = (pll.Vect()+vecMet).Mag() * (pll.Vect()+vecMet).Mag();
   double MT = TMath::Sqrt( (Ell+pvv)*(Ell+pvv) - secondterm  );
 
-  RJVars["mT"] = MT;
+
+  RJVars["mH"] = toGeV(MH);
+  RJVars["mW"] = toGeV(MW);
+  RJVars["mT"] = toGeV(MT);
 
   return EL::StatusCode::SUCCESS;
 }

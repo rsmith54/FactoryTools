@@ -3,7 +3,7 @@
 #include "xAODRootAccess/TStore.h"
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
-#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODBase/IParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
 #include "RJigsawTools/RegionVarCalculator_zl.h"
@@ -68,16 +68,18 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   //
   /////////////////////////////////////////////////////////////////////
 
+  auto toGeV = [](float a){return a*.001;};
+
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = 1*(*metcont)["Final"]->met();
+  RegionVars     ["met"]   = toGeV((*metcont)["Final"]->met());
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
-  xAOD::ParticleContainer* jets_nominal(nullptr);
+  xAOD::IParticleContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
@@ -87,10 +89,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<double> jetEVec;
 
   for( const auto& jet : *jets_nominal) {
-    jetPtVec.push_back( jet->pt());
+    jetPtVec.push_back( toGeV(jet->pt()));
     jetEtaVec.push_back( jet->p4().Eta() );
     jetPhiVec.push_back( jet->p4().Phi() );
-    jetEVec.push_back( jet->p4().E() );
+    jetEVec.push_back( toGeV(jet->p4().E()) );
   }
 
   VecRegionVars[ "jetPt" ]  = jetPtVec;
@@ -98,7 +100,7 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
 
-  xAOD::ParticleContainer* leptons_nominal(nullptr);
+  xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
   std::vector<double> lepPtVec;
@@ -107,10 +109,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<double> lepEVec;
 
   for( const auto& lep : *leptons_nominal) {
-    lepPtVec.push_back( lep->pt());
+    lepPtVec.push_back( toGeV(lep->pt()));
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
-    lepEVec.push_back( lep->p4().E() );
+    lepEVec.push_back( toGeV(lep->p4().E()) );
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;

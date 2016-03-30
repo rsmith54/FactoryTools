@@ -65,8 +65,8 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   xAOD::MissingETContainer * metcont = nullptr;
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
-  //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = (*metcont)["Final"]->met();
+  auto toGeV = [](float a){return a*.001;};
+  RegionVars     ["met"]   = toGeV((*metcont)["Final"]->met());
   RegionVars     ["met_phi"]   = (*metcont)["Final"]->phi();
 
   // xAOD::JetContainer* jets_nominal(nullptr);
@@ -82,10 +82,10 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   std::vector<double> jetEVec;
 
   for( const auto& jet : *jets_nominal) {
-    jetPtVec.push_back( jet->pt());
+    jetPtVec.push_back( toGeV(jet->pt()));
     jetEtaVec.push_back( jet->p4().Eta() );
     jetPhiVec.push_back( jet->p4().Phi() );
-    jetEVec.push_back( jet->p4().E() );
+    jetEVec.push_back( toGeV(jet->p4().E()) );
   }
 
   VecRegionVars[ "jetPt" ]  = jetPtVec;
@@ -102,19 +102,32 @@ EL::StatusCode RegionVarCalculator_tls::doAllCalculations(std::map<std::string, 
   std::vector<double> lepEVec;
   std::vector<double> lepPdgidVec;
 
+  auto lepPdgId = [](xAOD::IParticle* p){
+    xAOD::Electron * el = dynamic_cast<xAOD::Electron*>(p);
+    xAOD::Muon     * mu = dynamic_cast<xAOD::Muon*    >(p);
+    if( el ) return int(11*el->charge());
+    if( mu ) return int(13*mu->charge());
+    return 0;//check for failure
+  };
+
   for( const auto& lep : *leptons_nominal) {
-    lepPtVec.push_back( lep->pt());
+    lepPtVec.push_back( toGeV( lep->pt()));
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
-    lepEVec.push_back( lep->p4().E() );
-    lepPdgidVec.push_back( 0);
+    lepEVec.push_back( toGeV(lep->p4().E()) );
+    int pdgid = lepPdgId(lep);
+    if( pdgid) {lepPdgidVec.push_back(pdgid);}
+    else {
+      std::cout << "Failed to retrieve pdgid for the lepton.  Returning failure." << std::endl;
+      return EL::StatusCode::FAILURE;
+    }
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;
   VecRegionVars[ "lepEta" ] = lepEtaVec;
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
-  VecRegionVars[ "lepPdgidVec" ]   = lepPdgidVec;
+  VecRegionVars[ "lepPdgidVec" ] = lepPdgidVec;
 
   return EL::StatusCode::SUCCESS;
 }
@@ -134,11 +147,21 @@ EL::StatusCode RegionVarCalculator_tls::doSRCalculations(std::map<std::string, d
   // std::sort(leptons_nominal->begin(),leptons_nominal->end(), ptSort);
   // assert(leptons_nominal->at(0)->pt() > leptons_nominal->at(1)->pt());
 
-  RegionVars[ "isSS" ]  = 0;//leptons_nominal->at(0)->pdgId()*leptons_nominal->at(1)->pdgId() > 0;
-  RegionVars[ "isSF" ]  = 0;//abs(leptons_nominal->at(0)->pdgId()) == abs(leptons_nominal->at(1)->pdgId());
+  auto toGeV = [](float a){return a*.001;};
 
-  RegionVars[ "mll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).M();
-  RegionVars[ "ptll" ]  = (leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).Pt();
+  auto lepPdgId = [](xAOD::IParticle* p){
+    xAOD::Electron * el = dynamic_cast<xAOD::Electron*>(p);
+    xAOD::Muon     * mu = dynamic_cast<xAOD::Muon*    >(p);
+    if( el ) return int(11*el->charge());
+    if( mu ) return int(13*mu->charge());
+    return 0;//check for failure
+  };
+
+  RegionVars[ "isSS" ]  = lepPdgId(leptons_nominal->at(0))*lepPdgId(leptons_nominal->at(1)) > 0;
+  RegionVars[ "isSF" ]  = abs(lepPdgId(leptons_nominal->at(0))) == abs(lepPdgId(leptons_nominal->at(1)));
+
+  RegionVars[ "mll" ]  = toGeV((leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).M());
+  RegionVars[ "ptll"]  = toGeV((leptons_nominal->at(0)->p4() + leptons_nominal->at(1)->p4() ).Pt());
 
   return EL::StatusCode::SUCCESS;
 }
