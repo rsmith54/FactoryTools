@@ -20,6 +20,7 @@ def discover(sh, search_directories, pattern="*trees*"):
 def addTags(sh_all):
 	for sample in sh_all:
 
+		sample_name = sample.getMetaString("sample_name")
 		short_name = sample.getMetaString("sample_name").split(".")[3]
 		dsid = int(sample.getMetaString("sample_name").split(".")[2])
 		sample.setMetaString( "short_name" , sample.getMetaString("sample_name") )
@@ -50,7 +51,7 @@ def addTags(sh_all):
 			sample.addTag("ss_onestepcc")
 
 
-		if "410000" in short_name:
+		if "410000" in sample_name:
 			sample.addTag("top")
 			sample.addTag("ttbar")
 		if dsid in range(410011,410015):
