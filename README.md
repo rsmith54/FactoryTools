@@ -19,7 +19,7 @@ Now we can checkout our dependencies using the following :
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
 rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-07-42 SUSYTools
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-18 CommonTools
-git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 69eb536488ff31dea46e2eae6fd03f267c5367af; git checkout -b localRJbranch; cd ..;
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 686427881df80c5c7ab783a77c0628adee35b77a; git checkout -b localRJbranch; cd ..;
 rc checkout_pkg atlasoff/Reconstruction/Jet/JetJvtEfficiency/tags/JetJvtEfficiency-00-00-03 JetJvtEfficiency
 ```
 

@@ -54,7 +54,8 @@ print search_directories
 
 tmpOutputDirectory = "tmpOutput"
 outputDirectory = "output"
-treePrefix = "trees"
+treeStream = "trees"
+treePrefix = "trees_"
 
 selection = options.selection
 ncores = min(int(options.nproc),mp.cpu_count())
@@ -81,7 +82,7 @@ outputSampleNames = [
 logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
-discoverInput.discover(sh_all, search_directories, "*%s*"%treePrefix  )
+discoverInput.discover(sh_all, search_directories, "*%s*"%treeStream  )
 print len(sh_all)
 
 logging.info("adding my tags defined in discoverInput.py")
