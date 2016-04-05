@@ -101,7 +101,8 @@ def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
         if not gridUser : gridUser = os.environ.get("USER")
         if not gridTag  : gridTag  = date.today().strftime("%m%d%y")
         driver = ROOT.EL.PrunDriver()
-        driver.options().setString("nc_outputSampleName", "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(gridUser,gridTag)   );
+        gridOutputDatasetName = "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(gridUser,gridTag)
+        driver.options().setString("nc_outputSampleName", gridOutputDatasetName  );
         driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
         logging.info("submit job")
