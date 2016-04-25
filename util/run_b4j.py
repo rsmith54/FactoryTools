@@ -20,9 +20,8 @@ logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
 commonOptions.fillSampleHandler(sh_all, options.inputDS)
-
-sh_all.setMetaString ("nc_tree", "CollectionTree");
-#sh_all.printContent();
+if options.verbosity in ["verbose","debug"] : sh_all.printContent()
+sh_all.setMetaString ("nc_tree", "CollectionTree")
 
 # this is the basic description of our job
 logging.info("creating new job")
@@ -42,8 +41,8 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY2KernelSkim" )
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
-
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName      = ""
