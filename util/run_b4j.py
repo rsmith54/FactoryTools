@@ -20,7 +20,6 @@ logging.info("creating new sample handler")
 sh_all = ROOT.SH.SampleHandler()
 
 commonOptions.fillSampleHandler(sh_all, options.inputDS)
-if options.verbosity in ["verbose","debug"] : sh_all.printContent()
 sh_all.setMetaString ("nc_tree", "CollectionTree")
 
 # this is the basic description of our job
