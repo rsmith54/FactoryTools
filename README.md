@@ -18,6 +18,7 @@ Now we can checkout our dependencies using the following :
 ```
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk CommonTools
+rc checkout_pkg atlasoff/Reconstruction/MET/METUtilities/tags/METUtilities-00-02-18-01 METUtilities
 git clone https://github.com/rsmith54/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout feature/2.4.X; git checkout -b feature/2.4.X; cd ..;
 ```
 
