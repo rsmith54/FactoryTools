@@ -32,7 +32,7 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/l/larry/public/lvlv_datasets/
+python RJigsawTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/l/larry/public/lvlv_datasets/
 ```
 
 (This points to a public directory so this should run for anyone on afs.)
