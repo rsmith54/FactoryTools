@@ -4,3 +4,4 @@ localSetupFAX
 localSetupPyAMI
 localSetupROOT
 rcSetup Base,2.4.6
+voms-proxy-init -voms atlas

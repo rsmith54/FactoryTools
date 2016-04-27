@@ -16,9 +16,9 @@ source RJigsawTools/util/setup.sh
 Now we can checkout our dependencies using the following :
 
 ```
-git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-18 CommonTools
-git clone https://github.com/rsmith54/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout feature/2.4.X; git checkout -b feature/2.4.X; cd ..;
+git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
+git clone https://github.com/rsmith54/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout feature/2.4.X; cd ..;
 ```
 
 And of course do a normal rc set up procedure
