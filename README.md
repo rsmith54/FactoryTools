@@ -46,10 +46,15 @@ submit_dir/data-TEST_OUTPUTNAME/*.root
 by default when doing a test, where TEST_OUTPUTNAME is set in your submission script.  The file in submit_dir does not have your output trees!!!
 
 
-You can run on the grid with
+To run on the gird, first setup panda :
+```
+lsetup panda
+'''
+
+And then you can call
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
+python RJigsawTools/util/run_tls.py --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.

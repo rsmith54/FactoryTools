@@ -50,7 +50,9 @@ def fillSampleHandler ( sh_all, inp) :
     if os.path.isfile(inp) :
         with open(inp) as f :
             for ds in f :
-                ROOT.SH.addGrid(sh_all, ds.rstrip() )
+                #this removes the scope and trailing whitespace
+                cleanedDs = (ds.split(":")[-1]).rstrip()
+                ROOT.SH.addGrid(sh_all, cleanedDs )
     elif os.path.isdir(inp) :
         mylist = ROOT.SH.DiskListLocal(inp)
         ROOT.SH.scanDir(sh_all,mylist, "*")
