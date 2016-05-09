@@ -58,6 +58,7 @@ def fillSampleHandler ( sh_all, inp) :
         ROOT.SH.scanDir(sh_all,mylist, "*")
     else :
         ROOT.SH.scanDQ2(sh_all, inp)
+        sh_all.setMetaString("nc_grid_filter", "*");
     if not sh_all.size() :
         functionName = lambda : sys._getframe(1).f_code.co_name
         logging.warning("failed to find any samples in " + functionName())
