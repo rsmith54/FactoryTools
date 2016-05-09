@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import shutil
 import ROOT
@@ -44,17 +45,22 @@ def setVerbosity ( alg , levelString ) :
         commonOptions.quiet_exit()
     alg.setMsgLevel(level)
 
-def fillSampleHandler ( sh_all, inp ) :
+def fillSampleHandler ( sh_all, inp) :
     """You can pass either the directory locally, the file containing the list of grid datasets, or directly the name of a grid dataset. """
     if os.path.isfile(inp) :
         with open(inp) as f :
             for ds in f :
-                ROOT.SH.addGrid(sh_all, ds.rstrip() )
+                #this removes the scope and trailing whitespace
+                cleanedDs = (ds.split(":")[-1]).rstrip()
+                ROOT.SH.addGrid(sh_all, cleanedDs )
     elif os.path.isdir(inp) :
         mylist = ROOT.SH.DiskListLocal(inp)
         ROOT.SH.scanDir(sh_all,mylist, "*")
     else :
         ROOT.SH.scanDQ2(sh_all, inp)
+    if not sh_all.size() :
+        functionName = lambda : sys._getframe(1).f_code.co_name
+        logging.warning("failed to find any samples in " + functionName())
 
 def addAlgsFromDict( job,  algsToRun , verbosity = "error" ) :
     for name,alg in algsToRun.iteritems() :

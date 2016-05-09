@@ -16,11 +16,10 @@ source RJigsawTools/util/setup.sh
 Now we can checkout our dependencies using the following :
 
 ```
-git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; git checkout -b v1.6; cd ..
-rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-07-42 SUSYTools
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-18 CommonTools
-git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 686427881df80c5c7ab783a77c0628adee35b77a; git checkout -b localRJbranch; cd ..;
-rc checkout_pkg atlasoff/Reconstruction/Jet/JetJvtEfficiency/tags/JetJvtEfficiency-00-00-03 JetJvtEfficiency
+git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
+git clone https://github.com/rsmith54/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout feature/2.4.X; cd ..;
+rc checkout_pkg atlasoff/Reconstruction/MET/METUtilities/tags/METUtilities-00-02-18-01 METUtilities
 ```
 
 And of course do a normal rc set up procedure
@@ -33,7 +32,7 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/l/larry/public/lvlv_datasets/
+python RJigsawTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/p2613/
 ```
 
 (This points to a public directory so this should run for anyone on afs.)
@@ -47,10 +46,15 @@ submit_dir/data-TEST_OUTPUTNAME/*.root
 by default when doing a test, where TEST_OUTPUTNAME is set in your submission script.  The file in submit_dir does not have your output trees!!!
 
 
-You can run on the grid with
+To run on the gird, first setup panda :
+```
+lsetup panda
+'''
+
+And then you can call
 
 ```
-python RJigsawTools/util/run_lvlv.py  --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15_13TeV_25ns_SM_p2419.ds --gridTag 012516_lvlv
+python RJigsawTools/util/run_tls.py --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
