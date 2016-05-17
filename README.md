@@ -18,7 +18,7 @@ Now we can checkout our dependencies using the following :
 ```
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
-git clone https://github.com/rsmith54/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 2d502e1ecc4e4f45db2c74b34f133641f79a5c59;  git checkout -b localRJbranch; cd ..;
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 2d502e1ecc4e4f45db2c74b34f133641f79a5c59;  git checkout -b localRJbranch; cd ..;
 ```
 
 And of course do a normal rc set up procedure
