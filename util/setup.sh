@@ -3,5 +3,5 @@ localSetupDQ2Client
 localSetupFAX
 localSetupPyAMI
 localSetupROOT
-rcSetup Base,2.4.6
+rcSetup Base,2.4.7
 voms-proxy-init -voms atlas
