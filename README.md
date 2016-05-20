@@ -1,9 +1,9 @@
 ## Getting Started
 
-Once you have the RJigsawTools package with
+Once you have the FactoryTools package with
 
 ```
-git clone https://github.com/rsmith54/RJigsawTools.git
+git clone https://github.com/rsmith54/FactoryTools.git
 ```
 
 you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
@@ -31,7 +31,7 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python RJigsawTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/p2613/
+python FactoryTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/p2613/
 ```
 
 (This points to a public directory so this should run for anyone on afs.)
@@ -48,12 +48,12 @@ by default when doing a test, where TEST_OUTPUTNAME is set in your submission sc
 To run on the gird, first setup panda :
 ```
 lsetup panda
-'''
+```
 
 And then you can call
 
 ```
-python RJigsawTools/util/run_tls.py --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
+python FactoryTools/util/run_tls.py --doOverwrite --driver grid --inputDS RJigsawTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
