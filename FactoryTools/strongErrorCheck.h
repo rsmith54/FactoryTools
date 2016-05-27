@@ -1,7 +1,7 @@
 // Dear emacs, this is -*- c++ -*-
 // $Id: errorcheck.h 299732 2014-03-27 17:41:34Z krasznaa $
-#ifndef RJIGSAWTOOLS_ERRORCHECK_H
-#define RJIGSAWTOOLS_ERRORCHECK_H
+#ifndef FACTORYTOOLS_ERRORCHECK_H
+#define FACTORYTOOLS_ERRORCHECK_H
 
 #include <typeinfo>
 
@@ -21,4 +21,4 @@
                   #ARG ); \
        return EL::StatusCode::FAILURE;		\
      }
-#endif // RJIGSAWTOOLS_ERRORCHECK_H
+#endif // FACTORYTOOLS_ERRORCHECK_H

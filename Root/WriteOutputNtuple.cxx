@@ -7,11 +7,11 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/WriteOutputNtuple.h>
+#include <FactoryTools/WriteOutputNtuple.h>
 #include <CommonTools/NtupManager.h>
 
-#include <RJigsawTools/printDebug.h>
-#include <RJigsawTools/strongErrorCheck.h>
+#include <FactoryTools/printDebug.h>
+#include <FactoryTools/strongErrorCheck.h>
 
 #include <iostream>
 

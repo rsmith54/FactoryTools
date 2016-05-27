@@ -1,7 +1,7 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <RJigsawTools/PostselectTwoLeptonEvents.h>
+#include <FactoryTools/PostselectTwoLeptonEvents.h>
 
 #include <AsgTools/MsgStream.h>
 #include <AsgTools/MsgStreamMacros.h>
@@ -14,7 +14,7 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/strongErrorCheck.h>
+#include <FactoryTools/strongErrorCheck.h>
 
 
 

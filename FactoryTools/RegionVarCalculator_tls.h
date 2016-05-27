@@ -4,7 +4,7 @@
 //date   : January 2015
 
 #include "EventLoop/StatusCode.h"
-#include "RJigsawTools/RegionVarCalculator.h"
+#include "FactoryTools/RegionVarCalculator.h"
 
 #include <map>
 #include <iostream>

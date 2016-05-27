@@ -1,9 +1,9 @@
-#ifndef RJIGSAW_CALCULATOR_TLS_H
-#define RJIGSAW_CALCULATOR_TLS_H
+#ifndef RJIGSAW_CALCULATOR_ZL_H
+#define RJIGSAW_CALCULATOR_ZL_H
 //author : Russell Smith
 //date   : January 2015
 
-#include "RJigsawTools/RJigsawCalculator.h"
+#include "FactoryTools/RJigsawCalculator.h"
 
 namespace RestFrames {
   class LabRecoFrame ;
@@ -21,11 +21,11 @@ namespace RestFrames {
   class SetRapidityInvJigsaw   ;
 }
 
-class RJigsawCalculator_tls : public RJigsawCalculator {
+class RJigsawCalculator_zl : public RJigsawCalculator {
 
 public :
-  RJigsawCalculator_tls();
-  virtual  ~RJigsawCalculator_tls ();
+  RJigsawCalculator_zl();
+  virtual  ~RJigsawCalculator_zl ();
 
 private :
   RestFrames::LabRecoFrame *  LAB;
@@ -62,18 +62,6 @@ private :
   RestFrames::SetMassInvJigsaw       *     InvMass_bkg      ;
   RestFrames::SetRapidityInvJigsaw   *     InvRapidity_bkg  ;
 
-
-  RestFrames::LabRecoFrame           *   LAB_ISR;
-  RestFrames::DecayRecoFrame         *   CM_ISR;
-  RestFrames::DecayRecoFrame         *   S_ISR;
-  RestFrames::VisibleRecoFrame       *   ISR_ISR;
-  RestFrames::VisibleRecoFrame       *   V_ISR;
-  RestFrames::InvisibleRecoFrame     *   I_ISR;
-  RestFrames::InvisibleGroup         *   INV_ISR;
-  RestFrames::CombinatoricGroup      *   VIS_ISR;
-  RestFrames::SetMassInvJigsaw       *   InvMass_ISR;
-  RestFrames::MinMassesCombJigsaw    *   SplitVis_ISR;
-
 private :
   virtual EL::StatusCode doInitialize();
   virtual EL::StatusCode doClearEvent();
@@ -82,7 +70,7 @@ private :
                                      xAOD::MissingET& met
                                      );
   // this is needed to distribute the algorithm to the workers
-  ClassDef(RJigsawCalculator_tls, 1);
+  ClassDef(RJigsawCalculator_zl, 1);
 };
 
-#endif //RJIGSAW_CALCULATOR_TLS_H
+#endif //RJIGSAW_CALCULATOR_ZL_H

@@ -1,14 +1,16 @@
-#ifndef RJigsawTools_PreselectTwoLeptonEvents_H
-#define RJigsawTools_PreselectTwoLeptonEvents_H
+#ifndef FactoryTools_SelectTwoLeptonEvents_H
+#define FactoryTools_SelectTwoLeptonEvents_H
 
 #include <EventLoop/Algorithm.h>
 
-class PreselectTwoLeptonEvents : public EL::Algorithm
+class SelectTwoLeptonEvents : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
 public:
   // float cutValue;
+
+
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -20,7 +22,7 @@ public:
 
 
   // this is a standard constructor
-  PreselectTwoLeptonEvents ();
+  SelectTwoLeptonEvents ();
 
   // these are the functions inherited from Algorithm
   virtual EL::StatusCode setupJob (EL::Job& job);
@@ -34,7 +36,7 @@ public:
   virtual EL::StatusCode histFinalize ();
 
   // this is needed to distribute the algorithm to the workers
-  ClassDef(PreselectTwoLeptonEvents, 1);
+  ClassDef(SelectTwoLeptonEvents, 1);
 };
 
 #endif

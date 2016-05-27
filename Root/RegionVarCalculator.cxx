@@ -6,8 +6,8 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include "RJigsawTools/RegionVarCalculator.h"
-#include "RJigsawTools/strongErrorCheck.h"
+#include "FactoryTools/RegionVarCalculator.h"
+#include "FactoryTools/strongErrorCheck.h"
 
 #include <xAODAnaHelpers/HelperFunctions.h>
 

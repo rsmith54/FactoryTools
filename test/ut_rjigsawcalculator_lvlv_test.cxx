@@ -2,7 +2,7 @@
 //date   : December 2015
 //adapted from Code from Nils Krumnack
 
-#include <RJigsawTools/RJigsawCalculator_lvlv.h>
+#include <FactoryTools/RJigsawCalculator_lvlv.h>
 
 #include <RootCoreUtils/Assert.h>
 #include <TSystem.h>

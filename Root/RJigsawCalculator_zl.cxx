@@ -26,7 +26,7 @@
 #include "RestFrames/ContraBoostInvJigsaw.hh"
 #include "RestFrames/SelfAssemblingRecoFrame.hh"
 
-#include "RJigsawTools/RJigsawCalculator_zl.h"
+#include "FactoryTools/RJigsawCalculator_zl.h"
 #include "EventLoop/StatusCode.h"
 
 // this is needed to distribute the algorithm to the workers

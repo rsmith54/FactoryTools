@@ -1,15 +1,25 @@
-#ifndef RJigsawTools_MCEventVeto_H
-#define RJigsawTools_MCEventVeto_H
+#ifndef FactoryTools_CalculateRegionVars_H
+#define FactoryTools_CalculateRegionVars_H
 
 #include <EventLoop/Algorithm.h>
 
+class RegionVarCalculator;
 
-class MCEventVeto : public EL::Algorithm
+class CalculateRegionVars : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
 public:
   // float cutValue;
+
+  enum RegionCalculatorName {
+    none           = 0,
+    lvlvCalculator = 1,
+    zlCalculator   = 2,
+    tlsCalculator  = 3,
+    b4jCalculator  = 4
+  };
+
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -18,10 +28,10 @@ public:
   // Tree *myTree; //!
   // TH1 *myHist; //!
 
-
+  RegionCalculatorName  calculatorName;
 
   // this is a standard constructor
-  MCEventVeto ();
+  CalculateRegionVars ();
 
   // these are the functions inherited from Algorithm
   virtual EL::StatusCode setupJob (EL::Job& job);
@@ -34,8 +44,12 @@ public:
   virtual EL::StatusCode finalize ();
   virtual EL::StatusCode histFinalize ();
 
+private :
+  RegionVarCalculator  * m_calculator;//!
+
+public :
   // this is needed to distribute the algorithm to the workers
-  ClassDef(MCEventVeto, 1);
+  ClassDef(CalculateRegionVars, 1);
 };
 
 #endif

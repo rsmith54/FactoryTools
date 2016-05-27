@@ -7,7 +7,7 @@
 
 
 # the name of the package:
-PACKAGE              = RJigsawTools
+PACKAGE              = FactoryTools
 
 # the libraries to link with this one:
 PACKAGE_PRELOAD      =

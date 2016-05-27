@@ -26,7 +26,7 @@
 #include "RestFrames/ContraBoostInvJigsaw.hh"
 #include "RestFrames/SelfAssemblingRecoFrame.hh"
 
-#include "RJigsawTools/RJigsawCalculator_tls.h"
+#include "FactoryTools/RJigsawCalculator_tls.h"
 #include "EventLoop/StatusCode.h"
 #include "xAODBase/ObjectType.h"
 

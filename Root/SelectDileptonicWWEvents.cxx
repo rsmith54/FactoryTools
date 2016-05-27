@@ -1,7 +1,7 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <RJigsawTools/SelectDileptonicWWEvents.h>
+#include <FactoryTools/SelectDileptonicWWEvents.h>
 
 #include <AsgTools/MsgStream.h>
 #include <AsgTools/MsgStreamMacros.h>
@@ -12,7 +12,7 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/strongErrorCheck.h>
+#include <FactoryTools/strongErrorCheck.h>
 
 #include "xAODBase/IParticleContainer.h"
 #include "xAODParticleEvent/ParticleAuxContainer.h"

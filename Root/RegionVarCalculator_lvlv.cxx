@@ -6,8 +6,8 @@
 #include "xAODBase/IParticleContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 
-#include "RJigsawTools/RegionVarCalculator_lvlv.h"
-#include "RJigsawTools/strongErrorCheck.h"
+#include "FactoryTools/RegionVarCalculator_lvlv.h"
+#include "FactoryTools/strongErrorCheck.h"
 
 #include <xAODAnaHelpers/HelperFunctions.h>
 

@@ -1,5 +1,5 @@
 
-#include "RJigsawTools/MCEventVetoHelper.h"
+#include "FactoryTools/MCEventVetoHelper.h"
 
 #include "xAODTruth/TruthParticle.h"
 #include "xAODTruth/TruthVertex.h"

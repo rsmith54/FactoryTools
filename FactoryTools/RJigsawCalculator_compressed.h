@@ -3,7 +3,7 @@
 //author : Lawrence Lee
 //date   : February 2016
 
-#include "RJigsawTools/RJigsawCalculator.h"
+#include "FactoryTools/RJigsawCalculator.h"
 
 namespace RestFrames {
   class LabRecoFrame ;

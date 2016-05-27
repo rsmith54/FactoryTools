@@ -1,5 +1,5 @@
-#ifndef RJigsawTools_CalibrateST_H
-#define RJigsawTools_CalibrateST_H
+#ifndef FactoryTools_CalibrateST_H
+#define FactoryTools_CalibrateST_H
 
 #include <EventLoop/Algorithm.h>
 #include "SUSYTools/SUSYObjDef_xAOD.h"

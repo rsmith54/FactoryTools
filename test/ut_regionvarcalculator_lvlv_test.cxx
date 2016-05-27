@@ -2,7 +2,7 @@
 //date   : January 2015
 //adapted from code from Nils Krumnack
 
-#include <RJigsawTools/RegionVarCalculator_lvlv.h>
+#include <FactoryTools/RegionVarCalculator_lvlv.h>
 #include <EventLoop/Worker.h>
 #include <xAODRootAccess/TStore.h>
 
@@ -12,7 +12,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-#include <RJigsawTools/strongErrorCheck.h>
+#include <FactoryTools/strongErrorCheck.h>
 
 #include <map>
 #include <xAODMissingET/MissingET.h>

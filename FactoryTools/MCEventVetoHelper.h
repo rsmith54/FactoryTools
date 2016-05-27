@@ -1,5 +1,5 @@
-#ifndef RJigsawTools_MCEventVetoHelper_H_
-#define RJigsawTools_MCEventVetoHelper_H_
+#ifndef FactoryTools_MCEventVetoHelper_H_
+#define FactoryTools_MCEventVetoHelper_H_
 
 #include "xAODJet/JetContainer.h"
 #include "xAODMissingET/MissingETContainer.h"

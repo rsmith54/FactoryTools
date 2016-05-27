@@ -1,9 +1,9 @@
-#ifndef RJigsawTools_SelectDiFatJetEvents_H
-#define RJigsawTools_SelectDiFatJetEvents_H
+#ifndef FactoryTools_SelectDileptonicWWEvents_H
+#define FactoryTools_SelectDileptonicWWEvents_H
 
 #include <EventLoop/Algorithm.h>
 
-class SelectDiFatJetEvents : public EL::Algorithm
+class SelectDileptonicWWEvents : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
@@ -22,7 +22,7 @@ public:
 
 
   // this is a standard constructor
-  SelectDiFatJetEvents ();
+  SelectDileptonicWWEvents ();
 
   // these are the functions inherited from Algorithm
   virtual EL::StatusCode setupJob (EL::Job& job);
@@ -36,7 +36,7 @@ public:
   virtual EL::StatusCode histFinalize ();
 
   // this is needed to distribute the algorithm to the workers
-  ClassDef(SelectDiFatJetEvents, 1);
+  ClassDef(SelectDileptonicWWEvents, 1);
 };
 
 #endif

@@ -3,7 +3,7 @@
 //author : Russell Smith
 //date   : December 2015
 
-#include "RJigsawTools/RJigsawCalculator.h"
+#include "FactoryTools/RJigsawCalculator.h"
 
 namespace RestFrames {
   class LabGenFrame;

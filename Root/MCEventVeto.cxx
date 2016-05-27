@@ -1,8 +1,8 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <RJigsawTools/MCEventVeto.h>
-#include <RJigsawTools/MCEventVetoHelper.h>
+#include <FactoryTools/MCEventVeto.h>
+#include <FactoryTools/MCEventVetoHelper.h>
 
 #include <AsgTools/MsgStream.h>
 #include <AsgTools/MsgStreamMacros.h>
@@ -15,7 +15,7 @@
 
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
-#include <RJigsawTools/strongErrorCheck.h>
+#include <FactoryTools/strongErrorCheck.h>
 
 
 // this is needed to distribute the algorithm to the workers
