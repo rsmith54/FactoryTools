@@ -24,17 +24,38 @@ EL::StatusCode RegionVarCalculator::doGeneralCalculations(std::map<std::string, 
   const xAOD::EventInfo* eventInfo = nullptr;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
+  bool isMC = false;
+  if(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ){
+    isMC = true;
+  }
+
+  // Include variables for all samples ///////////////////////////////                                                                                                             
+  //                                                                                                                                                                               
   RegionVars["runNumber"]   = eventInfo->runNumber();
   RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
   RegionVars["bcid"]        = eventInfo->bcid();
   RegionVars["eventNumber"] = eventInfo->eventNumber();
-  RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
+
+  //                                                                                                                                                                               
+  /////////////////////////////////////////////////////////////////////                                                                                                            
+
+  // For MC Samples only (Not defined for data) ///////////////////////                                                                                                            
+  //                                                                                                                                                                               
+  if(isMC){
+    RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
+    RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
+  }
+  //                                                                                                                                                                               
+  ///////////////////////////////////////////////////////////////////// 
+ 
+  // Include variables for all samples ///////////////////////////////                                                                                                             
+  //
+  RegionVars["pileupWeight"]  = eventInfo->auxdecor< float >("PileupWeight");
   RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
   RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
-
-  RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
-  RegionVars["pileupWeight"]  = eventInfo->auxdecor< float >("PileupWeight");
-
+  
+  //                                                                                                                                                                               
+  /////////////////////////////////////////////////////////////////////
 
   // Get relevant info from the vertex container //////////////////////
   //
