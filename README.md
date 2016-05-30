@@ -31,7 +31,7 @@ rc compile
 Then you can run a test with e.g.:
 
 ```
-python FactoryTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/p2613/
+python FactoryTools/util/run_tls.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/
 ```
 
 (This points to a public directory so this should run for anyone on afs.)
