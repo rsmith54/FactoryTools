@@ -18,7 +18,7 @@ basicEventSelectionDict = {
     "m_storePassL1" : False,
     "m_storePassHLT" : True,
     "m_storeTrigKeys" : False,
-    "m_derivationName" : "SUSY1KernelSkim",
+    "m_derivationName" : "",
     "m_checkDuplicatesData" : True,
     "m_checkDuplicatesMC" : True,
     "m_metaDataStreamName" : "trees",
