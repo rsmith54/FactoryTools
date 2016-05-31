@@ -19,11 +19,14 @@
 #include <FactoryTools/PreselectDiFatJetEvents.h>
 #include <FactoryTools/SelectDiFatJetEvents.h>
 
+#include <FactoryTools/SelectNixonResolvedEvents.h>
+
 #include <FactoryTools/RegionVarCalculator.h>
 #include <FactoryTools/RegionVarCalculator_lvlv.h>
 #include <FactoryTools/RegionVarCalculator_zl.h>
 #include <FactoryTools/RegionVarCalculator_tls.h>
 #include <FactoryTools/RegionVarCalculator_b4j.h>
+#include <FactoryTools/RegionVarCalculator_nr.h>
 
 #include <FactoryTools/RJigsawCalculator.h>
 #include <FactoryTools/RJigsawCalculator_compressed.h>
@@ -99,6 +102,10 @@
 #endif
 
 #ifdef __CINT__
+#pragma link C++ class RegionVarCalculator_nr+;
+#endif
+
+#ifdef __CINT__
 #pragma link C++ class SelectZeroLeptonEvents+;
 #endif
 
@@ -144,4 +151,8 @@
 
 #ifdef __CINT__
 #pragma link C++ class CalculateRegionVars+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class SelectNixonResolvedEvents+;
 #endif
