@@ -1,7 +1,7 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
-#include <FactoryTools/PreselectDileptonicWWEvents.h>
+#include <FactoryTools/SelectNixonResolvedEvents.h>
 
 #include <AsgTools/MsgStream.h>
 #include <AsgTools/MsgStreamMacros.h>
@@ -10,20 +10,20 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include <TSystem.h>
-
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
 #include <FactoryTools/strongErrorCheck.h>
 
+#include "xAODParticleEvent/ParticleContainer.h"
+#include "xAODParticleEvent/ParticleAuxContainer.h"
 
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(PreselectDileptonicWWEvents)
+ClassImp(SelectNixonResolvedEvents)
 
 
 
-PreselectDileptonicWWEvents :: PreselectDileptonicWWEvents ()
+SelectNixonResolvedEvents :: SelectNixonResolvedEvents ()
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -35,7 +35,7 @@ PreselectDileptonicWWEvents :: PreselectDileptonicWWEvents ()
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: setupJob (EL::Job& job)
+EL::StatusCode SelectNixonResolvedEvents :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -49,7 +49,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: setupJob (EL::Job& job)
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: histInitialize ()
+EL::StatusCode SelectNixonResolvedEvents :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -60,7 +60,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: histInitialize ()
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: fileExecute ()
+EL::StatusCode SelectNixonResolvedEvents :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -69,7 +69,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: fileExecute ()
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: changeInput (bool firstFile)
+EL::StatusCode SelectNixonResolvedEvents :: changeInput (bool firstFile)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -79,7 +79,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: changeInput (bool firstFile)
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: initialize ()
+EL::StatusCode SelectNixonResolvedEvents :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -89,53 +89,63 @@ EL::StatusCode PreselectDileptonicWWEvents :: initialize ()
   // doesn't get called if no events are processed.  So any objects
   // you create here won't be available in the output if you have no
   // input events.
-
-
-
-
-  // // GRL
-  // m_grl = new GoodRunsListSelectionTool("GoodRunsListSelectionTool");
-  // // Make this python-configurable! /LL
-  // std::string GRLFilePath = "$ROOTCOREBIN/data/SUSYTools/GRL/Moriond2016/data15_13TeV.periodAllYear_DetStatus-v73-pro19-08_DQDefects-00-01-02_PHYS_StandardGRL_All_Good_25ns.xml";
-  // std::vector<std::string> vecStringGRL;
-  // vecStringGRL.push_back(GRLFilePath);
-  // STRONG_CHECK(m_grl->setProperty( "GoodRunsListVec", vecStringGRL));
-
-  // // Make this python-configurable! /LL
-  // STRONG_CHECK(m_grl->setProperty("PassThrough", false)); // if true (default) will ignore result of GRL and will just pass all events
-  // STRONG_CHECK(m_grl->initialize());
-
-
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: execute ()
+EL::StatusCode SelectNixonResolvedEvents :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
   // histograms and trees.  This is where most of your actual analysis
   // code will go.
 
-  //todo add some preselection here!
-
-  xAOD::TStore* store = wk()->xaodStore();
+  xAOD::TStore * store = wk()->xaodStore();
   xAOD::TEvent* event = wk()->xaodEvent();
 
   const xAOD::EventInfo* eventInfo = 0;
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
-  eventInfo->auxdecor< std::string >("regionName") = "Preselected";
 
+  // If the event didn't pass the preselection alg, don't bother doing anything with it...
+  std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("Preselected?: " << preselectedRegionName  );
 
-  if(eventInfo->auxdecor< std::string >("regionName") == "")  wk()->skipEvent();
+  if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
+
+  std::pair< xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
+  selectedJets.first->setStore(selectedJets.second);
+
+  STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedJets.second    , "selectedJetsAux."    ) );//todo configurable if needed
+
+  const xAOD::JetContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "SignalJets"));
+
+  for (const auto& jet : *jets_nominal) {
+    // Already did cleaning/pT/eta requirements before.
+    // Leave this as is for now in case we want more options later.
+    ATH_MSG_VERBOSE( "jet pt : " << jet->pt() );
+    
+    xAOD::Jet* newjet = new xAOD::Jet();
+    selectedJets.first->push_back(newjet  );
+    *newjet= *jet;
+  }
+
+  //Let's just categorize from here maybe? But if we want different CRs in different algs,
+  //then we'd need to play with something in the store a little more smartly
+
+  ATH_MSG_DEBUG("Writing particle container for calculator to store");
+
+  eventInfo->auxdecor< std::string >("regionName") = "SR" ;
+  ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: postExecute ()
+EL::StatusCode SelectNixonResolvedEvents :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -145,7 +155,7 @@ EL::StatusCode PreselectDileptonicWWEvents :: postExecute ()
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: finalize ()
+EL::StatusCode SelectNixonResolvedEvents :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -156,21 +166,12 @@ EL::StatusCode PreselectDileptonicWWEvents :: finalize ()
   // submission node after all your histogram outputs have been
   // merged.  This is different from histFinalize() in that it only
   // gets called on worker nodes that processed input events.
-
-
-  // GRL
-  // if (m_grl) {
-  //   delete m_grl;
-  //   m_grl = 0;
-  // }
-
-
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode PreselectDileptonicWWEvents :: histFinalize ()
+EL::StatusCode SelectNixonResolvedEvents :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker

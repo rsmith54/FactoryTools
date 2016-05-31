@@ -5,16 +5,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import commonOptions
+import jetCalibConfig
 
 parser = commonOptions.parseCommonOptions()
 #you can add additional options here if you want
 #parser.add_option('--verbosity', help   = "Run all algs at the selected verbosity.",choices=("info", "warning","error", "debug", "verbose"), default="error")
+parser.add_option('--truth', help = "Specify running on truth jets", action="store_true", dest="isTruth")
 
 (options, args) = parser.parse_args()
 #print options
 
 ROOT.gROOT.Macro( '$ROOTCOREDIR/scripts/load_packages.C' )
-import basicEventSelectionConfig
 
 # create a new sample handler to describe the data files we use
 logging.info("creating new sample handler")
@@ -33,41 +34,49 @@ job.useXAOD()
 
 logging.info("creating algorithms")
 
+outputFilename = "trees"
+output = ROOT.EL.OutputStream(outputFilename);
+
 #here we add the algorithms we want to run over
 import collections
 algsToRun = collections.OrderedDict()
 
-outputFilename = "trees"
-output = ROOT.EL.OutputStream(outputFilename);
-
+# Basic event selection
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
-algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
-algsToRun["calibrateST" ]               = ROOT.CalibrateST()
-algsToRun["calibrateST" ].systName      = ""
+# Jet calibration and selection
+if not options.isTruth :
+  jetCalibDict = jetCalibConfig.jetCalibrationDict
+  algsToRun["calibrateJets"]           = ROOT.JetCalibrator()
+  commonOptions.configxAODAnaHelperAlg(algsToRun["calibrateJets"],jetCalibDict)
 
-algsToRun["preselectDileptonicWW"  ]    = ROOT.PreselectDileptonicWWEvents()
-algsToRun["selectDileptonicWW"     ]    = ROOT.SelectDileptonicWWEvents()
-algsToRun["postselectDileptonicWW" ]    = ROOT.PostselectDileptonicWWEvents()
+  jetSelectionDict = jetCalibConfig.jetSelectionDict
 
-#todo move the enums to a separate file since they are shared by multiple algs
-algsToRun["calculateRJigsawVariables" ]                = ROOT.CalculateRJigsawVariables()
-algsToRun["calculateRJigsawVariables" ].calculatorName = ROOT.CalculateRJigsawVariables.lvlvCalculator
-algsToRun["calculateRegionVars" ]                      = ROOT.CalculateRegionVars()
-algsToRun["calculateRegionVars" ].calculatorName       = ROOT.CalculateRegionVars.lvlvCalculator
+else :
+  jetSelectionDict = jetCalibConfig.jetSelectionDict_truth
 
-for regionName in ["SR","CR1L","CR0L"]:
-    tmpWriteOutputNtuple                     = ROOT.WriteOutputNtuple()
-    tmpWriteOutputNtuple.outputName          = outputFilename
-    tmpWriteOutputNtuple.regionName          = regionName
-    tmpWriteOutputNtuple.systName            = ""
-    algsToRun["writeOutputNtuple"+regionName] = tmpWriteOutputNtuple
+print jetSelectionDict
+algsToRun["selectJets"]              = ROOT.JetSelector()
+commonOptions.configxAODAnaHelperAlg(algsToRun["selectJets"],jetSelectionDict)
+
+algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
+algsToRun["selectNixonResolved"]        = ROOT.SelectNixonResolvedEvents()
+algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
+
+algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
+algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.nrCalculator
+
+regionName = "SR"
+tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
+tmpWriteOutputNtuple.outputName            = outputFilename
+tmpWriteOutputNtuple.regionName            = regionName
+tmpWriteOutputNtuple.systName            = ""
+algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
 if options.doSystematics : commonOptions.doSystematics(algsToRun)
 
 job.outputAdd(output);
-
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)
 
 if options.nevents > 0 :
