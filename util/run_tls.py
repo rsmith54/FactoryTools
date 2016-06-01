@@ -41,9 +41,8 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
-setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY2KernelSkim" )
-algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
+commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
+#algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()

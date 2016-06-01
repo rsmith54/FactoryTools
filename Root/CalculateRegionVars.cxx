@@ -12,6 +12,7 @@
 #include <FactoryTools/RegionVarCalculator_tls.h>
 #include <FactoryTools/RegionVarCalculator_zl.h>
 #include <FactoryTools/RegionVarCalculator_b4j.h>
+#include <FactoryTools/RegionVarCalculator_nr.h>
 #include <FactoryTools/CalculateRegionVars.h>
 
 #include <FactoryTools/printDebug.h>
@@ -111,6 +112,10 @@ EL::StatusCode CalculateRegionVars :: initialize ()
   }  
   else if(calculatorName == b4jCalculator){
     m_calculator  = new RegionVarCalculator_b4j;
+    STRONG_CHECK_SC( m_calculator->initialize(wk()));
+  }
+  else if(calculatorName == nrCalculator){
+    m_calculator  = new RegionVarCalculator_nr;
     STRONG_CHECK_SC( m_calculator->initialize(wk()));
   }
   else {

@@ -118,7 +118,7 @@ def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
         logging.info( "you gave an illegal driver name.  Not submitting.")
 
 
-def configBasicEventSelection(alg , configDict = basicEventSelectionConfig.basicEventSelectionDict ) :
+def configxAODAnaHelperAlg(alg , configDict = basicEventSelectionConfig.basicEventSelectionDict ) :
     for key, value in configDict.iteritems() :
         if not hasattr(alg, key) :
             raise AttributeError(key)

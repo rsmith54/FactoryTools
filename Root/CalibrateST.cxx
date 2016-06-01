@@ -143,21 +143,32 @@ EL::StatusCode CalibrateST :: execute ()
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
+  bool hasElectrons = event->contains<xAOD::ElectronContainer>( "Electrons" ); 
+  bool hasPhotons = event->contains<xAOD::PhotonContainer>( "Photons" );  
+  bool hasMuons = event->contains<xAOD::MuonContainer>( "Muons" ); 
+  bool hasTaus = event->contains<xAOD::TauJetContainer>( "TauJets" );
+
   // Get the nominal object containers from the event
   // Electrons
   xAOD::ElectronContainer* electrons_nominal(nullptr);
   xAOD::ShallowAuxContainer* electrons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetElectrons(electrons_nominal, electrons_nominal_aux, true) );
+  if(hasElectrons) {
+    STRONG_CHECK( m_objTool->GetElectrons(electrons_nominal, electrons_nominal_aux, true) );
+  }
 
   // Photons
   xAOD::PhotonContainer* photons_nominal(nullptr);
   xAOD::ShallowAuxContainer* photons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetPhotons(photons_nominal,photons_nominal_aux, true) );
+  if(hasPhotons) {
+    STRONG_CHECK( m_objTool->GetPhotons(photons_nominal,photons_nominal_aux, true) );
+  }
 
   // Muons
   xAOD::MuonContainer* muons_nominal(nullptr);
   xAOD::ShallowAuxContainer* muons_nominal_aux(nullptr);
-  STRONG_CHECK( m_objTool->GetMuons(muons_nominal, muons_nominal_aux, true) );
+  if(hasMuons) {
+    STRONG_CHECK( m_objTool->GetMuons(muons_nominal, muons_nominal_aux, true) );
+  }
 
   // Jets
   xAOD::JetContainer* jets_nominal(nullptr);
@@ -174,15 +185,17 @@ EL::StatusCode CalibrateST :: execute ()
   // Taus
   xAOD::TauJetContainer* taus_nominal(nullptr);
   xAOD::ShallowAuxContainer* taus_nominal_aux(nullptr);
-  //  STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
-
+  if(hasTaus) {
+    STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
+  }
 
   xAOD::MissingETContainer*    newMetContainer    = new xAOD::MissingETContainer();
   xAOD::MissingETAuxContainer* newMetAuxContainer = new xAOD::MissingETAuxContainer();
   newMetContainer->setStore(newMetAuxContainer);
 
   //todo this needs to be moved and calculated after selections
-  STRONG_CHECK( m_objTool->GetMET(*newMetContainer,
+  if (hasElectrons && hasMuons && hasPhotons) 
+    STRONG_CHECK( m_objTool->GetMET(*newMetContainer,
 				  jets_nominal,
 				  electrons_nominal,
 				  muons_nominal,
@@ -194,7 +207,8 @@ EL::StatusCode CalibrateST :: execute ()
 				  ));
 
 
-  STRONG_CHECK(  m_objTool->OverlapRemoval(electrons_nominal,
+  if (hasElectrons && hasMuons) 
+    STRONG_CHECK(  m_objTool->OverlapRemoval(electrons_nominal,
 					   muons_nominal,
 					   jets_nominal
 					   )
@@ -214,12 +228,14 @@ EL::StatusCode CalibrateST :: execute ()
   // Lepton Scale Factors added as decorators to eventInfo object
 
   float muSF = 1.0;
-  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons) 
+     muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
   eventInfo->auxdecor<float>("muSF") = muSF ;
 
 
   float elSF = 1.0;
-  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons) 
+    elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
   eventInfo->auxdecor<float>("elSF") = elSF ;
 
 

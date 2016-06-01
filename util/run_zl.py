@@ -40,7 +40,7 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName     = ""

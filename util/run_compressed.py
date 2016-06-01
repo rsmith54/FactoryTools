@@ -40,7 +40,7 @@ import collections
 algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
-commonOptions.configBasicEventSelection(algsToRun["basicEventSelection"] )
+commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
