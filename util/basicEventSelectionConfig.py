@@ -12,7 +12,7 @@ basicEventSelectionDict = {
     "m_PVNTrack" : 2,
     "m_applyEventCleaningCut" : True,
     "m_applyCoreFlagsCut" : True,
-    "m_triggerSelection" : "HLT_(e2|mu2).*",
+    "m_triggerSelection" : "",
     "m_applyTriggerCut" : False,
     "m_storeTrigDecisions" : True,
     "m_storePassL1" : False,
