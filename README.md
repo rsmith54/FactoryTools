@@ -53,7 +53,7 @@ lsetup panda
 And then you can call
 
 ```
-python FactoryTools/util/run_tls.py --doOverwrite --driver grid --inputDS FactoryTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
+python FactoryTools/util/run_zl.py --doOverwrite --driver grid --inputDS FactoryTools/data/mc15c_13TeV_SM_SUSY2_p2613.ds
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
