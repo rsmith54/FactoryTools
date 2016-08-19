@@ -41,6 +41,8 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
+setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY1KernelSkim" )
+
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName     = ""
