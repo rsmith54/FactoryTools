@@ -120,20 +120,111 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
 
+
+
+  double MEff = 0;
+  double HT = 0;
+
+  for( const auto& jet : *jets_nominal) {
+    HT += toGeV(jet->pt());
+  }
+
+  MEff = HT + toGeV((*metcont)["Final"]->met());
+
+  RegionVars["MEff"] = MEff;
+  RegionVars["HT"] = HT;
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 EL::StatusCode RegionVarCalculator_zl::doSRCalculations(std::map<std::string, double>& RegionVars,
 							  std::map<std::string, std::vector<double> > & VecRegionVars)
-{/*todo*/return EL::StatusCode::SUCCESS;}
+{
+  return EL::StatusCode::SUCCESS;
+}
 
 
 EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, double>& RegionVars,
 							    std::map<std::string, std::vector<double> > & VecRegionVars)
-{/*todo*/return EL::StatusCode::SUCCESS;}
+{
+  auto toGeV = [](float a){return a*.001;};
+
+
+  xAOD::TStore * store = m_worker->xaodStore();
+  xAOD::TEvent * event = m_worker->xaodEvent();
+
+
+  xAOD::MissingETContainer * metcont = nullptr;
+  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
+
+  xAOD::IParticleContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
+
+  xAOD::IParticleContainer* leptons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
+
+  double MEff = 0;
+  double HT = 0;
+
+  for( const auto& jet : *jets_nominal) {
+    HT += toGeV(jet->pt());
+  }
+
+  for( const auto& lepton : *leptons_nominal) {
+    HT += toGeV(lepton->pt());
+  }
+
+  MEff = HT + toGeV((*metcont)["Final"]->met());
+
+  RegionVars["MEff"] = MEff;
+  RegionVars["HT"] = HT;
+
+  return EL::StatusCode::SUCCESS;
+
+}
 
 
 EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, double>& RegionVars,
 							    std::map<std::string, std::vector<double> > & VecRegionVars)
-{/*todo*/return EL::StatusCode::SUCCESS;}
+{
+  auto toGeV = [](float a){return a*.001;};
+
+
+  xAOD::TStore * store = m_worker->xaodStore();
+  xAOD::TEvent * event = m_worker->xaodEvent();
+
+  xAOD::MissingETContainer * metcont = nullptr;
+  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
+
+  xAOD::IParticleContainer* jets_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
+
+  xAOD::IParticleContainer* leptons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
+
+  double MEff = 0;
+  double HT = 0;
+  double MET = 0;
+
+  xAOD::MissingET METVec(*(*metcont)["Final"]);
+
+
+  for( const auto& lepton : *leptons_nominal) {
+    METVec.add(lepton);
+  }
+
+
+  for( const auto& jet : *jets_nominal) {
+    HT += toGeV(jet->pt());
+  }
+
+  MET = toGeV(  METVec.met() );
+  MEff = HT + MET;
+
+  RegionVars["MEff"] = MEff;
+  RegionVars["MET"] = MET;
+
+  return EL::StatusCode::SUCCESS;
+
+}

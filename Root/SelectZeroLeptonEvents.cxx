@@ -199,6 +199,8 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
     selectedRJigsawParticles.first->push_back( myjet );
   }
 
+  //important for consistent tree production for e.g. backgrounds that often have too few objects
+  if(selectedRJigsawParticles.first->size()<2) wk()->skipEvent(); 
 
   ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 
