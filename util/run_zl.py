@@ -46,8 +46,8 @@ setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY1KernelSkim" 
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].systName     = ""
-algsToRun["calibrateST" ].PRWConfigFileNames       = "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/SUSYTools/merged_prw_mc15c.root"
-algsToRun["calibrateST" ].PRWLumiCalcFileNames     = "${ROOTCOREBIN}/data/FactoryTools/ilumicalc_histograms_None_276262-304494_OflLumi-13TeV-005.root"
+algsToRun["calibrateST" ].PRWConfigFileNames       = algsToRun["basicEventSelection"].m_PRWFileNames
+algsToRun["calibrateST" ].PRWLumiCalcFileNames     = algsToRun["basicEventSelection"].m_lumiCalcFileNames
 algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
 algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
 # algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
