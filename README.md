@@ -16,9 +16,11 @@ source FactoryTools/util/setup.sh
 Now we can checkout our dependencies using the following :
 
 ```
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools; cd CommonTools; svn update -r 417222; cd -;
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
-git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 2d502e1ecc4e4f45db2c74b34f133641f79a5c59;  git checkout -b localRJbranch; cd ..;
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-02 SUSYTools;
+rc checkout SUSYTools/doc/packages.txt;
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..;
 ```
 
 And of course do a normal rc set up procedure

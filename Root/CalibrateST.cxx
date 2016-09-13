@@ -110,12 +110,30 @@ EL::StatusCode CalibrateST :: initialize ()
     return EL::StatusCode::FAILURE;
   }
 
+  if( PRWLumiCalcFileNames == notSetString()) {
+    ATH_MSG_ERROR( "you need to set the lumicalc file path in your run script!");
+    return EL::StatusCode::FAILURE;
+  }
+
+  if( PRWConfigFileNames == notSetString()) {
+    ATH_MSG_ERROR( "you need to set the pileup reweighting file path in your run script!");
+    return EL::StatusCode::FAILURE;
+  }
+
 
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
 
   STRONG_CHECK( m_objTool->setProperty("DataSource", datasource)) ;
   STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
 
+  std::vector<std::string> PRWConfigFileNamesVec  ;
+  std::vector<std::string> PRWLumiCalcFileNamesVec;
+
+  PRWConfigFileNamesVec  .push_back(PRWConfigFileNames  ) ;
+  PRWLumiCalcFileNamesVec.push_back(PRWLumiCalcFileNames) ;
+
+  STRONG_CHECK( m_objTool->setProperty("PRWConfigFiles",   PRWConfigFileNamesVec     ) );
+  STRONG_CHECK( m_objTool->setProperty("PRWLumiCalcFiles", PRWLumiCalcFileNamesVec   ) );
 
   m_objTool->msg().setLevel( this->msg().level());
   STRONG_CHECK( m_objTool->initialize());
