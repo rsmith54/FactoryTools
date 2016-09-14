@@ -1,7 +1,8 @@
-image: lukasheinrich/atlas_base_external_cvmfs
 
 before_script:
-  - bash
+  - docker info
+  - docker pull  hepsw/cvmfs-atlas
+  - docker run --privileged -it -v $HOME:$HOME -e DISPLAY=${ip}:0 lukasheinrich/atlas_base_fromhepsw /bin/bash
   - pwd
   - cd ..
   - pwd; ls
