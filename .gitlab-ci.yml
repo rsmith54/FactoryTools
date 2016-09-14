@@ -1,4 +1,6 @@
 before_script:
+  - pwd
+  - cd ..
   - pwd; ls
   - source FactoryTools/util/setup.sh
   - git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
