@@ -1,4 +1,6 @@
 
+image: lukasheinrich/atlas_base_fromhepsw
+
 before_script:
   - cvmfs_talk
   - pwd
