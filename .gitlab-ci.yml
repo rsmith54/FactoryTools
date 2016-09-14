@@ -1,9 +1,11 @@
 image: lukasheinrich/atlas_base_fromhepsw
 
 before_script:
+  - bash
   - pwd
   - cd ..
   - pwd; ls
+  - cvmfs_talk
   - source FactoryTools/util/setup.sh
   - git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
   - rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
