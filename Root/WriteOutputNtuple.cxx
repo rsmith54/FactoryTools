@@ -123,7 +123,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 
   if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
-  ATH_MSG_DEBUG("Our event passed one of the selection " << regionName);
+  ATH_MSG_DEBUG("Our event passed one of the selections " << regionName);
 
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
   if( eventRegionName != regionName ) return EL::StatusCode::SUCCESS;

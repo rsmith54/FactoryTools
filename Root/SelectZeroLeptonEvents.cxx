@@ -117,6 +117,10 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedLeptons.first->setStore(selectedLeptons.second);
+
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedPhotons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
+  selectedPhotons.first->setStore(selectedPhotons.second);
+
   std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedJets   ( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedJets.first->setStore(selectedJets.second);
   std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer *> selectedRJigsawParticles(new xAOD::IParticleContainer(SG::VIEW_ELEMENTS), nullptr);
@@ -124,6 +128,10 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedLeptons.second , "selectedLeptonsAux."    ) );//todo configurable if needed
+
+  STRONG_CHECK( store->record( selectedPhotons.first  , "selectedPhotons"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedPhotons.second , "selectedPhotonsAux."    ) );//todo configurable if needed
+
   STRONG_CHECK( store->record( selectedJets.first     , "selectedJets"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedJets.second    , "selectedJetsAux."    ) );//todo configurable if needed
 
@@ -141,6 +149,11 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   xAOD::ElectronContainer* electrons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(electrons_nominal, "STCalibElectrons"));
+
+  xAOD::PhotonContainer* photons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(photons_nominal, "STCalibPhotons"));
+
+
 
   for (const auto& jet : *jets_nominal) {
     if ((int)jet->auxdata<char>("baseline") == 0) continue;
@@ -172,19 +185,54 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
     selectedLeptons.first->push_back( el );
   }
 
+
+  for (const auto& ph : *photons_nominal) {
+    if ((int)ph->auxdata<char>("baseline") == 0) continue;
+    if ((int)ph->auxdata<char>("passOR") != 1) continue;
+    if ((int)ph->auxdata<char>("signal") != 1) continue;
+    // If I've gotten this far, I have a signal, isolated, beautiful el
+    ATH_MSG_VERBOSE( "ph pt : " << ph->pt() );
+
+    selectedPhotons.first->push_back( ph );
+  }
+
   int const nLeptons = selectedLeptons.first->size();
+  int const nPhotons = selectedPhotons.first->size();
 
   ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
+  ATH_MSG_DEBUG("Number of Selected Photons: " << nPhotons  );
 
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
   //then we'd need to play with something in the store a little more smartly
 
-  std::string regionName = "";
 
-  auto  getRegionName = [](int nLeptons){ std::string regionName = "";
-					  if(nLeptons == 0){regionName = "SR";}
-					  if(nLeptons == 1){regionName = "CR1L";}
-					  if(nLeptons == 2){regionName = "CR2L";}
+
+
+  std::vector< std::string > const & passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
+
+  std::map<std::string,int> passedTriggers;
+  passedTriggers["HLT_xe100"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100") != passTrigs.end();
+  passedTriggers["HLT_xe100_mht_L1XE50"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100_mht_L1XE50") != passTrigs.end();
+
+  passedTriggers["HLT_e24_lhmedium_L1EM18VH"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e24_lhmedium_L1EM18VH") != passTrigs.end();
+  passedTriggers["HLT_e26_lhtight_nod0_ivarloose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e26_lhtight_nod0_ivarloose") != passTrigs.end();
+  passedTriggers["HLT_mu20_iloose_L1MU15"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu20_iloose_L1MU15") != passTrigs.end();
+  passedTriggers["HLT_mu26_ivarmedium"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu26_ivarmedium") != passTrigs.end();
+
+  passedTriggers["HLT_g140_loose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_g140_loose") != passTrigs.end();
+
+  passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"]  || passedTriggers["HLT_xe100"];
+  passedTriggers["Electron"] = passedTriggers["HLT_e24_lhmedium_L1EM18VH"] || passedTriggers["HLT_e26_lhtight_nod0_ivarloose"];
+  passedTriggers["Muon"] = passedTriggers["HLT_mu20_iloose_L1MU15"] || passedTriggers["HLT_mu26_ivarmedium"];
+  passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
+
+
+  auto  getRegionName = [](int nLeptons, int nPhotons, std::map<std::string,int>  passedTriggers){ 
+            std::string regionName = "";
+					  if( nLeptons == 0 && passedTriggers["MET"] ) {regionName = "SR";}
+					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR1L";}
+            if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR2L";}
+            if( nPhotons > 0  && passedTriggers["Photon"] ){regionName = "CRY";}
 					  return regionName;};//todo >2 leptons in the SR? pretty rare though
 
   //Here we should add the particles that we want in the calculation to myparticles
@@ -194,20 +242,35 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   //  tmpparticle->setP4( mylepton->p4() );
   //}
 
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nPhotons, passedTriggers )  );
+
+  ATH_MSG_DEBUG("Writing particle container for calculator to store");
+
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nPhotons, passedTriggers ) ;
+
+
   // // What happens if we add the jets into the calculation?
   for( const auto& myjet: *selectedJets.first){
     selectedRJigsawParticles.first->push_back( myjet );
   }
 
+  if (eventInfo->auxdecor< std::string >("regionName") == "CR1L"){
+    for( const auto& mylep: *selectedLeptons.first){
+      selectedRJigsawParticles.first->push_back( mylep );
+    }
+  }
+
+
   //important for consistent tree production for e.g. backgrounds that often have too few objects
-  if(selectedRJigsawParticles.first->size()<2) wk()->skipEvent(); 
+  // if(selectedRJigsawParticles.first->size()<2) {
+  //   eventInfo->auxdecor< std::string >("regionName") = "";
+  // }
 
-  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons)  );
 
-  ATH_MSG_DEBUG("Writing particle container for calculator to store");
-
-  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons) ;
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );
+
+
+
 
   return EL::StatusCode::SUCCESS;
 }

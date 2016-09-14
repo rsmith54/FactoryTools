@@ -44,7 +44,10 @@ EL::StatusCode RegionVarCalculator_zl::doCalculate(std::map<std::string, double 
 							 doCR1LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
 
   else if ( regionName == "CR2L") {return EL::StatusCode(doAllCalculations (RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS &&
-							 doCR2LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
+               doCR2LCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
+
+  else if ( regionName == "CRY") {return EL::StatusCode(doAllCalculations (RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS &&
+               doCRYCalculations(RegionVars, VecRegionVars) == EL::StatusCode::SUCCESS);}
 
 
   return EL::StatusCode::SUCCESS;
@@ -74,7 +77,7 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
 
   //  std::cout << "MET : " << (*metcont)["Final"]->met() << std::endl;
-  RegionVars     ["met"]   = toGeV((*metcont)["Final"]->met());
+  RegionVars     ["MET"]   = toGeV((*metcont)["Final"]->met());
 
   // xAOD::JetContainer* jets_nominal(nullptr);
   // STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
@@ -186,7 +189,7 @@ EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, 
 
 
 EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, double>& RegionVars,
-							    std::map<std::string, std::vector<double> > & VecRegionVars)
+                  std::map<std::string, std::vector<double> > & VecRegionVars)
 {
   auto toGeV = [](float a){return a*.001;};
 
@@ -221,6 +224,62 @@ EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, 
 
   MET = toGeV(  METVec.met() );
   MEff = HT + MET;
+
+  RegionVars["MEff"] = MEff;
+  RegionVars["MET"] = MET;
+
+  return EL::StatusCode::SUCCESS;
+
+}
+
+
+
+EL::StatusCode RegionVarCalculator_zl::doCRYCalculations(std::map<std::string, double>& RegionVars,
+                  std::map<std::string, std::vector<double> > & VecRegionVars)
+{
+  auto toGeV = [](float a){return a*.001;};
+
+  xAOD::TStore * store = m_worker->xaodStore();
+  xAOD::TEvent * event = m_worker->xaodEvent();
+
+  xAOD::MissingETContainer * metcont = nullptr;
+  STRONG_CHECK(store->retrieve(metcont, "STCalibMET"));
+
+  xAOD::IParticleContainer* photons_nominal(nullptr);
+  STRONG_CHECK(store->retrieve(photons_nominal, "selectedPhotons"));
+
+
+  std::vector<double> phPtVec;
+  std::vector<double> phEtaVec;
+  std::vector<double> phPhiVec;
+  std::vector<double> phEVec;
+
+  for( const auto& ph : *photons_nominal) {
+    phPtVec.push_back( toGeV(ph->pt()));
+    phEtaVec.push_back( ph->p4().Eta() );
+    phPhiVec.push_back( ph->p4().Phi() );
+    phEVec.push_back( toGeV(ph->p4().E()) );
+  }
+
+  VecRegionVars[ "phPt" ]  = phPtVec;
+  VecRegionVars[ "phEta" ] = phEtaVec;
+  VecRegionVars[ "phPhi" ] = phPhiVec;
+  VecRegionVars[ "phE" ]   = phEVec;
+
+
+  double MEff = 0;
+  double MET = 0;
+
+  xAOD::MissingET METVec(*(*metcont)["Final"]);
+
+  // for( const auto& photon : *photons_nominal) {
+  //   METVec.add(photon);
+  // }
+
+  METVec.add((*photons_nominal)[0]);
+
+  MEff = toGeV(  METVec.met() );
+  MEff = RegionVars["HT"] + MET;
 
   RegionVars["MEff"] = MEff;
   RegionVars["MET"] = MET;

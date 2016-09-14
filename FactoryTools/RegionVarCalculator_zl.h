@@ -29,7 +29,10 @@ private :
 				      std::map<std::string, std::vector<double> > & VecRegionVars);
 
   EL::StatusCode doCR2LCalculations  (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+              std::map<std::string, std::vector<double> > & VecRegionVars);
+
+  EL::StatusCode doCRYCalculations  (std::map<std::string, double>               & RegionVars,
+              std::map<std::string, std::vector<double> > & VecRegionVars);
 
 
 public :

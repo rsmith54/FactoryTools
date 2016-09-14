@@ -41,7 +41,9 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
-setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY1KernelSkim" )
+setattr(algsToRun["basicEventSelection"], "m_derivationName"  , "SUSY1KernelSkim" )
+setattr(algsToRun["basicEventSelection"], "m_triggerSelection", ".+" )
+setattr(algsToRun["basicEventSelection"], "m_applyTriggerCut" , False )
 
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
@@ -57,7 +59,7 @@ algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVar
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
 algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
 
-for regionName in ["SR","CR1L","CR2L"]:
+for regionName in ["SR","CR1L","CR2L","CRY"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
