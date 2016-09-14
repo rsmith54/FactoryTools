@@ -161,6 +161,8 @@ EL::StatusCode CalibrateST :: execute ()
   const xAOD::EventInfo* eventInfo(nullptr);
   STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
 
+  if( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) m_objTool->ApplyPRWTool();
+
   bool hasElectrons = event->contains<xAOD::ElectronContainer>( "Electrons" ); 
   bool hasPhotons = event->contains<xAOD::PhotonContainer>( "Photons" );  
   bool hasMuons = event->contains<xAOD::MuonContainer>( "Muons" ); 
