@@ -1,14 +1,16 @@
 before_script:
-  - apt-get update -qq && apt-get install -y -qq sqlite3 libsqlite3-dev nodejs
-  - ruby -v
-  - which ruby
-  - gem install bundler --no-ri --no-rdoc
-  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
+  - source FactoryTools/util/setup.sh
+  - git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
+  - rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
+  - git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 2d502e1ecc4e4f45db2c74b34f133641f79a5c59;  git checkout -b localRJbranch; cd ..;
 
-rspec:
+compile:
   script:
-    - bundle exec rspec
+    - rc find_packages
+    - rc compile
 
-rubocop:
+runmc:
   script:
-    - bundle exec rubocop
+    - rc find_packages
+    - rc compile
+    - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/
