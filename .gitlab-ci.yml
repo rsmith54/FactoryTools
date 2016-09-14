@@ -1,4 +1,4 @@
-image: lukasheinrich/atlas_base_fromhepsw
+image: lukasheinrich/atlas_base_external_cvmfs
 
 before_script:
   - bash
