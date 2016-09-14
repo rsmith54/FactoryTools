@@ -1,3 +1,5 @@
+image: hepsw/cvmfs-atlas
+
 before_script:
   - pwd
   - cd ..
