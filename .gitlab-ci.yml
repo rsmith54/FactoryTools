@@ -1,0 +1,12 @@
+myjob:
+  image: lukasheinrich/recast_cvmfs_assisted
+  tags:
+  - cvmfs
+  script:
+  - ls -l /cvmfs/atlas.cern.ch/repo
+  - pwd
+  - source ~/.bashrc  || echo ignore alrb
+  - lsetup root || echo ignore alrb
+  - rcSetup Base,2.4.18 || echo ignore alrb
+  - rc find_packages
+  - rc build
