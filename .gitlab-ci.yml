@@ -1,4 +1,5 @@
- image: lukasheinrich/recast_cvmfs_assisted
+image: lukasheinrich/recast_cvmfs_assisted
+
 stages:
   - build
   - test
