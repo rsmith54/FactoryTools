@@ -11,8 +11,8 @@ setup:
   tags:
     - cvmfs
   script:
-  	- /bin/bash
-  	- pwd;ls
+    - bash
+    - pwd;ls
     - cd ..
     - pwd; ls
     - source FactoryTools/util/setup_CI.sh
