@@ -1,6 +1,10 @@
 
 image: lukasheinrich/atlas_base_external_cvmfs
 
+
+tags:
+  - cvmfs
+
 before_script:
   - cvmfs_talk
   - pwd

@@ -221,7 +221,8 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   passedTriggers["HLT_g140_loose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_g140_loose") != passTrigs.end();
 
-  passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"]  || passedTriggers["HLT_xe100"];
+  passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"];
+  // passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"]  || passedTriggers["HLT_xe100"];
   passedTriggers["Electron"] = passedTriggers["HLT_e24_lhmedium_L1EM18VH"] || passedTriggers["HLT_e26_lhtight_nod0_ivarloose"];
   passedTriggers["Muon"] = passedTriggers["HLT_mu20_iloose_L1MU15"] || passedTriggers["HLT_mu26_ivarmedium"];
   passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
