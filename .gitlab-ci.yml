@@ -10,8 +10,10 @@ compile:
     - ls
     - pwd
     - ls /cvmfs/
-    - mkdir FactoryTools
-    - mv * FactoryTools/.
+    - mkdir Fake
+    - mv !(FakeMcFakester) FakeMcFakester
+    - mv FakeMcFakester FactoryTools
+    - ls
     - source FactoryTools/util/setup.sh
     - rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools; cd CommonTools; svn update -r 417222; cd -;
     - git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
