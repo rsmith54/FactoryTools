@@ -10,12 +10,12 @@ before_script:
   - ls $HOME
   - ls ~
   - cat ~/.bashrc
-  - source ~/.bashrc
+  - source ~/.bashrc || true
 
 inspect:
   stage: inspect
   script:
-    - setupATLAS
+    - setupATLAS || true
 
 compile:
   stage: build
