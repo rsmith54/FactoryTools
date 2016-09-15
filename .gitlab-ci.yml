@@ -6,7 +6,11 @@ stages:
   - test
 
 before_script:
-  - source $HOME/.bashrc
+  - echo $HOME
+  - ls $HOME
+  - ls ~
+  - cat ~/.bashrc
+  - source ~/.bashrc
 
 inspect:
   stage: inspect
