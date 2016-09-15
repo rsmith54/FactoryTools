@@ -1,4 +1,7 @@
-setupATLAS # or equivalent on your machine
+# setupATLAS # or equivalent on your machine
+
+source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+
 localSetupDQ2Client
 localSetupFAX
 localSetupPyAMI

@@ -118,6 +118,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedLeptons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedLeptons.first->setStore(selectedLeptons.second);
 
+  std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedBaselineLeptons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
+  selectedBaselineLeptons.first->setStore(selectedBaselineLeptons.second);
+
   std::pair<xAOD::IParticleContainer* , xAOD::ParticleAuxContainer*> selectedPhotons( new xAOD::IParticleContainer(SG::VIEW_ELEMENTS) , nullptr);
   selectedPhotons.first->setStore(selectedPhotons.second);
 
@@ -128,6 +131,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   STRONG_CHECK( store->record( selectedLeptons.first  , "selectedLeptons"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedLeptons.second , "selectedLeptonsAux."    ) );//todo configurable if needed
+
+  STRONG_CHECK( store->record( selectedBaselineLeptons.first  , "selectedBaselineLeptons"    ) );//todo configurable if needed
+  STRONG_CHECK( store->record( selectedBaselineLeptons.second , "selectedBaselineLeptonsAux."    ) );//todo configurable if needed
 
   STRONG_CHECK( store->record( selectedPhotons.first  , "selectedPhotons"    ) );//todo configurable if needed
   STRONG_CHECK( store->record( selectedPhotons.second , "selectedPhotonsAux."    ) );//todo configurable if needed
@@ -166,6 +172,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   for (const auto& mu : *muons_nominal) {
     if ((int)mu->auxdata<char>("baseline") == 0) continue;
     if ((int)mu->auxdata<char>("passOR") != 1) continue;
+
+    selectedBaselineLeptons.first->push_back( mu );
+
     if ((int)mu->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful muon
     ATH_MSG_VERBOSE( "mu pt : " << mu->pt() );
@@ -176,6 +185,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   for (const auto& el : *electrons_nominal) {
     if ((int)el->auxdata<char>("baseline") == 0) continue;
     if ((int)el->auxdata<char>("passOR") != 1) continue;
+
+    selectedBaselineLeptons.first->push_back( el );
+
     if ((int)el->auxdata<char>("signal") != 1) continue;
     // If I've gotten this far, I have a signal, isolated, beautiful el
     ATH_MSG_VERBOSE( "el pt : " << el->pt() );
@@ -195,9 +207,11 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   }
 
   int const nLeptons = selectedLeptons.first->size();
+  int const nBaselineLeptons = selectedBaselineLeptons.first->size();
   int const nPhotons = selectedPhotons.first->size();
 
   ATH_MSG_DEBUG("Number of Selected Leptons: " << nLeptons  );
+  ATH_MSG_DEBUG("Number of Selected Baseline Leptons: " << nBaselineLeptons  );
   ATH_MSG_DEBUG("Number of Selected Photons: " << nPhotons  );
 
   //Let's just categorize from here maybe? But if we want different CRs in different algs,
@@ -220,7 +234,7 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
     for (auto trig : passTrigs) // access by value, the type of i is int
         std::cout << trig << std::endl;
     std::cout << std::endl << std::endl;
-    std::cout << passedTriggers["HLT_xe100"] << std::endl << std::endl;
+    std::cout << passedTriggers["HLT_xe100_mht_L1XE50"] << std::endl << std::endl;
   }
 
 
@@ -239,9 +253,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
 
 
-  auto  getRegionName = [](int nLeptons, int nPhotons, std::map<std::string,int>  passedTriggers){ 
+  auto  getRegionName = [](int nLeptons, int nBaselineLeptons, int nPhotons, std::map<std::string,int>  passedTriggers){ 
             std::string regionName = "";
-					  if( nLeptons == 0 && passedTriggers["MET"] ) {regionName = "SR";}
+					  if( nBaselineLeptons == 0 && passedTriggers["MET"] ) {regionName = "SR";}
 					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR1L";}
             if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR2L";}
             if( nPhotons > 0  && passedTriggers["Photon"] ){regionName = "CRY";}
@@ -254,11 +268,11 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   //  tmpparticle->setP4( mylepton->p4() );
   //}
 
-  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nPhotons, passedTriggers )  );
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers )  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
 
-  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nPhotons, passedTriggers ) ;
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers ) ;
 
 
   // // What happens if we add the jets into the calculation?
