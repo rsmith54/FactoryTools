@@ -1,7 +1,15 @@
 # image: lukasheinrich/atlas_base_external_cvmfs
 stages:
+  - inspect
   - build
   - test
+
+inspect:
+  stage: inspect
+  script:
+    - ls -lavh /*
+    - source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
+
 
 compile:
   stage: build
