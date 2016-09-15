@@ -11,7 +11,7 @@ compile:
     - pwd
     - ls /cvmfs/
     - mkdir Fake
-    - mv !(FakeMcFakester) FakeMcFakester
+    - shopt -s extglob dotglob; mv !(FakeMcFakester) FakeMcFakester; shopt -u extglob dotglob
     - mv FakeMcFakester FactoryTools
     - ls
     - source FactoryTools/util/setup.sh
