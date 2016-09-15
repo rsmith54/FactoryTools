@@ -11,7 +11,7 @@ compile:
     - pwd
     - ls /cvmfs/
     - mkdir FakeMcFakester
-    - mv * FakeMcFakester/.
+    - mv `ls -A | grep -v FakeMcFakeeter` ./FakeMcFakester
     - mv FakeMcFakester FactoryTools
     - ls
     - source FactoryTools/util/setup.sh
