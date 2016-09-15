@@ -11,7 +11,7 @@ compile:
   script:
     - ls
     - pwd
-    - cvmfs_talk
+    - ls /cvmfs/
     # - source build.sh
 
 

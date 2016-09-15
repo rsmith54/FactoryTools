@@ -139,8 +139,6 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   STRONG_CHECK( store->record( selectedRJigsawParticles.second , "myparticlesaux."    ) );//todo configurable if needed
 
 
-
-
   xAOD::JetContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "STCalibAntiKt4EMTopoJets"));
 
@@ -210,9 +208,22 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   std::vector< std::string > const & passTrigs = eventInfo->auxdecor<  std::vector< std::string >  >("passTriggers");
 
+
   std::map<std::string,int> passedTriggers;
   passedTriggers["HLT_xe100"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100") != passTrigs.end();
   passedTriggers["HLT_xe100_mht_L1XE50"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100_mht_L1XE50") != passTrigs.end();
+
+
+
+  if(eventInfo->eventNumber()==21368832){
+    std::cout << std::endl << std::endl << "LL - Found the event!" << std::endl;
+    for (auto trig : passTrigs) // access by value, the type of i is int
+        std::cout << trig << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << passedTriggers["HLT_xe100"] << std::endl << std::endl;
+  }
+
+
 
   passedTriggers["HLT_e24_lhmedium_L1EM18VH"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e24_lhmedium_L1EM18VH") != passTrigs.end();
   passedTriggers["HLT_e26_lhtight_nod0_ivarloose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e26_lhtight_nod0_ivarloose") != passTrigs.end();
