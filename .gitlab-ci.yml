@@ -1,17 +1,17 @@
-#image: lukasheinrich/recast_cvmfs_assisted
-
-variables:
-  ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+image: lukasheinrich/recast_cvmfs_assisted
 
 stages:
   - inspect
   - build
   - test
 
+before_script:
+  - source $HOME/.bashrc
+
 inspect:
   stage: inspect
   script:
-    - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+    - setupATLAS
 
 compile:
   stage: build
