@@ -10,8 +10,8 @@ compile:
     - ls
     - pwd
     - ls /cvmfs/
-    - mkdir Fake
-    - shopt -s extglob dotglob && mv !(FakeMcFakester) FakeMcFakester && shopt -u extglob dotglob
+    - mkdir FakeMcFakester
+    - mv * FakeMcFakester/.
     - mv FakeMcFakester FactoryTools
     - ls
     - source FactoryTools/util/setup.sh
