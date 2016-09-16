@@ -183,6 +183,13 @@ EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, 
   RegionVars["MEff"] = MEff;
   RegionVars["HT"] = HT;
 
+
+  // double mT = std::sqrt( 2.*(*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met() *
+  //                        (1.-((*leptons_nominal)[0].p4().Px()*(*metcont)["Final"]->mpx() + (*leptons_nominal)[0].p4().Py()*(*metcont)["Final"]->mpy())/((*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met())) );
+  // if(!(mt >30000 && mt<100000)) return true
+  // RegionVars["mT"] = mT;
+  // Once mT is calculated, still need to cut on it in a post-selection!
+
   return EL::StatusCode::SUCCESS;
 
 }
