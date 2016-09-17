@@ -25,3 +25,5 @@ Host isscvs.cern.ch
 
 echo "${servicePass}" | kinit ${serviceUser}@CERN.CH
 klist
+
+ssh atlzerol@svn.cern.ch

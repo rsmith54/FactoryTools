@@ -25,8 +25,8 @@ EL::StatusCode RegionVarCalculator_zl::doInitialize(EL::Worker * worker) {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_zl::doCalculate(std::map<std::string, double              >& RegionVars,
-						     std::map<std::string, std::vector<double> >& VecRegionVars){
+EL::StatusCode RegionVarCalculator_zl::doCalculate(std::map<std::string, float              >& RegionVars,
+						     std::map<std::string, std::vector<float> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
   xAOD::TEvent* event = m_worker->xaodEvent();
 
@@ -53,8 +53,8 @@ EL::StatusCode RegionVarCalculator_zl::doCalculate(std::map<std::string, double 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, double>& RegionVars,
-							 std::map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, float>& RegionVars,
+							 std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
@@ -86,10 +86,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
-  std::vector<double> jetPtVec;
-  std::vector<double> jetEtaVec;
-  std::vector<double> jetPhiVec;
-  std::vector<double> jetEVec;
+  std::vector<float> jetPtVec;
+  std::vector<float> jetEtaVec;
+  std::vector<float> jetPhiVec;
+  std::vector<float> jetEVec;
 
   for( const auto& jet : *jets_nominal) {
     jetPtVec.push_back( toGeV(jet->pt()));
@@ -106,10 +106,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
-  std::vector<double> lepPtVec;
-  std::vector<double> lepEtaVec;
-  std::vector<double> lepPhiVec;
-  std::vector<double> lepEVec;
+  std::vector<float> lepPtVec;
+  std::vector<float> lepEtaVec;
+  std::vector<float> lepPhiVec;
+  std::vector<float> lepEVec;
 
   for( const auto& lep : *leptons_nominal) {
     lepPtVec.push_back( toGeV(lep->pt()));
@@ -141,15 +141,15 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
 }
 
 
-EL::StatusCode RegionVarCalculator_zl::doSRCalculations(std::map<std::string, double>& RegionVars,
-							  std::map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_zl::doSRCalculations(std::map<std::string, float>& RegionVars,
+							  std::map<std::string, std::vector<float> > & VecRegionVars)
 {
   return EL::StatusCode::SUCCESS;
 }
 
 
-EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, double>& RegionVars,
-							    std::map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, float>& RegionVars,
+							    std::map<std::string, std::vector<float> > & VecRegionVars)
 {
   auto toGeV = [](float a){return a*.001;};
 
@@ -195,8 +195,8 @@ EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, 
 }
 
 
-EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, double>& RegionVars,
-                  std::map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, float>& RegionVars,
+                  std::map<std::string, std::vector<float> > & VecRegionVars)
 {
   auto toGeV = [](float a){return a*.001;};
 
@@ -241,8 +241,8 @@ EL::StatusCode RegionVarCalculator_zl::doCR2LCalculations(std::map<std::string, 
 
 
 
-EL::StatusCode RegionVarCalculator_zl::doCRYCalculations(std::map<std::string, double>& RegionVars,
-                  std::map<std::string, std::vector<double> > & VecRegionVars)
+EL::StatusCode RegionVarCalculator_zl::doCRYCalculations(std::map<std::string, float>& RegionVars,
+                  std::map<std::string, std::vector<float> > & VecRegionVars)
 {
   auto toGeV = [](float a){return a*.001;};
 
@@ -256,10 +256,10 @@ EL::StatusCode RegionVarCalculator_zl::doCRYCalculations(std::map<std::string, d
   STRONG_CHECK(store->retrieve(photons_nominal, "selectedPhotons"));
 
 
-  std::vector<double> phPtVec;
-  std::vector<double> phEtaVec;
-  std::vector<double> phPhiVec;
-  std::vector<double> phEVec;
+  std::vector<float> phPtVec;
+  std::vector<float> phEtaVec;
+  std::vector<float> phPhiVec;
+  std::vector<float> phEVec;
 
   for( const auto& ph : *photons_nominal) {
     phPtVec.push_back( toGeV(ph->pt()));

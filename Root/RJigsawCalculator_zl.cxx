@@ -230,7 +230,7 @@ EL::StatusCode RJigsawCalculator_zl::doInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& RJVars,
+EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& RJVars,
 						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
@@ -762,32 +762,32 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& 
   RJVars[ "RPT_HT1CM"] = m_RPT_HT1CM;
   RJVars[ "MS"]        = toGeV(m_MS);
 
-  RJVars[ "ddphiP"]      = m_ddphiP;
-  RJVars[ "sdphiP"] = m_sdphiP;
+  // RJVars[ "ddphiP"]      = m_ddphiP;
+  // RJVars[ "sdphiP"] = m_sdphiP;
 
-  RJVars[ "pPP_Ia"] = m_pPP_Ia;
-  RJVars[ "pPP_Ib"] = m_pPP_Ib;
+  // RJVars[ "pPP_Ia"] = m_pPP_Ia;
+  // RJVars[ "pPP_Ib"] = m_pPP_Ib;
 
   RJVars[ "pT_jet1a"]  = toGeV(m_pT_jet1a);
   RJVars[ "pT_jet1b"]  = toGeV(m_pT_jet1b);
   RJVars[ "pT_jet2a"]  = toGeV(m_pT_jet2a);
   RJVars[ "pT_jet2b"]  = toGeV(m_pT_jet2b);
-  RJVars[ "pTPP_jet1"] = toGeV(m_pTPP_jet1);
-  RJVars[ "pTPP_jet2"] = toGeV(m_pTPP_jet2);
+  // RJVars[ "pTPP_jet1"] = toGeV(m_pTPP_jet1);
+  // RJVars[ "pTPP_jet2"] = toGeV(m_pTPP_jet2);
 
-  RJVars[ "pTPP_jet1a"] = toGeV(m_pTPP_jet1a);
-  RJVars[ "pTPP_jet1b"] = toGeV(m_pTPP_jet1b);
-  RJVars[ "pTPP_jet2a"] = toGeV(m_pTPP_jet2a);
-  RJVars[ "pTPP_jet2b"] = toGeV(m_pTPP_jet2b);
-  RJVars[ "pTPP_jet3a"] = toGeV(m_pTPP_jet3a);
-  RJVars[ "pTPP_jet3b"] = toGeV(m_pTPP_jet3b);
+  // RJVars[ "pTPP_jet1a"] = toGeV(m_pTPP_jet1a);
+  // RJVars[ "pTPP_jet1b"] = toGeV(m_pTPP_jet1b);
+  // RJVars[ "pTPP_jet2a"] = toGeV(m_pTPP_jet2a);
+  // RJVars[ "pTPP_jet2b"] = toGeV(m_pTPP_jet2b);
+  // RJVars[ "pTPP_jet3a"] = toGeV(m_pTPP_jet3a);
+  // RJVars[ "pTPP_jet3b"] = toGeV(m_pTPP_jet3b);
 
-  RJVars[ "pPP_jet1a"] = toGeV(m_pPP_jet1a);
-  RJVars[ "pPP_jet1b"] = toGeV(m_pPP_jet1b);
-  RJVars[ "pPP_jet2a"] = toGeV(m_pPP_jet2a);
-  RJVars[ "pPP_jet2b"] = toGeV(m_pPP_jet2b);
-  RJVars[ "pPP_jet3a"] = toGeV(m_pPP_jet3a);
-  RJVars[ "pPP_jet3b"] = toGeV(m_pPP_jet3b);
+  // RJVars[ "pPP_jet1a"] = toGeV(m_pPP_jet1a);
+  // RJVars[ "pPP_jet1b"] = toGeV(m_pPP_jet1b);
+  // RJVars[ "pPP_jet2a"] = toGeV(m_pPP_jet2a);
+  // RJVars[ "pPP_jet2b"] = toGeV(m_pPP_jet2b);
+  // RJVars[ "pPP_jet3a"] = toGeV(m_pPP_jet3a);
+  // RJVars[ "pPP_jet3b"] = toGeV(m_pPP_jet3b);
 
   RJVars["R_H2PP_H3PP"]  = m_R_H2PP_H3PP;
   RJVars["R_pTj2_HT3PP"] = m_R_pTj2_HT3PP;
@@ -795,16 +795,16 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& 
   RJVars["R_H2PP_H5PP"] = m_R_H2PP_H5PP;
   RJVars["minR_pTj2i_HT3PPi"] = m_minR_pTj2i_HT3PPi;
   RJVars["maxR_H1PPi_H2PPi"] = m_maxR_H1PPi_H2PPi;
-  RJVars["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
-  RJVars["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
+  // RJVars["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
+  // RJVars["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
 
   RJVars["RPZ_HT3PP"] = m_RPZ_HT3PP;
   RJVars["RPZ_HT5PP"] = m_RPZ_HT5PP;
-  RJVars["RPZ_HT9PP"] = m_RPZ_HT9PP;
+  // RJVars["RPZ_HT9PP"] = m_RPZ_HT9PP;
 
   RJVars["RPT_HT3PP"] = m_RPT_HT3PP;
   RJVars["RPT_HT5PP"] = m_RPT_HT5PP;
-  RJVars["RPT_HT9PP"] = m_RPT_HT9PP;
+  // RJVars["RPT_HT9PP"] = m_RPT_HT9PP;
 
   //  RJVars[ "PP_Mass"           ] = m_MPP;
   RJVars[ "PP_InvGamma"       ] = m_PP_VisShape;
@@ -822,14 +822,14 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& 
   RJVars[ "I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
   RJVars[ "I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
 
-  RJVars["dphiPV1a"  ] = m_dphiPV1a;
-  RJVars["cosV1a"    ] = m_cosV1a;
-  RJVars["dphiCV2a"  ] = m_dphiCV2a;
-  RJVars["cosV2a"    ] = m_cosV2a;
-  RJVars["dphiPV1b" ]  = m_dphiPV1b;
-  RJVars["cosV1b"   ]  = m_cosV1b;
-  RJVars["dphiCV2b" ]  = m_dphiCV2b;
-  RJVars["cosV2b"]	= m_cosV2b;
+  // RJVars["dphiPV1a"  ] = m_dphiPV1a;
+  // RJVars["cosV1a"    ] = m_cosV1a;
+  // RJVars["dphiCV2a"  ] = m_dphiCV2a;
+  // RJVars["cosV2a"    ] = m_cosV2a;
+  // RJVars["dphiPV1b" ]  = m_dphiPV1b;
+  // RJVars["cosV1b"   ]  = m_cosV1b;
+  // RJVars["dphiCV2b" ]  = m_dphiCV2b;
+  // RJVars["cosV2b"]	= m_cosV2b;
 
   RJVars["NJa"] = m_NJa;
   RJVars["NJb"] = m_NJb;
@@ -853,14 +853,14 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& 
   RJVars["H2Pb"]      = toGeV(m_H2Pb);
   RJVars["H3Pa"]      = toGeV(m_H3Pa);
   RJVars["H3Pb"]      = toGeV(m_H3Pb);
-  RJVars["H4Pa"]      = toGeV(m_H4Pa);
-  RJVars["H4Pb"]      = toGeV(m_H4Pb);
-  RJVars["H5Pa"]      = toGeV(m_H5Pa);
-  RJVars["H5Pb"]      = toGeV(m_H5Pb);
-  RJVars["H2Ca"]      = toGeV(m_H2Ca);
-  RJVars["H2Cb"]      = toGeV(m_H2Cb);
-  RJVars["H3Ca"]      = toGeV(m_H3Ca);
-  RJVars["H3Cb"]      = toGeV(m_H3Cb);
+  // RJVars["H4Pa"]      = toGeV(m_H4Pa);
+  // RJVars["H4Pb"]      = toGeV(m_H4Pb);
+  // RJVars["H5Pa"]      = toGeV(m_H5Pa);
+  // RJVars["H5Pb"]      = toGeV(m_H5Pb);
+  // RJVars["H2Ca"]      = toGeV(m_H2Ca);
+  // RJVars["H2Cb"]      = toGeV(m_H2Cb);
+  // RJVars["H3Ca"]      = toGeV(m_H3Ca);
+  // RJVars["H3Cb"]      = toGeV(m_H3Cb);
   RJVars["HT4PP"]     = toGeV(m_HT4PP); //m_HT4PP;
   RJVars["HT6PP"]     = toGeV(m_HT6PP); //m_HT6PP;
   //  RJVars["minH3P"]  toGeV(  = m_minH3P; //m_minH3P;

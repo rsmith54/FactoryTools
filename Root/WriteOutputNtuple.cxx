@@ -130,8 +130,8 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 
   ATH_MSG_DEBUG("Storing map in output " << regionName  );
 
-  std::map<std::string,double> * mymap = nullptr;
-  if(store->contains<std::map<std::string,double> >("RJigsawVarsMap") ){
+  std::map<std::string,float> * mymap = nullptr;
+  if(store->contains<std::map<std::string,float> >("RJigsawVarsMap") ){
     STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
     for (auto const& it : *mymap ) {
       ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
@@ -141,7 +141,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
     }
   }
 
-  std::map<std::string,double> * mymapRegionVars = nullptr;
+  std::map<std::string,float> * mymapRegionVars = nullptr;
   STRONG_CHECK(store->retrieve( mymapRegionVars,   "RegionVarsMap"));
 
   for (auto const& it : *mymapRegionVars ) {
@@ -152,7 +152,7 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   }
 
 
-  std::map<std::string, std::vector<double> > * mymapVecRegionVars = nullptr;
+  std::map<std::string, std::vector<float> > * mymapVecRegionVars = nullptr;
   STRONG_CHECK(store->retrieve( mymapVecRegionVars,   "VecRegionVarsMap"));
 
   for (auto const& it : *mymapVecRegionVars ) {
