@@ -18,4 +18,4 @@ rcSetup Base,2.4.18 || echo ignore alrb
 echo "${servicePass}" | kinit ${serviceUser}@CERN.CH
 klist
 
-ssh atlzerol@svn.cern.ch
+ssh -t -t atlzerol@svn.cern.ch
