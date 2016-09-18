@@ -36,7 +36,7 @@ setup:
     - pwd;ls
     - cd ..
     - pwd; ls
-    - find . ! -name 'FactoryTools' -type f -exec rm -rf {} +
+    - find . ! -name 'FactoryTools' -exec rm -rf {} +
     - source FactoryTools/util/setup_CI.sh
     - grep "#!!" FactoryTools/README.md > INSTALL
     - more INSTALL
