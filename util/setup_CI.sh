@@ -11,5 +11,13 @@ rcSetup Base,2.4.18 || echo ignore alrb
 echo "${servicePass}" | kinit ${serviceUser}@CERN.CH
 klist
 
+# echo "Host svn.cern.ch
+#    user atlzerol" >> ~/.ssh/config
+
 echo "Host svn.cern.ch
-   user atlzerol" >> ~/.ssh/config
+   User atlzerol
+   GSSAPIAuthentication yes
+   GSSAPIDelegateCredentials yes
+   Protocol 2
+   ForwardX11 no
+   IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config

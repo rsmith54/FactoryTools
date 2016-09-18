@@ -43,6 +43,7 @@ setup:
     - ls FactoryTools
     - source FactoryTools/util/setup_CI.sh
     - more ~/.ssh/config
+    - ls ~/.ssh
     # - grep "#!!" FactoryTools/README.md > INSTALL
     # - more INSTALL
     # - source INSTALL
