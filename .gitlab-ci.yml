@@ -35,7 +35,7 @@ setup:
     - bash
     - pwd;ls
     - cd ..
-    - find . ! -name 'FactoryTools' -exec rm -rf {} + || echo ignore alrb
+    - find . ! -name 'FactoryTools' -exec rm -f {} + || echo ignore alrb
     - pwd; ls;
     - ls FactoryTools
     - source FactoryTools/util/setup_CI.sh
