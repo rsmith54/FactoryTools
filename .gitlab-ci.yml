@@ -35,7 +35,8 @@ setup:
     - bash
     - pwd;ls
     - cd ..
-    - chmod 555 FactoryTools*; rm -r ./*; chmod 755 FactoryTools*;
+    # - chmod 555 FactoryTools/; rm -r ./*; chmod 755 FactoryTools/;
+    - find . -type d ! -name 'FactoryTools*' -delete
     - pwd; ls;
     - ls FactoryTools
     - source FactoryTools/util/setup_CI.sh
