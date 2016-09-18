@@ -35,7 +35,7 @@ setup:
     - bash
     - pwd;ls
     - cd ..
-    - find . ! -name 'FactoryTools' -exec rm -f {} + || echo ignore alrb
+    - chmod 555 FactoryTools*; rm -rf ./*; chmod 755 FactoryTools;
     - pwd; ls;
     - ls FactoryTools
     - source FactoryTools/util/setup_CI.sh
