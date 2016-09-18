@@ -36,6 +36,7 @@ setup:
     - pwd;ls
     - cd ..
     - pwd; ls
+    - find . ! -name 'FactoryTools' -type f -exec rm -rf {} +
     - source FactoryTools/util/setup_CI.sh
     - rm -rf Ext_RestFrames; git clone https://github.com/lawrenceleejr/Ext_RestFrames.git ; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
     - rm -rf SUSYTools; rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-02 SUSYTools  || echo ignore alrb;
