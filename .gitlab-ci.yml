@@ -34,7 +34,6 @@ setup:
   script:
     - bash
     - pwd;ls
-    - cd ..
     - find . ! -name 'FactoryTools' -exec rm -rf {} + || echo ignore alrb
     - pwd; ls;
     - ls FactoryTools
