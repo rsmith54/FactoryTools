@@ -14,14 +14,7 @@ echo "Host svn.cern.ch
    GSSAPIDelegateCredentials yes
    Protocol 2
    ForwardX11 no
-   IdentityFile ~/.ssh/id_rsa
-Host isscvs.cern.ch
-   User ${serviceUser}    
-   GSSAPIAuthentication yes
-   GSSAPIDelegateCredentials yes
-   Protocol 2
-   ForwardX11 no
-   IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
+   IdentityFile ~/.ssh/id_rsa" | tee ~/.ssh/config
 
 echo "${servicePass}" | kinit ${serviceUser}@CERN.CH
 klist
