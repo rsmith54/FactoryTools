@@ -18,5 +18,7 @@ klist
 #    Protocol 2
 #    ForwardX11 no
 #    IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
+echo "Host svn.cern.ch
+   user atlzerol" > ~/.ssh/config
 
 # ssh -t -t atlzerol@svn.cern.ch
