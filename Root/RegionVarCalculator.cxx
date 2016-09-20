@@ -16,7 +16,7 @@
 ClassImp(RegionVarCalculator)
 
 EL::StatusCode RegionVarCalculator::doGeneralCalculations(std::map<std::string, double>& RegionVars,
-							  std::map<std::string, std::vector<double> > & VecRegionVars)
+							  std::map<std::string, std::vector<float> > & VecRegionVars)
 {
   xAOD::TEvent * event = m_worker->xaodEvent();
   // Get relevant info from the EventInfo object
@@ -26,10 +26,10 @@ EL::StatusCode RegionVarCalculator::doGeneralCalculations(std::map<std::string, 
 
   // Include variables for all samples ///////////////////////////////
   //
-  RegionVars["runNumber"]   = eventInfo->runNumber();
-  RegionVars["lumiBlock"]   = eventInfo->lumiBlock();
-  RegionVars["bcid"]        = eventInfo->bcid();
-  RegionVars["eventNumber"] = eventInfo->eventNumber();
+  RegionVars["runNumber:int"]   = eventInfo->runNumber();
+  RegionVars["lumiBlock:int"]   = eventInfo->lumiBlock();
+  RegionVars["bcid:int"]        = eventInfo->bcid();
+  RegionVars["eventNumber:longlong"] = eventInfo->eventNumber();
 
   //
   /////////////////////////////////////////////////////////////////////
@@ -38,17 +38,17 @@ EL::StatusCode RegionVarCalculator::doGeneralCalculations(std::map<std::string, 
   //
 
   if(eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ){
-    RegionVars["mcChannelNumber"] = eventInfo->mcChannelNumber();
-    RegionVars["mcEventWeight"] = eventInfo->auxdecor< float >("mcEventWeight");
+    RegionVars["mcChannelNumber:int"] = eventInfo->mcChannelNumber();
+    RegionVars["mcEventWeight:int"] = eventInfo->auxdecor< float >("mcEventWeight");
   }
   //
   /////////////////////////////////////////////////////////////////////
 
   // Include variables for all samples ///////////////////////////////
   //
-  RegionVars["pileupWeight"]  = eventInfo->auxdecor< float >("PileupWeight");
-  RegionVars["actualInteractionsPerCrossing"] = eventInfo->actualInteractionsPerCrossing();
-  RegionVars["averageInteractionsPerCrossing"] = eventInfo->averageInteractionsPerCrossing();
+  RegionVars["pileupWeight:float"]  = eventInfo->auxdecor< float >("PileupWeight");
+  RegionVars["actualInteractionsPerCrossing:float"] = eventInfo->actualInteractionsPerCrossing();
+  RegionVars["averageInteractionsPerCrossing:float"] = eventInfo->averageInteractionsPerCrossing();
 
   //
   /////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ EL::StatusCode RegionVarCalculator::doGeneralCalculations(std::map<std::string, 
 
   const xAOD::VertexContainer* vertices = nullptr;
   STRONG_CHECK(event->retrieve( vertices, "PrimaryVertices"));
-  RegionVars["NPV"] = HelperFunctions::countPrimaryVertices(vertices, 2);
+  RegionVars["NPV:int"] = HelperFunctions::countPrimaryVertices(vertices, 2);
 
   //
   /////////////////////////////////////////////////////////////////////

@@ -230,7 +230,7 @@ EL::StatusCode RJigsawCalculator_zl::doInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& RJVars,
+EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, double>& RJVars,
 						   xAOD::IParticleContainer& particles,
 						   xAOD::MissingET& met
 						   ){
@@ -755,12 +755,12 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& R
 
   auto toGeV = [](float a){return a*.001;};
 
-  RJVars[ "HT1CM"]     = toGeV(m_HT1CM);
-  RJVars[ "PIoHT1CM"]  = m_PIoHT1CM;
-  RJVars[ "cosS"]      = m_cosS;
-  RJVars[ "NVS"]       = m_NVS;
-  RJVars[ "RPT_HT1CM"] = m_RPT_HT1CM;
-  RJVars[ "MS"]        = toGeV(m_MS);
+  RJVars[ "HT1CM:float"]     = toGeV(m_HT1CM);
+  RJVars[ "PIoHT1CM:float"]  = m_PIoHT1CM;
+  RJVars[ "cosS:float"]      = m_cosS;
+  RJVars[ "NVS:int"]       = m_NVS;
+  RJVars[ "RPT_HT1CM:float"] = m_RPT_HT1CM;
+  RJVars[ "MS:float"]        = toGeV(m_MS);
 
   // RJVars[ "ddphiP"]      = m_ddphiP;
   // RJVars[ "sdphiP"] = m_sdphiP;
@@ -768,10 +768,10 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& R
   // RJVars[ "pPP_Ia"] = m_pPP_Ia;
   // RJVars[ "pPP_Ib"] = m_pPP_Ib;
 
-  RJVars[ "pT_jet1a"]  = toGeV(m_pT_jet1a);
-  RJVars[ "pT_jet1b"]  = toGeV(m_pT_jet1b);
-  RJVars[ "pT_jet2a"]  = toGeV(m_pT_jet2a);
-  RJVars[ "pT_jet2b"]  = toGeV(m_pT_jet2b);
+  RJVars[ "pT_jet1a:float"]  = toGeV(m_pT_jet1a);
+  RJVars[ "pT_jet1b:float"]  = toGeV(m_pT_jet1b);
+  RJVars[ "pT_jet2a:float"]  = toGeV(m_pT_jet2a);
+  RJVars[ "pT_jet2b:float"]  = toGeV(m_pT_jet2b);
   // RJVars[ "pTPP_jet1"] = toGeV(m_pTPP_jet1);
   // RJVars[ "pTPP_jet2"] = toGeV(m_pTPP_jet2);
 
@@ -789,38 +789,38 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& R
   // RJVars[ "pPP_jet3a"] = toGeV(m_pPP_jet3a);
   // RJVars[ "pPP_jet3b"] = toGeV(m_pPP_jet3b);
 
-  RJVars["R_H2PP_H3PP"]  = m_R_H2PP_H3PP;
-  RJVars["R_pTj2_HT3PP"] = m_R_pTj2_HT3PP;
-  RJVars["R_HT5PP_H5PP"] = m_R_HT5PP_H5PP;
-  RJVars["R_H2PP_H5PP"] = m_R_H2PP_H5PP;
-  RJVars["minR_pTj2i_HT3PPi"] = m_minR_pTj2i_HT3PPi;
-  RJVars["maxR_H1PPi_H2PPi"] = m_maxR_H1PPi_H2PPi;
+  RJVars["R_H2PP_H3PP:float"]  = m_R_H2PP_H3PP;
+  RJVars["R_pTj2_HT3PP:float"] = m_R_pTj2_HT3PP;
+  RJVars["R_HT5PP_H5PP:float"] = m_R_HT5PP_H5PP;
+  RJVars["R_H2PP_H5PP:float"] = m_R_H2PP_H5PP;
+  RJVars["minR_pTj2i_HT3PPi:float"] = m_minR_pTj2i_HT3PPi;
+  RJVars["maxR_H1PPi_H2PPi:float"] = m_maxR_H1PPi_H2PPi;
   // RJVars["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
   // RJVars["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
 
-  RJVars["RPZ_HT3PP"] = m_RPZ_HT3PP;
-  RJVars["RPZ_HT5PP"] = m_RPZ_HT5PP;
-  // RJVars["RPZ_HT9PP"] = m_RPZ_HT9PP;
+  RJVars["RPZ_HT3PP:float"] = m_RPZ_HT3PP;
+  RJVars["RPZ_HT5PP:float"] = m_RPZ_HT5PP;
+  // RJVars["RPZ_HT9PP:float"] = m_RPZ_HT9PP;
 
-  RJVars["RPT_HT3PP"] = m_RPT_HT3PP;
-  RJVars["RPT_HT5PP"] = m_RPT_HT5PP;
-  // RJVars["RPT_HT9PP"] = m_RPT_HT9PP;
+  RJVars["RPT_HT3PP:float"] = m_RPT_HT3PP;
+  RJVars["RPT_HT5PP:float"] = m_RPT_HT5PP;
+  // RJVars["RPT_HT9PP:float"] = m_RPT_HT9PP;
 
   //  RJVars[ "PP_Mass"           ] = m_MPP;
-  RJVars[ "PP_InvGamma"       ] = m_PP_VisShape;
-  RJVars[ "PP_dPhiBetaR"      ] = m_dphiPPV;
-  RJVars[ "PP_dPhiVis"        ] = PP->GetDeltaPhiVisible();
-  RJVars[ "PP_CosTheta"       ] = m_cosPP;
-  RJVars[ "PP_dPhiDecayAngle" ] = m_dphiVP ; // I think ...
-  RJVars[ "PP_VisShape"       ] = m_PP_VisShape;
-  RJVars[ "PP_MDeltaR"        ] = toGeV(m_MDR);
+  RJVars[ "PP_InvGamma:float"       ] = m_PP_VisShape;
+  RJVars[ "PP_dPhiBetaR:float"      ] = m_dphiPPV;
+  RJVars[ "PP_dPhiVis:float"        ] = PP->GetDeltaPhiVisible();
+  RJVars[ "PP_CosTheta:float"       ] = m_cosPP;
+  RJVars[ "PP_dPhiDecayAngle:float" ] = m_dphiVP ; // I think ...
+  RJVars[ "PP_VisShape:float"       ] = m_PP_VisShape;
+  RJVars[ "PP_MDeltaR:float"        ] = toGeV(m_MDR);
 
-  RJVars[ "P1_Mass"           ] = toGeV(Pa->GetMass());
-  RJVars[ "P1_CosTheta"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
-  RJVars[ "P2_Mass"           ] = toGeV(Pb->GetMass());
-  RJVars[ "P2_CosTheta"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
-  RJVars[ "I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
-  RJVars[ "I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
+  RJVars[ "P1_Mass:float"           ] = toGeV(Pa->GetMass());
+  RJVars[ "P1_CosTheta:float"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
+  RJVars[ "P2_Mass:float"           ] = toGeV(Pb->GetMass());
+  RJVars[ "P2_CosTheta:float"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
+  RJVars[ "I1_Depth:int"          ] = Pa->GetFrameDepth   (*Ia);
+  RJVars[ "I2_Depth:int"          ] = Pb->GetFrameDepth   (*Ib);
 
   // RJVars["dphiPV1a"  ] = m_dphiPV1a;
   // RJVars["cosV1a"    ] = m_cosV1a;
@@ -831,28 +831,28 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& R
   // RJVars["dphiCV2b" ]  = m_dphiCV2b;
   // RJVars["cosV2b"]	= m_cosV2b;
 
-  RJVars["NJa"] = m_NJa;
-  RJVars["NJb"] = m_NJb;
+  RJVars["NJa:int"] = m_NJa;
+  RJVars["NJb:int"] = m_NJb;
   //  RJVars[ "MP"          ] = m_MP;
   //  RJVars[ "DeltaBetaGG" ] = DeltaBetaGG;
-  RJVars[ "dphiVG"      ] = PP->GetDeltaPhiDecayVisible();
+  RJVars[ "dphiVG:float"      ] = PP->GetDeltaPhiDecayVisible();
 
-  RJVars[ "QCD_dPhiR"    ] = -100;
+  RJVars[ "QCD_dPhiR:float"    ] = -100;
   //  RJVars[ "QCD_Rpt"      ] = m_RPT;
-  RJVars[ "QCD_Rsib"    ]  = m_Rsib;
-  RJVars[ "QCD_Delta1"   ] = m_deltaQCD;
+  RJVars[ "QCD_Rsib:float"    ]  = m_Rsib;
+  RJVars[ "QCD_Delta1:float"   ] = m_deltaQCD;
 
-  RJVars["H2PP"]      = toGeV(m_H2PP) ;
-  RJVars["H3PP"]      = toGeV(m_H3PP);
-  RJVars["H4PP"]      = toGeV(m_H4PP);
-  RJVars["H6PP"]      = toGeV(m_H6PP);
-  RJVars["H10PP"]     = toGeV(m_H10PP);
-  RJVars["HT10PP"]    = toGeV(m_HT10PP);
+  RJVars["H2PP:float"]      = toGeV(m_H2PP) ;
+  RJVars["H3PP:float"]      = toGeV(m_H3PP);
+  RJVars["H4PP:float"]      = toGeV(m_H4PP);
+  RJVars["H6PP:float"]      = toGeV(m_H6PP);
+  // RJVars["H10PP"]     = toGeV(m_H10PP);
+  // RJVars["HT10PP"]    = toGeV(m_HT10PP);
 
-  RJVars["H2Pa"]      = toGeV(m_H2Pa);
-  RJVars["H2Pb"]      = toGeV(m_H2Pb);
-  RJVars["H3Pa"]      = toGeV(m_H3Pa);
-  RJVars["H3Pb"]      = toGeV(m_H3Pb);
+  // RJVars["H2Pa:float"]      = toGeV(m_H2Pa);
+  // RJVars["H2Pb:float"]      = toGeV(m_H2Pb);
+  RJVars["H3Pa:float"]      = toGeV(m_H3Pa);
+  RJVars["H3Pb:float"]      = toGeV(m_H3Pb);
   // RJVars["H4Pa"]      = toGeV(m_H4Pa);
   // RJVars["H4Pb"]      = toGeV(m_H4Pb);
   // RJVars["H5Pa"]      = toGeV(m_H5Pa);
@@ -861,11 +861,11 @@ EL::StatusCode RJigsawCalculator_zl::doCalculate(std::map<std::string, float>& R
   // RJVars["H2Cb"]      = toGeV(m_H2Cb);
   // RJVars["H3Ca"]      = toGeV(m_H3Ca);
   // RJVars["H3Cb"]      = toGeV(m_H3Cb);
-  RJVars["HT4PP"]     = toGeV(m_HT4PP); //m_HT4PP;
-  RJVars["HT6PP"]     = toGeV(m_HT6PP); //m_HT6PP;
+  RJVars["HT4PP:float"]     = toGeV(m_HT4PP); //m_HT4PP;
+  RJVars["HT6PP:float"]     = toGeV(m_HT6PP); //m_HT6PP;
   //  RJVars["minH3P"]  toGeV(  = m_minH3P; //m_minH3P;
-  RJVars["sangle"]    = m_sangle;
-  RJVars["dangle"]    = m_dangle;
+  RJVars["sangle:float"]    = m_sangle;
+  RJVars["dangle:float"]    = m_dangle;
 
   return EL::StatusCode::SUCCESS;
 }

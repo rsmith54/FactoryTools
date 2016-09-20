@@ -26,7 +26,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doInitialize(EL::Worker * worker) {
 }
 
 EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, double              >& RegionVars,
-						     std::map<std::string, std::vector<double> >& VecRegionVars){
+						     std::map<std::string, std::vector<float> >& VecRegionVars){
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
   xAOD::TEvent* event = m_worker->xaodEvent();
 
@@ -51,7 +51,7 @@ EL::StatusCode RegionVarCalculator_lvlv::doCalculate(std::map<std::string, doubl
 }
 
 EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string, double>& RegionVars,
-							   std::map<std::string, std::vector<double> > & VecRegionVars)
+							   std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
@@ -77,10 +77,10 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   xAOD::IParticleContainer* jets_nominal(nullptr);
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
-  std::vector<double> jetPtVec;
-  std::vector<double> jetEtaVec;
-  std::vector<double> jetPhiVec;
-  std::vector<double> jetEVec;
+  std::vector<float> jetPtVec;
+  std::vector<float> jetEtaVec;
+  std::vector<float> jetPhiVec;
+  std::vector<float> jetEVec;
 
   for( const auto& jet : *jets_nominal) {
     jetPtVec.push_back( toGeV(jet->pt()));
@@ -97,10 +97,10 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
-  std::vector<double> lepPtVec;
-  std::vector<double> lepEtaVec;
-  std::vector<double> lepPhiVec;
-  std::vector<double> lepEVec;
+  std::vector<float> lepPtVec;
+  std::vector<float> lepEtaVec;
+  std::vector<float> lepPhiVec;
+  std::vector<float> lepEVec;
 
   for( const auto& lep : *leptons_nominal) {
     lepPtVec.push_back( toGeV(lep->pt()));
@@ -119,15 +119,15 @@ EL::StatusCode RegionVarCalculator_lvlv::doAllCalculations(std::map<std::string,
 
 
 EL::StatusCode RegionVarCalculator_lvlv::doSRCalculations(std::map<std::string, double>& RegionVars,
-							  std::map<std::string, std::vector<double> > & VecRegionVars)
+							  std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
 EL::StatusCode RegionVarCalculator_lvlv::doCR1LCalculations(std::map<std::string, double>& RegionVars,
-							    std::map<std::string, std::vector<double> > & VecRegionVars)
+							    std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 
 
 EL::StatusCode RegionVarCalculator_lvlv::doCR0LCalculations(std::map<std::string, double>& RegionVars,
-							    std::map<std::string, std::vector<double> > & VecRegionVars)
+							    std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
