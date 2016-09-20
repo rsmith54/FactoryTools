@@ -1,0 +1,69 @@
+image: lukasheinrich/recast_cvmfs_assisted
+
+
+before_script:
+  # Install ssh-agent if not already installed, it is required by Docker.
+  # (change apt-get to yum if you use a CentOS-based image)
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+  # Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  #- echo "${SSH_PRIVATE_KEY}" > test.key; chmod 600 test.key
+
+
+  # For Docker builds disable host key checking. Be aware that by adding that
+  # you are suspectible to man-in-the-middle attacks.
+  # WARNING: Use this only with the Docker executor, if you use it with shell
+  # you will overwrite your user's SSH config.
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+
+stages:
+  - setup
+  - build
+  - test
+
+setup:
+  stage: setup
+  tags:
+    - cvmfs
+  script:
+    - bash
+    - pwd;ls
+    - cd ..
+    # - chmod 555 FactoryTools/; rm -r ./*; chmod 755 FactoryTools/;
+    # - find . -type d ! -name 'FactoryTools*' -exec rm -rf {} \ || echo ignore;
+    - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
+    - ln -s ../FactoryTools FactoryTools;
+    - pwd; ls;
+    - ls FactoryTools
+    - source FactoryTools/util/setup_CI.sh
+    - more ~/.ssh/config
+    - ls ~/.ssh
+    - grep "#!!" FactoryTools/README.md > INSTALL
+    - more INSTALL
+    - source INSTALL
+    # - rm -rf SUSYTools; rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-02 SUSYTools  || echo ignore alrb;
+    # - rc checkout SUSYTools/doc/packages.txt;
+    # - rm -rf Ext_RestFrames; git clone https://github.com/lawrenceleejr/Ext_RestFrames.git ; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
+    # - git clone https://github.com/UCATLAS/xAODAnaHelpers.git  || echo ignore alrb ; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..;
+    # - rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools  || echo ignore alrb; cd CommonTools; svn update -r 417222; cd -;
+
+compile:
+  stage: build
+  tags:
+    - cvmfs
+  script:
+    - rc find_packages
+    - rc compile
+
+runmc:
+  stage: test
+  tags:
+    - cvmfs
+  script:
+    - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/

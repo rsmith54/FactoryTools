@@ -13,6 +13,8 @@
 #include <FactoryTools/printDebug.h>
 #include <FactoryTools/strongErrorCheck.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 
 // this is needed to distribute the algorithm to the workers
@@ -119,25 +121,42 @@ EL::StatusCode WriteOutputNtuple :: execute ()
   std::string const & eventRegionName =  eventInfo->auxdecor< std::string >("regionName");
   ATH_MSG_DEBUG("Event falls in region: " << eventRegionName  );
 
-
+  auto splitString = [](std::string line){
+    std::vector<std::string> strs;
+    boost::split(strs,line,boost::is_any_of(":"));
+    return strs;
+  };
 
   if( regionName == "" ) return EL::StatusCode::SUCCESS;
 
-  ATH_MSG_DEBUG("Our event passed one of the selection " << regionName);
+  ATH_MSG_DEBUG("Our event passed one of the selections " << regionName);
 
   // Furthermore! If the event doesn't pass this region def, don't write it out to this tree.
   if( eventRegionName != regionName ) return EL::StatusCode::SUCCESS;
 
   ATH_MSG_DEBUG("Storing map in output " << regionName  );
 
+  std::string tmpKey, tmpType;
+
   std::map<std::string,double> * mymap = nullptr;
+
   if(store->contains<std::map<std::string,double> >("RJigsawVarsMap") ){
     STRONG_CHECK(store->retrieve( mymap,   "RJigsawVarsMap"));
+
     for (auto const& it : *mymap ) {
+
       ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
-      m_ntupManager->setProperty(it.first,
-  			       it.second
-  			       );
+
+      if(splitString(it.first).size()==1){
+        m_ntupManager->setProperty(it.first, (double) it.second);
+      } else {
+        tmpKey = splitString(it.first).at(0);
+        tmpType = splitString(it.first).at(1);
+        if(tmpType=="float"){ m_ntupManager->setProperty(tmpKey, (float) it.second); }
+        else if(tmpType=="double"){ m_ntupManager->setProperty(tmpKey, (double) it.second); }
+        else if(tmpType=="int"){ m_ntupManager->setProperty(tmpKey, (int) it.second); }
+        else if(tmpType=="longlong"){ m_ntupManager->setProperty(tmpKey, (long long) it.second); }
+      }
     }
   }
 
@@ -146,13 +165,22 @@ EL::StatusCode WriteOutputNtuple :: execute ()
 
   for (auto const& it : *mymapRegionVars ) {
     ATH_MSG_VERBOSE("Storing map(key,value) into ntupManager: (" << it.first << " , " << it.second  << ")");
-    m_ntupManager->setProperty(it.first,
-			       it.second
-			       );
+
+    if(splitString(it.first).size()==1){
+      m_ntupManager->setProperty(it.first, (double) it.second);
+    } else {
+      tmpKey = splitString(it.first).at(0);
+      tmpType = splitString(it.first).at(1);
+      if(tmpType=="float"){ m_ntupManager->setProperty(tmpKey, (float) it.second); }
+      else if(tmpType=="double"){ m_ntupManager->setProperty(tmpKey, (double) it.second); }
+      else if(tmpType=="int"){ m_ntupManager->setProperty(tmpKey, (int) it.second); }
+      else if(tmpType=="longlong"){ m_ntupManager->setProperty(tmpKey, (long long) it.second); }
+    }
+
   }
 
 
-  std::map<std::string, std::vector<double> > * mymapVecRegionVars = nullptr;
+  std::map<std::string, std::vector<float> > * mymapVecRegionVars = nullptr;
   STRONG_CHECK(store->retrieve( mymapVecRegionVars,   "VecRegionVarsMap"));
 
   for (auto const& it : *mymapVecRegionVars ) {

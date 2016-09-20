@@ -3,22 +3,24 @@
 Once you have the FactoryTools package with
 
 ```
-git clone https://github.com/rsmith54/FactoryTools.git
+git clone https://github.com/rsmith54/FactoryTools.git #!
 ```
 
 you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
 First setup RootCore :
 
 ```
-source FactoryTools/util/setup.sh
+source FactoryTools/util/setup.sh #!
 ```
 
 Now we can checkout our dependencies using the following :
 
 ```
-git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/tags/CommonTools-00-00-20 CommonTools
-git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 2d502e1ecc4e4f45db2c74b34f133641f79a5c59;  git checkout -b localRJbranch; cd ..;
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-04 SUSYTools; #!!
+rc checkout SUSYTools/doc/packages.txt; #!!
+git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..; #!!
+git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..; #!!
+rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools; cd CommonTools; svn update -r 417222; cd -; #!!
 ```
 
 And of course do a normal rc set up procedure
@@ -57,6 +59,11 @@ python FactoryTools/util/run_zl.py --doOverwrite --driver grid --inputDS Factory
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
+
+```
+# Please keep #! markers for install commands
+# #!! markers are used by CI for gitlab compilation
+```
 
 ## Merging Step
 

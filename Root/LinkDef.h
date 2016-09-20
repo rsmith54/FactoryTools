@@ -13,7 +13,7 @@
 
 //#include <FactoryTools/PreselectDileptonicWWEvents.h>
 #include <FactoryTools/SelectZeroLeptonEvents.h>
-//#include <FactoryTools/PostselectDileptonicWWEvents.h>
+#include <FactoryTools/PostselectZeroLeptonEvents.h>
 
 
 #include <FactoryTools/PreselectDiFatJetEvents.h>
@@ -107,6 +107,10 @@
 
 #ifdef __CINT__
 #pragma link C++ class SelectZeroLeptonEvents+;
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class PostselectZeroLeptonEvents+;
 #endif
 
 #ifdef __CINT__

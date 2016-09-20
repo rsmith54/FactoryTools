@@ -26,7 +26,7 @@ EL::StatusCode RegionVarCalculator_nr::doInitialize(EL::Worker * worker) {
 }
 
 EL::StatusCode RegionVarCalculator_nr::doCalculate(std::map<std::string, double>& RegionVars,
-						     std::map<std::string, std::vector<double> >& VecRegionVars){
+						     std::map<std::string, std::vector<float> >& VecRegionVars){
 
   xAOD::TStore * store = m_worker->xaodStore();//grab the store from the worker
   xAOD::TEvent* event = m_worker->xaodEvent();
@@ -45,7 +45,7 @@ EL::StatusCode RegionVarCalculator_nr::doCalculate(std::map<std::string, double>
 }
 
 EL::StatusCode RegionVarCalculator_nr::doAllCalculations(std::map<std::string, double>& RegionVars,
-							 std::map<std::string, std::vector<double> > & VecRegionVars)
+							 std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
@@ -68,10 +68,10 @@ EL::StatusCode RegionVarCalculator_nr::doAllCalculations(std::map<std::string, d
   STRONG_CHECK(store->retrieve(jets_nominal, "selectedJets"));
 
   //  const std::vector<xAOD::IParticle*> & jetStdVec = jetcont->stdcont();
-  std::vector<double> jetPtVec;
-  std::vector<double> jetEtaVec;
-  std::vector<double> jetPhiVec;
-  std::vector<double> jetEVec;
+  std::vector<float> jetPtVec;
+  std::vector<float> jetEtaVec;
+  std::vector<float> jetPhiVec;
+  std::vector<float> jetEVec;
 
   for( const auto& jet : *jets_nominal) {
     jetPtVec.push_back( toGeV(jet->pt()));
@@ -90,6 +90,6 @@ EL::StatusCode RegionVarCalculator_nr::doAllCalculations(std::map<std::string, d
 
 
 EL::StatusCode RegionVarCalculator_nr::doSRCalculations(std::map<std::string, double>& RegionVars,
-							  std::map<std::string, std::vector<double> > & VecRegionVars)
+							  std::map<std::string, std::vector<float> > & VecRegionVars)
 {/*todo*/return EL::StatusCode::SUCCESS;}
 

@@ -140,7 +140,7 @@ EL::StatusCode CalculateRegionVars :: execute ()
   xAOD::TStore * store = wk()->xaodStore();
 
   std::map<std::string,double>               * mymap    = new std::map<std::string,double>;
-  std::map<std::string,std::vector<double> > * myvecmap = new std::map<std::string,std::vector<double> >;
+  std::map<std::string,std::vector<float> > * myvecmap = new std::map<std::string,std::vector<float> >;
 
   printDebug();
   STRONG_CHECK_SC( m_calculator->calculate(*mymap, *myvecmap   ));
