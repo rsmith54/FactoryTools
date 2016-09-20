@@ -47,29 +47,28 @@ setup:
     - grep "#!!" FactoryTools/README.md > INSTALL
     - more INSTALL
     - source INSTALL
-    # - rm -rf SUSYTools; rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-02 SUSYTools  || echo ignore alrb;
-    # - rc checkout SUSYTools/doc/packages.txt;
-    # - rm -rf Ext_RestFrames; git clone https://github.com/lawrenceleejr/Ext_RestFrames.git ; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
-    # - git clone https://github.com/UCATLAS/xAODAnaHelpers.git  || echo ignore alrb ; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..;
-    # - rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools  || echo ignore alrb; cd CommonTools; svn update -r 417222; cd -;
-
-compile:
-  stage: build
-  tags:
-    - cvmfs
-  script:
-    - bash
-    - cd testArea
-    - source rcSetup.sh
     - rc find_packages
     - rc compile
-
-runmc:
-  stage: test
-  tags:
-    - cvmfs
-  script:
-    - bash
-    - cd testArea
-    - source rcSetup.sh
     - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/
+
+
+# compile:
+#   stage: build
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - cd testArea
+#     - source rcSetup.sh
+#     - rc find_packages
+#     - rc compile
+
+# runmc:
+#   stage: test
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - cd testArea
+#     - source rcSetup.sh
+#     - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/
