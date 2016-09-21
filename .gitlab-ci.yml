@@ -67,7 +67,13 @@ setupAndValgrind:
     - rc find_packages
     - rc compile
     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
-    - valgrind -q python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
+    - wget http://valgrind.org/downloads/valgrind-3.9.0.tar.bz2
+    - tar xvjf valgrind-3.9.0.tar.bz2 
+    - cd valgrind-3.9.0
+    - ./configure --prefix=$HOME/valgrind
+    - make
+    - make install
+    - ~/valgrind/bin/valgrind -q python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
 
 
 # compile:
