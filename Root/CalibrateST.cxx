@@ -124,8 +124,12 @@ EL::StatusCode CalibrateST :: initialize ()
   m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
 
   STRONG_CHECK( m_objTool->setProperty("DataSource", datasource)) ;
-  STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
-
+  if( SUSYToolsConfigFileName == notSetString() ) {
+    STRONG_CHECK( m_objTool->setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf") );
+  } else {
+    ATH_MSG_DEBUG( "analysisName set. Trying to open config file "<< SUSYToolsConfigFileName );
+    STRONG_CHECK( m_objTool->setProperty("ConfigFile", SUSYToolsConfigFileName ) );
+  }
   std::vector<std::string> PRWConfigFileNamesVec  ;
   std::vector<std::string> PRWLumiCalcFileNamesVec;
 

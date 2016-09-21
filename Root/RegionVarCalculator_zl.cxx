@@ -1,3 +1,4 @@
+#include "EventLoop/Job.h"
 #include "EventLoop/StatusCode.h"
 #include "EventLoop/Worker.h"
 #include "xAODRootAccess/TStore.h"
@@ -183,11 +184,20 @@ EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, 
   RegionVars["MEff:float"] = MEff;
   RegionVars["HT:float"] = HT;
 
+  // std::cout << "Leading lepton pT: "<< (*(*leptons_nominal)[0]).p4().Pt() << std::endl;
 
-  // double mT = std::sqrt( 2.*(*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met() *
-  //                        (1.-((*leptons_nominal)[0].p4().Px()*(*metcont)["Final"]->mpx() + (*leptons_nominal)[0].p4().Py()*(*metcont)["Final"]->mpy())/((*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met())) );
+  double tmpLeptonPt = (*(*leptons_nominal)[0]).p4().Pt();
+  double tmpLeptonPx = (*(*leptons_nominal)[0]).p4().Px();
+  double tmpLeptonPy = (*(*leptons_nominal)[0]).p4().Py();
+  double tmpMET = (*metcont)["Final"]->met();
+  double tmpMEx = (*metcont)["Final"]->mpx();
+  double tmpMEy = (*metcont)["Final"]->mpy();
+
+
+  double mT = std::sqrt( 2.*tmpLeptonPt*tmpMET *
+                         (1.-(tmpLeptonPx*tmpMEx + tmpLeptonPy*tmpMEy)/(tmpLeptonPt*tmpMET)) );
   // if(!(mt >30000 && mt<100000)) return true
-  // RegionVars["mT"] = mT;
+  RegionVars["mT:float"] = toGeV(mT);
   // Once mT is calculated, still need to cut on it in a post-selection!
 
   return EL::StatusCode::SUCCESS;
