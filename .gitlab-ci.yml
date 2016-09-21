@@ -70,6 +70,7 @@ download:
   script:
     - bash
     - pwd;ls
+    - source FactoryTools/util/setup_CI.sh
     - rm -rf samples; mkdir samples; cd samples;
     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
   artifacts:
