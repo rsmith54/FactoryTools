@@ -27,7 +27,7 @@ stages:
   - build
   - test
 
-setup:
+setupAndTest:
   stage: setup
   tags:
     - cvmfs
@@ -43,42 +43,68 @@ setup:
     - grep "#!!" FactoryTools/README.md > INSTALL
     - more INSTALL
     - source INSTALL
-
-compile:
-  stage: build
-  tags:
-    - cvmfs
-  script:
-    - bash
-    - cd testArea
-    - source FactoryTools/util/setup_CI.sh
-    - source rcSetup.sh
     - rc find_packages
     - rc compile
-
-runmctest:
-  stage: test
-  tags:
-    - cvmfs
-  script:
-    - bash
-    - cd testArea
-    - source FactoryTools/util/setup_CI.sh
-    - source rcSetup.sh
-    - rc find_packages
-    - rc compile
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
     - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS factoryToolsSample/
 
-
-runmcvalgrind:
-  stage: test
+setupAndValgrind:
+  stage: setup
   tags:
     - cvmfs
   script:
     - bash
-    - cd testArea
+    - pwd;ls
+    - cd ..
+    - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
+    - ln -s ../FactoryTools FactoryTools;
+    - pwd; ls;
     - source FactoryTools/util/setup_CI.sh
-    - source rcSetup.sh
+    - more ~/.ssh/config
+    - grep "#!!" FactoryTools/README.md > INSTALL
+    - more INSTALL
+    - source INSTALL
     - rc find_packages
     - rc compile
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
     - valgrind -q python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
+
+
+# compile:
+#   stage: build
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - cd testArea
+#     - source FactoryTools/util/setup_CI.sh
+#     - source rcSetup.sh
+#     - rc find_packages
+#     - rc compile
+
+# runmctest:
+#   stage: test
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - cd testArea
+#     - source FactoryTools/util/setup_CI.sh
+#     - source rcSetup.sh
+#     - rc find_packages
+#     - rc compile
+#     - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS factoryToolsSample/
+
+
+# runmcvalgrind:
+#   stage: test
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - cd testArea
+#     - source FactoryTools/util/setup_CI.sh
+#     - source rcSetup.sh
+#     - rc find_packages
+#     - rc compile
+#     - valgrind -q python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
