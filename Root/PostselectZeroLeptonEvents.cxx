@@ -127,7 +127,7 @@ EL::StatusCode PostselectZeroLeptonEvents :: execute ()
 
 
 
-  if( std::strcmp(eventRegionName.c_str(),"CR1L") ) {
+  if( std::strcmp(eventRegionName.c_str(),"CR1L")==0 ) {
       ATH_MSG_DEBUG("Test of regionVars map. mT: " << (*RegionVars)["mT:float"]  );
       if(!((*RegionVars)["mT:float"] > 30. && (*RegionVars)["mT:float"]<100.) ) eventInfo->auxdecor< std::string >("regionName") = "";
   }
