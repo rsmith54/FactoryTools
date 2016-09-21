@@ -34,7 +34,6 @@ setup:
   script:
     - bash
     - pwd;ls
-    - cd ..
     - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
     - ln -s ../FactoryTools FactoryTools;
     - pwd; ls;
@@ -47,7 +46,7 @@ setup:
     # - rc compile
   artifacts:
     paths:
-    - ../testArea/
+    - testArea/
 
 compile:
   stage: build
@@ -56,13 +55,13 @@ compile:
   script:
     - bash
     - pwd;ls
-    - cd ../testArea/
+    - cd testArea/
     - source FactoryTools/util/setup_CI.sh
     - rc find_packages
     - rc compile
   artifacts:
     paths:
-    - ../testArea/
+    - testArea/
 
 download:
   stage: build
@@ -71,12 +70,12 @@ download:
   script:
     - bash
     - pwd;ls
-    - cd ../testArea/
+    - cd testArea/
     - source FactoryTools/util/setup_CI.sh
     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
   artifacts:
     paths:
-    - ../testArea/
+    - testArea/
 
 test:
   stage: test
@@ -85,7 +84,7 @@ test:
   script:
     - bash
     - pwd;ls
-    - cd ../testArea/
+    - cd testArea/
     - source FactoryTools/util/setup_CI.sh
     - rc find_packages
     - rc compile
@@ -99,7 +98,7 @@ testValgrind:
   script:
     - bash
     - pwd;ls
-    - cd ../testArea/
+    - cd testArea/
     - source FactoryTools/util/setup_CI.sh
     - rc find_packages
     - rc compile
