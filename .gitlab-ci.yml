@@ -35,7 +35,7 @@ setup:
     - bash
     - pwd;ls
     - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
-    - ln -s ../FactoryTools FactoryTools;
+    - ln -s ../../FactoryTools FactoryTools;
     - pwd; ls;
     - source FactoryTools/util/setup_CI.sh
     - more ~/.ssh/config
