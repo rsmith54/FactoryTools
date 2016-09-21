@@ -56,7 +56,7 @@ setupAndValgrind:
     - bash
     - pwd;ls
     - cd ..
-    - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
+    - rm -rf testAreaValgrind || echo ignore; mkdir testAreaValgrind; cd testAreaValgrind;
     - ln -s ../FactoryTools FactoryTools;
     - pwd; ls;
     - source FactoryTools/util/setup_CI.sh

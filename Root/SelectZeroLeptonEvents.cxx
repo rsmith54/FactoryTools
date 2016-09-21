@@ -111,6 +111,7 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
   std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("EventNumber: " << eventInfo->eventNumber()  );
   ATH_MSG_DEBUG("Preselected?: " << preselectedRegionName  );
 
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
