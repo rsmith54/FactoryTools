@@ -24,7 +24,7 @@ public :
   EL::StatusCode initialize(EL::Worker * worker){return doInitialize( worker );}
   //to be used per event
   EL::StatusCode calculate(std::map<std::string, double>              & RegionVars,
-			   std::map<std::string, std::vector<double> >& VecRegionVars
+			   std::map<std::string, std::vector<float> >& VecRegionVars
 			   //This is somewhat for simplicity, to be able to write out vectors of i.e. jet pts
 			   ){return doCalculate( RegionVars, VecRegionVars);}
 
@@ -35,7 +35,7 @@ private :
     std::cout << "you called the base calculator function! Exiting" << std::endl;
     return EL::StatusCode::FAILURE;};
   virtual EL::StatusCode doCalculate(std::map<std::string, double>              & RegionVars,
-                                     std::map<std::string, std::vector<double> >& VecRegionVars)
+                                     std::map<std::string, std::vector<float> >& VecRegionVars)
 {std::cout << "you called the base calculator function! Exiting" << std::endl;return EL::StatusCode::FAILURE;};
 
 protected :
@@ -44,7 +44,7 @@ protected :
   //This should be pointed to the EventLoop Worker in your alg which fills your map
 
   EL::StatusCode doGeneralCalculations(std::map<std::string, double>              & RegionVars,
-				       std::map<std::string, std::vector<double> >& VecRegionVars);
+				       std::map<std::string, std::vector<float> >& VecRegionVars);
 public :
   // this is needed to distribute the algorithm to the workers
   ClassDef(RegionVarCalculator, 1);

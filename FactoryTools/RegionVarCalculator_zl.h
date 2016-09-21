@@ -17,19 +17,22 @@ private :
   //todo probably clean this up
   virtual EL::StatusCode doInitialize(EL::Worker * worker);
   virtual EL::StatusCode doCalculate (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+				      std::map<std::string, std::vector<float> > & VecRegionVars);
 
   EL::StatusCode doAllCalculations   (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+				      std::map<std::string, std::vector<float> > & VecRegionVars);
 
   EL::StatusCode doSRCalculations    (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+				      std::map<std::string, std::vector<float> > & VecRegionVars);
 
   EL::StatusCode doCR1LCalculations  (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+				      std::map<std::string, std::vector<float> > & VecRegionVars);
 
   EL::StatusCode doCR2LCalculations  (std::map<std::string, double>               & RegionVars,
-				      std::map<std::string, std::vector<double> > & VecRegionVars);
+              std::map<std::string, std::vector<float> > & VecRegionVars);
+
+  EL::StatusCode doCRYCalculations  (std::map<std::string, double>               & RegionVars,
+              std::map<std::string, std::vector<float> > & VecRegionVars);
 
 
 public :

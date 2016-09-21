@@ -41,21 +41,28 @@ algsToRun = collections.OrderedDict()
 
 algsToRun["basicEventSelection"]       = ROOT.BasicEventSelection()
 commonOptions.configxAODAnaHelperAlg(algsToRun["basicEventSelection"] )
-setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY1KernelSkim" )
+setattr(algsToRun["basicEventSelection"], "m_derivationName"  , "SUSY1KernelSkim" )
+setattr(algsToRun["basicEventSelection"], "m_triggerSelection", ".+" )
+setattr(algsToRun["basicEventSelection"], "m_applyTriggerCut" , False )
 
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["calibrateST" ].SUSYToolsConfigFileName = "${ROOTCOREBIN}/data/FactoryTools/SUSYTools_zl.conf"
 algsToRun["calibrateST" ].systName     = ""
+algsToRun["calibrateST" ].PRWConfigFileNames       = algsToRun["basicEventSelection"].m_PRWFileNames
+algsToRun["calibrateST" ].PRWLumiCalcFileNames     = algsToRun["basicEventSelection"].m_lumiCalcFileNames
 algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
 algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
-# algsToRun["postselectDileptonicWW"]    = ROOT.PostselectDileptonicWWEvents()
 
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
 algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
 
-for regionName in ["SR","CR1L","CR2L"]:
+algsToRun["postselectZeroLepton"]    = ROOT.PostselectZeroLeptonEvents()
+
+
+for regionName in ["SR","CR1L","CR2L","CRY"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
