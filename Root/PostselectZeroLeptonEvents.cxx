@@ -121,9 +121,16 @@ EL::StatusCode PostselectZeroLeptonEvents :: execute ()
   STRONG_CHECK(store->retrieve( RegionVars,   "RegionVarsMap"));
 
   // ATH_MSG_DEBUG("Test of regionVars map: " << *RegionVars  );
-  ATH_MSG_DEBUG("Test of regionVars map: " << (*RegionVars)["MEff:float"]  );
+  ATH_MSG_DEBUG("Test of regionVars map. MEff: " << (*RegionVars)["MEff:float"]  );
 
   if((*RegionVars)["MEff:float"]<600) eventInfo->auxdecor< std::string >("regionName") = "";
+
+
+
+  if( std::strcmp(eventRegionName.c_str(),"CR1L")==0 ) {
+      ATH_MSG_DEBUG("Test of regionVars map. mT: " << (*RegionVars)["mT:float"]  );
+      if(!((*RegionVars)["mT:float"] > 30. && (*RegionVars)["mT:float"]<100.) ) eventInfo->auxdecor< std::string >("regionName") = "";
+  }
 
 
   return EL::StatusCode::SUCCESS;

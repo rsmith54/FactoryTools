@@ -34,36 +34,91 @@ setup:
   script:
     - bash
     - pwd;ls
-    - cd ..
-    # - chmod 555 FactoryTools/; rm -r ./*; chmod 755 FactoryTools/;
-    # - find . -type d ! -name 'FactoryTools*' -exec rm -rf {} \ || echo ignore;
     - rm -rf testArea || echo ignore; mkdir testArea; cd testArea;
-    - ln -s ../FactoryTools FactoryTools;
+    - ln -s ../../FactoryTools FactoryTools;
     - pwd; ls;
-    - ls FactoryTools
     - source FactoryTools/util/setup_CI.sh
     - more ~/.ssh/config
-    - ls ~/.ssh
     - grep "#!!" FactoryTools/README.md > INSTALL
     - more INSTALL
     - source INSTALL
-    # - rm -rf SUSYTools; rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-02 SUSYTools  || echo ignore alrb;
-    # - rc checkout SUSYTools/doc/packages.txt;
-    # - rm -rf Ext_RestFrames; git clone https://github.com/lawrenceleejr/Ext_RestFrames.git ; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..
-    # - git clone https://github.com/UCATLAS/xAODAnaHelpers.git  || echo ignore alrb ; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..;
-    # - rc checkout_pkg svn+ssh://atlzerol@svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools  || echo ignore alrb; cd CommonTools; svn update -r 417222; cd -;
+    # - rc find_packages
+    # - rc compile
+  artifacts:
+    paths:
+    - testArea/
 
 compile:
   stage: build
   tags:
     - cvmfs
   script:
+    - bash
+    - pwd;ls
+    - cd testArea/
+    - source FactoryTools/util/setup_CI.sh
     - rc find_packages
     - rc compile
+  artifacts:
+    paths:
+    - testArea/
 
-runmc:
+# Download stage doesn't work because input xAOD is too large to be passed around via artifacts
+# download:
+#   stage: build
+#   tags:
+#     - cvmfs
+#   script:
+#     - bash
+#     - pwd;ls
+#     - source util/setup_CI.sh
+#     - rm -rf samples; mkdir samples; cd samples;
+#     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
+#   artifacts:
+#     paths:
+#     - samples/
+
+test:
   stage: test
   tags:
     - cvmfs
   script:
-    - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS /afs/cern.ch/work/r/rsmith/public/factoryToolsSample/
+    - bash
+    - pwd;ls
+    - cd testArea/
+    - source FactoryTools/util/setup_CI.sh
+    - rc find_packages
+    - rc compile
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
+    - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS factoryToolsSample/
+
+
+testValgrind:
+  stage: test
+  tags:
+    - cvmfs
+  script:
+    - bash
+    - pwd;ls
+    - cd testArea/
+    - source FactoryTools/util/setup_CI.sh
+    - rc find_packages
+    - rc compile
+    - wget http://valgrind.org/downloads/valgrind-3.9.0.tar.bz2
+    - tar xvjf valgrind-3.9.0.tar.bz2
+    - cd valgrind-3.9.0
+    - ./configure --prefix=$HOME/valgrind
+    - make
+    - make install
+    - cd ..
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
+    - wget http://svn.python.org/projects/python/trunk/Misc/valgrind-python.supp
+    - ~/valgrind/bin/valgrind -q --leak-check=full --error-exitcode=0  --suppressions=valgrind-python.supp  python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --inputDS factoryToolsSample/ &> valgrind.log
+    - grep "possibly lost" valgrind.log
+    - grep "definitely lost" valgrind.log
+    # - grep -A 20 "SUMMARY:" valgrind.log
+    # valgrind -q  --tool=memcheck --leak-check=yes python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
+
+  artifacts:
+    paths:
+    - valgrind.log

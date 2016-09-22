@@ -47,6 +47,7 @@ setattr(algsToRun["basicEventSelection"], "m_applyTriggerCut" , False )
 
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
+algsToRun["calibrateST" ].SUSYToolsConfigFileName = "${ROOTCOREBIN}/data/FactoryTools/SUSYTools_zl.conf"
 algsToRun["calibrateST" ].systName     = ""
 algsToRun["calibrateST" ].PRWConfigFileNames       = algsToRun["basicEventSelection"].m_PRWFileNames
 algsToRun["calibrateST" ].PRWLumiCalcFileNames     = algsToRun["basicEventSelection"].m_lumiCalcFileNames

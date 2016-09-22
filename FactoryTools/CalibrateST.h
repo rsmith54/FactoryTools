@@ -26,6 +26,7 @@ public:
   }
 
   std::string systName;
+  std::string SUSYToolsConfigFileName;
   std::string PRWConfigFileNames;
   std::string PRWLumiCalcFileNames;
   std::string fatJetContainerName;

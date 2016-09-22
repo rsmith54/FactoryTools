@@ -1,3 +1,4 @@
+#include "EventLoop/Job.h"
 #include "EventLoop/StatusCode.h"
 #include "EventLoop/Worker.h"
 #include "xAODRootAccess/TStore.h"
@@ -59,6 +60,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
+
+  const xAOD::EventInfo* eventInfo = nullptr;
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+
   doGeneralCalculations(RegionVars, VecRegionVars);
 
   // Get relevant info from the vertex container //////////////////////
@@ -90,18 +95,24 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<float> jetEtaVec;
   std::vector<float> jetPhiVec;
   std::vector<float> jetEVec;
+  std::vector<float> jetBTagVec;
 
   for( const auto& jet : *jets_nominal) {
     jetPtVec.push_back( toGeV(jet->pt()));
     jetEtaVec.push_back( jet->p4().Eta() );
     jetPhiVec.push_back( jet->p4().Phi() );
     jetEVec.push_back( toGeV(jet->p4().E()) );
+    jet->auxdata<char>("bjet") == 1 ? jetBTagVec.push_back( 1. ) : jetBTagVec.push_back( 0. );
   }
 
   VecRegionVars[ "jetPt" ]  = jetPtVec;
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
+  VecRegionVars[ "jetBTag" ]   = jetBTagVec;
+
+  RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
+  RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
 
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
@@ -110,20 +121,24 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<float> lepEtaVec;
   std::vector<float> lepPhiVec;
   std::vector<float> lepEVec;
+  std::vector<float> lepSignVec;
 
-  for( const auto& lep : *leptons_nominal) {
+
+  for( xAOD::IParticle * lep : *leptons_nominal) {
     lepPtVec.push_back( toGeV(lep->pt()));
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
     lepEVec.push_back( toGeV(lep->p4().E()) );
+    if(xAOD::Electron* myelectron = static_cast<xAOD::Electron*>(lep)) lepSignVec.push_back( myelectron->charge() * 11. );
+    else if(xAOD::Muon* mymuon = dynamic_cast<xAOD::Muon*>(lep)) lepSignVec.push_back( mymuon->charge() * 13. );
+    else lepSignVec.push_back( 0. );
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;
   VecRegionVars[ "lepEta" ] = lepEtaVec;
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
-
-
+  VecRegionVars[ "lepSign" ]   = lepSignVec;
 
   double MEff = 0;
   double HT = 0;
@@ -183,11 +198,20 @@ EL::StatusCode RegionVarCalculator_zl::doCR1LCalculations(std::map<std::string, 
   RegionVars["MEff:float"] = MEff;
   RegionVars["HT:float"] = HT;
 
+  // std::cout << "Leading lepton pT: "<< (*(*leptons_nominal)[0]).p4().Pt() << std::endl;
 
-  // double mT = std::sqrt( 2.*(*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met() *
-  //                        (1.-((*leptons_nominal)[0].p4().Px()*(*metcont)["Final"]->mpx() + (*leptons_nominal)[0].p4().Py()*(*metcont)["Final"]->mpy())/((*leptons_nominal)[0].p4().Pt()*(*metcont)["Final"]->met())) );
+  double tmpLeptonPt = (*(*leptons_nominal)[0]).p4().Pt();
+  double tmpLeptonPx = (*(*leptons_nominal)[0]).p4().Px();
+  double tmpLeptonPy = (*(*leptons_nominal)[0]).p4().Py();
+  double tmpMET = (*metcont)["Final"]->met();
+  double tmpMEx = (*metcont)["Final"]->mpx();
+  double tmpMEy = (*metcont)["Final"]->mpy();
+
+
+  double mT = std::sqrt( 2.*tmpLeptonPt*tmpMET *
+                         (1.-(tmpLeptonPx*tmpMEx + tmpLeptonPy*tmpMEy)/(tmpLeptonPt*tmpMET)) );
   // if(!(mt >30000 && mt<100000)) return true
-  // RegionVars["mT"] = mT;
+  RegionVars["mT:float"] = toGeV(mT);
   // Once mT is calculated, still need to cut on it in a post-selection!
 
   return EL::StatusCode::SUCCESS;
