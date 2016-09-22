@@ -249,6 +249,13 @@ EL::StatusCode CalibrateST :: execute ()
   // eventInfo_shallowCopy.second->setShallowIO(true);
 
 
+
+
+  TString muTrig2015 = "HLT_mu20_iloose_L1MU15_OR_HLT_mu50"; //"HLT_mu18_mu8noL1"; //"HLT_mu20_iloose_L1MU15_OR_HLT_mu50";
+  TString muTrig2016 = "HLT_mu24_imedium"; //"HLT_mu20_mu8noL1";  //HLT_mu20_iloose_L1MU15_OR_HLT_mu50
+
+
+
   // Lepton Scale Factors added as decorators to eventInfo object
 
   float muSF = 1.0;
