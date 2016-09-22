@@ -60,6 +60,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
+
+  const xAOD::EventInfo* eventInfo = nullptr;
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+
   doGeneralCalculations(RegionVars, VecRegionVars);
 
   // Get relevant info from the vertex container //////////////////////
@@ -107,6 +111,9 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   VecRegionVars[ "jetE" ]   = jetEVec;
   VecRegionVars[ "jetBTag" ]   = jetBTagVec;
 
+  RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
+  RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
+
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
@@ -116,16 +123,15 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<float> lepEVec;
   std::vector<float> lepSignVec;
 
-  // dynamic_cast<xAOD::Muon*>( (leptons_nominal)[0]  );
 
-  for( const auto& lep : *leptons_nominal) {
+  for( xAOD::IParticle * lep : *leptons_nominal) {
     lepPtVec.push_back( toGeV(lep->pt()));
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
     lepEVec.push_back( toGeV(lep->p4().E()) );
-    // if(xAOD::Electron myelectron = static_cast<xAOD::Electron*>(lep)) lepSignVec.push_back( myelectron->charge() * 11. );
-    // else if(xAOD::Muon* mymuon = dynamic_cast<xAOD::Muon*>(lep)) lepSignVec.push_back( mymuon->charge() * 13. );
-    // else lepSignVec.push_back( 0 );
+    if(xAOD::Electron* myelectron = static_cast<xAOD::Electron*>(lep)) lepSignVec.push_back( myelectron->charge() * 11. );
+    else if(xAOD::Muon* mymuon = dynamic_cast<xAOD::Muon*>(lep)) lepSignVec.push_back( mymuon->charge() * 13. );
+    else lepSignVec.push_back( 0. );
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;

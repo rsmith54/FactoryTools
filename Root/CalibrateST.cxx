@@ -167,9 +167,9 @@ EL::StatusCode CalibrateST :: execute ()
 
   if( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) m_objTool->ApplyPRWTool();
 
-  bool hasElectrons = event->contains<xAOD::ElectronContainer>( "Electrons" ); 
-  bool hasPhotons = event->contains<xAOD::PhotonContainer>( "Photons" );  
-  bool hasMuons = event->contains<xAOD::MuonContainer>( "Muons" ); 
+  bool hasElectrons = event->contains<xAOD::ElectronContainer>( "Electrons" );
+  bool hasPhotons = event->contains<xAOD::PhotonContainer>( "Photons" );
+  bool hasMuons = event->contains<xAOD::MuonContainer>( "Muons" );
   bool hasTaus = event->contains<xAOD::TauJetContainer>( "TauJets" );
 
   // Get the nominal object containers from the event
@@ -218,7 +218,7 @@ EL::StatusCode CalibrateST :: execute ()
   newMetContainer->setStore(newMetAuxContainer);
 
   //todo this needs to be moved and calculated after selections
-  if (hasElectrons && hasMuons && hasPhotons) 
+  if (hasElectrons && hasMuons && hasPhotons)
     STRONG_CHECK( m_objTool->GetMET(*newMetContainer,
 				  jets_nominal,
 				  electrons_nominal,
@@ -231,7 +231,7 @@ EL::StatusCode CalibrateST :: execute ()
 				  ));
 
 
-  if (hasElectrons && hasMuons) 
+  if (hasElectrons && hasMuons)
     STRONG_CHECK(  m_objTool->OverlapRemoval(electrons_nominal,
 					   muons_nominal,
 					   jets_nominal
@@ -252,13 +252,13 @@ EL::StatusCode CalibrateST :: execute ()
   // Lepton Scale Factors added as decorators to eventInfo object
 
   float muSF = 1.0;
-  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons) 
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons)
      muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
   eventInfo->auxdecor<float>("muSF") = muSF ;
 
 
   float elSF = 1.0;
-  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons) 
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons)
     elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
   eventInfo->auxdecor<float>("elSF") = elSF ;
 
