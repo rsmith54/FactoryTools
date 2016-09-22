@@ -250,17 +250,19 @@ EL::StatusCode CalibrateST :: execute ()
 
 
 
+  // Lepton Scale Factors added as decorators to eventInfo object
+
+
+
 
   TString muTrig2015 = "HLT_mu20_iloose_L1MU15_OR_HLT_mu50"; //"HLT_mu18_mu8noL1"; //"HLT_mu20_iloose_L1MU15_OR_HLT_mu50";
   TString muTrig2016 = "HLT_mu24_imedium"; //"HLT_mu20_mu8noL1";  //HLT_mu20_iloose_L1MU15_OR_HLT_mu50
 
 
-
-  // Lepton Scale Factors added as decorators to eventInfo object
-
   float muSF = 1.0;
-  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons)
-     muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons){
+         muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+  }
   eventInfo->auxdecor<float>("muSF") = muSF ;
 
 
