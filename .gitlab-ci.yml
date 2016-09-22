@@ -113,6 +113,12 @@ testValgrind:
     - cd ..
     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
     - wget http://svn.python.org/projects/python/trunk/Misc/valgrind-python.supp
-    - ~/valgrind/bin/valgrind -q --leak-check=full --error-exitcode=0  --suppressions=valgrind-python.supp  python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --inputDS factoryToolsSample/
+    - ~/valgrind/bin/valgrind -q --leak-check=full --error-exitcode=0  --suppressions=valgrind-python.supp  python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --inputDS factoryToolsSample/ &> valgrind.log
+    - grep "definitely lost" valgrind.log
+    - grep "possibly lost" valgrind.log
+    - grep -A 20 "SUMMARY:" valgrind.log
     # valgrind -q  --tool=memcheck --leak-check=yes python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
 
+  artifacts:
+    paths:
+    - valgrind.log
