@@ -121,4 +121,4 @@ testValgrind:
 
   artifacts:
     paths:
-    - valgrind.log
+    - testArea/valgrind.log

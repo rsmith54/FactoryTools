@@ -51,17 +51,23 @@ algsToRun["calibrateST" ].SUSYToolsConfigFileName = "${ROOTCOREBIN}/data/Factory
 algsToRun["calibrateST" ].systName     = ""
 algsToRun["calibrateST" ].PRWConfigFileNames       = algsToRun["basicEventSelection"].m_PRWFileNames
 algsToRun["calibrateST" ].PRWLumiCalcFileNames     = algsToRun["basicEventSelection"].m_lumiCalcFileNames
-algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
+
+# This preselection algorithm does nothing at the moment.
+algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()
+
+# Main selection and sorting algorithm
 algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
 
+# These are the calculators that calculate various derived quantities
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
 algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
 
+# This bit runs filtering on derived variables. e.g. MEff filter.
 algsToRun["postselectZeroLepton"]    = ROOT.PostselectZeroLeptonEvents()
 
-
+# These correspond to writing out the various trees used in the analysis
 for regionName in ["SR","CR1L","CR2L","CRY"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
