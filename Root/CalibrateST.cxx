@@ -20,6 +20,8 @@
 #include "FactoryTools/CalibrateST.h"
 #include "FactoryTools/strongErrorCheck.h"
 
+#include <boost/algorithm/string/replace.hpp>
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(CalibrateST)
 
@@ -251,6 +253,15 @@ EL::StatusCode CalibrateST :: execute ()
 
 		muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true, m_objTool->treatAsYear()==2015 ? muTrig2015: muTrig2016);
 		//loop over electrons and attach trigger matching
+
+		bool passTM = false;
+		for (auto mu: *muons_nominal){
+			passTM=false;
+			passTM |= m_objTool->IsTrigMatched(mu, m_objTool->treatAsYear()==2015 ? 
+				boost::replace_all_copy(muTrig2015, "_OR_", "") :
+				boost::replace_all_copy(muTrig2016, "_OR_", "") );
+			(mu)->auxdecor< int >( "passTM" ) = passTM;
+		}
 	}
 	eventInfo->auxdecor<float>("muSF") = muSF ;
 
@@ -268,6 +279,15 @@ EL::StatusCode CalibrateST :: execute ()
 	float elSF = 1.0;
 	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons){
 		elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
+
+		bool passTM = false;
+		for (auto el: *electrons_nominal){
+			passTM=false;
+			passTM |= m_objTool->IsTrigMatched(el, m_objTool->treatAsYear()==2015 ? 
+				boost::replace_all_copy(elTrig2015, "_OR_", "") :
+				boost::replace_all_copy(elTrig2016, "_OR_", "") );
+			(el)->auxdecor< int >( "passTM" ) = passTM;
+		}
 	}
 	eventInfo->auxdecor<float>("elSF") = elSF ;
 
