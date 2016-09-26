@@ -243,14 +243,11 @@ EL::StatusCode CalibrateST :: execute ()
 	// Muons! - Figuring out year, getting SF
 	//
 
+	if(muTrig2015=="" ) muTrig2015 = "HLT_mu20_iloose_L1MU15_OR_HLT_mu50";
+	if(muTrig2016=="" ) muTrig2016 = "HLT_mu26_ivarmedium";
+
 	float muSF = 1.0;
 	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasMuons){
-
-		// maybe make trigger python configurable for this and selection algorithm
-		if(muTrig2015==notSetString() && muTrig2016==notSetString()){
-			muTrig2015 = "HLT_mu20_iloose_L1MU15_OR_HLT_mu50"; //"HLT_mu18_mu8noL1"; //"HLT_mu20_iloose_L1MU15_OR_HLT_mu50";
-			muTrig2016 = "HLT_mu26_ivarmedium"; //"HLT_mu20_mu8noL1";  //HLT_mu20_iloose_L1MU15_OR_HLT_mu50
-		}
 
 		muSF = (float) m_objTool->GetTotalMuonSF(*muons_nominal,true,true, m_objTool->treatAsYear()==2015 ? muTrig2015: muTrig2016);
 		//loop over electrons and attach trigger matching
@@ -265,15 +262,28 @@ EL::StatusCode CalibrateST :: execute ()
 	// Electrons! - Figuring out year, getting SF
 	//
 
+	if(elTrig2015=="") elTrig2015 = "HLT_e24_lhmedium_L1EM18VH";
+	if(elTrig2016=="") elTrig2016 = "HLT_e26_lhtight_nod0_ivarloose";
+	
 	float elSF = 1.0;
 	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons){
-		if(elTrig2015==notSetString() && elTrig2016==notSetString()){
-			elTrig2015 = "HLT_e24_lhmedium_L1EM18VH";
-			elTrig2016 = "HLT_e26_lhtight_nod0_ivarloose";
-		}
 		elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
 	}
 	eventInfo->auxdecor<float>("elSF") = elSF ;
+
+	//
+	/////////////////////////////////////////////////////////////////
+
+
+	/////////////////////////////////////////////////////////////////
+	// B-Tagging! - Getting SF
+	//
+
+	float btagSF = 1.0;
+	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ){
+		btagSF = (float) m_objTool->BtagSF(jets_nominal);
+	}
+	eventInfo->auxdecor<float>("btagSF") = btagSF ;
 
 	//
 	/////////////////////////////////////////////////////////////////
@@ -283,6 +293,7 @@ EL::StatusCode CalibrateST :: execute ()
 	//
 
 	eventInfo->auxdecor<float>("year") =  m_objTool->treatAsYear();
+
 
 	eventInfo->auxdecor<std::string>("muTrig2015") =  muTrig2015;
 	eventInfo->auxdecor<std::string>("muTrig2016") =  muTrig2016;

@@ -18,6 +18,7 @@
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/regex.hpp>
 
 
 // this is needed to distribute the algorithm to the workers
@@ -226,10 +227,10 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   auto trigORFromString = [](std::vector< std::string > passTrigs, std::string trigString){
     std::vector<std::string> trigVect;
-    boost::split(trigVect,trigString,boost::is_any_of("_OR_"));
+    boost::algorithm::split_regex(trigVect,trigString,boost::regex("_OR_") );
     bool trigDecision = 0;
     for(auto iTrig : trigVect){
-      trigDecision |= std::find(passTrigs.begin(), passTrigs.end(), iTrig) != passTrigs.end();
+      trigDecision |= std::find(passTrigs.begin(), passTrigs.end(), iTrig ) != passTrigs.end();
     }
     return trigDecision;
   };
@@ -256,8 +257,8 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
     passedTriggers["Electron"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("elTrig2015") );
     passedTriggers["Muon"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("muTrig2015") );
     passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
-  } else if(eventInfo->auxdecor<float>("year")==2016){
-    passedTriggers["MET"] = passedTriggers["HLT_xe110_mht_L1XE50"];
+  } else {
+    passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"];
     passedTriggers["Electron"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("elTrig2016") );
     passedTriggers["Muon"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("muTrig2016") );
     passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];

@@ -111,9 +111,6 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   VecRegionVars[ "jetE" ]   = jetEVec;
   VecRegionVars[ "jetBTag" ]   = jetBTagVec;
 
-  RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
-  RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
-
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
 
@@ -139,6 +136,12 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
   VecRegionVars[ "lepSign" ]   = lepSignVec;
+
+
+  RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
+  RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
+  RegionVars["btagSF:float"] = eventInfo->auxdecor<float>("btagSF");
+
 
   double MEff = 0;
   double HT = 0;
