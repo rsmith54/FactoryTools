@@ -18,7 +18,6 @@
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 
 
 // this is needed to distribute the algorithm to the workers
@@ -225,8 +224,9 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
 
   auto trigORFromString = [](std::vector< std::string > passTrigs, std::string trigString){
+    boost::replace_all(trigString, "_OR_", ":");
     std::vector<std::string> trigVect;
-    boost::algorithm::split_regex(trigVect,trigString,boost::regex("_OR_") );
+    boost::split(trigVect,trigString,boost::is_any_of(":") );
     bool trigDecision = 0;
     for(auto iTrig : trigVect){
       trigDecision |= std::find(passTrigs.begin(), passTrigs.end(), iTrig ) != passTrigs.end();
