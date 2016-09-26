@@ -31,6 +31,12 @@ public:
   std::string PRWLumiCalcFileNames;
   std::string fatJetContainerName;
 
+  std::string muTrig2015;
+  std::string muTrig2016;
+  std::string elTrig2015;
+  std::string elTrig2016;
+
+
   ST::SUSYObjDef_xAOD *m_objTool;//!
 
   // this is a standard constructor
