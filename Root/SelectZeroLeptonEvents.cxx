@@ -218,11 +218,10 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   ATH_MSG_DEBUG("Number of Selected Baseline Leptons: " << nBaselineLeptons  );
   ATH_MSG_DEBUG("Number of Selected Photons: " << nPhotons  );
 
-  //Let's just categorize from here maybe? But if we want different CRs in different algs,
-  //then we'd need to play with something in the store a little more smartly
-
-
-
+  bool passTM = false;
+  for (auto lepton: *selectedLeptons.first){
+    if(lepton->auxdecor< int >( "passTM" ) ) passTM = true;
+  }
 
 
   auto trigORFromString = [](std::vector< std::string > passTrigs, std::string trigString){
@@ -265,20 +264,20 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   }
 
 
-  auto  getRegionName = [](int nLeptons, int nBaselineLeptons, int nPhotons, std::map<std::string,int>  passedTriggers){ 
+  auto  getRegionName = [](int nLeptons, int nBaselineLeptons, int nPhotons, std::map<std::string,int>  passedTriggers, bool passTM){ 
             std::string regionName = "";
 					  if( nBaselineLeptons == 0 && passedTriggers["MET"] ) {regionName = "SR";}
-					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR1L";}
-            if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR2L";}
+					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) && passTM){regionName = "CR1L";}
+            if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) && passTM){regionName = "CR2L";}
             if( nPhotons > 0  && passedTriggers["Photon"] ){regionName = "CRY";}
 					  return regionName;};//todo >2 leptons in the SR? pretty rare though
 
 
-  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers )  );
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers, passTM )  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
 
-  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers ) ;
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers, passTM ) ;
 
 
   // // What happens if we add the jets into the calculation?
