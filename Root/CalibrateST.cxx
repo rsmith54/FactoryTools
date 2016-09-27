@@ -257,7 +257,7 @@ EL::StatusCode CalibrateST :: execute ()
 		bool passTM = false;
 		for (auto mu: *muons_nominal){
 			passTM=false;
-			passTM |= m_objTool->IsTrigMatched(mu, m_objTool->treatAsYear()==2015 ? 
+			passTM |= m_objTool->IsTrigMatched(mu, m_objTool->treatAsYear()==2015 ?
 				boost::replace_all_copy(muTrig2015, "_OR_", "") :
 				boost::replace_all_copy(muTrig2016, "_OR_", "") );
 			(mu)->auxdecor< int >( "passTM" ) = passTM;
@@ -275,7 +275,7 @@ EL::StatusCode CalibrateST :: execute ()
 
 	if(elTrig2015=="") elTrig2015 = "HLT_e24_lhmedium_L1EM18VH";
 	if(elTrig2016=="") elTrig2016 = "HLT_e26_lhtight_nod0_ivarloose";
-	
+
 	float elSF = 1.0;
 	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) && hasElectrons){
 		elSF = (float) m_objTool->GetTotalElectronSF(*electrons_nominal);
@@ -283,7 +283,7 @@ EL::StatusCode CalibrateST :: execute ()
 		bool passTM = false;
 		for (auto el: *electrons_nominal){
 			passTM=false;
-			passTM |= m_objTool->IsTrigMatched(el, m_objTool->treatAsYear()==2015 ? 
+			passTM |= m_objTool->IsTrigMatched(el, m_objTool->treatAsYear()==2015 ?
 				boost::replace_all_copy(elTrig2015, "_OR_", "") :
 				boost::replace_all_copy(elTrig2016, "_OR_", "") );
 			(el)->auxdecor< int >( "passTM" ) = passTM;
@@ -291,7 +291,7 @@ EL::StatusCode CalibrateST :: execute ()
 	}
 	eventInfo->auxdecor<float>("elSF") = elSF ;
 
-	//       
+	//
 	/////////////////////////////////////////////////////////////////
 
 

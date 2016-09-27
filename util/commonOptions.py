@@ -131,19 +131,44 @@ def getSystList(dataSource = 1) :
     susyTools.setDataSource(dataSource)
     susyTools.setProperty("ConfigFile", "SUSYTools/SUSYTools_Default.conf")
 
+    PRWLumiCalcFiles = ROOT.std.vector('string')(0)
+    PRWLumiCalcFiles.push_back("$ROOTCOREBIN/data/FactoryTools/ilumicalc_histograms_None_276262-304494_OflLumi-13TeV-005.root")
+
+    PRWConfigFiles = ROOT.std.vector('string')(0)
+    PRWConfigFiles.push_back("/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/SUSYTools/merged_prw_mc15c.root")
+
+    susyTools.setProperty("PRWConfigFiles", PRWConfigFiles )
+    susyTools.setProperty("PRWLumiCalcFiles", PRWLumiCalcFiles  )
     logging.info("initializing SUSYTools")
 
     susyTools.initialize()
 
-    registry = ROOT.CP.SystematicRegistry.getInstance()
-    recommendedSystematics = registry.recommendedSystematics()
+    # registry = ROOT.CP.SystematicRegistry.getInstance()
+    # recommendedSystematics = registry.recommendedSystematics()
+
+    recommendedSystematics = susyTools.getSystInfoList()
+
+    logging.debug("Full list of recommended systematics is (%d):"%recommendedSystematics.size())
+    for systInfo in recommendedSystematics:
+        logging.debug(systInfo.systset.name() )
+
     return recommendedSystematics
 
-def doSystematics(algsToRun, nonSystAlgs = ["basicEventSelection", "mcEventVeto"] ) :
+def doSystematics(algsToRun, nonSystAlgs = ["basicEventSelection", "mcEventVeto"], fullChainOnWeightSysts = 0 , excludeStrings = []) :
     '''This function will get the list of systematics from an initialized SUSYTools instance.  For each algorithm in algsToRun, it will add a copy of that algorithm to the algsToRun with an additional string for the systematic.  It will apply the systematic to those algorithms which have systName as a member of the class.  By default, we will skip running systematics on the algorithms : ''' , nonSystAlgs ,  '''.'''
     tmpAlgsToRun = copy(algsToRun)
 
-    for syst in getSystList() :
+    for systInfo in getSystList() :
+        syst = systInfo.systset
+        if syst.name() == "":
+            continue
+        if len( [substring for substring in excludeStrings if substring in syst.name()] ):
+            logging.info("Skipping excluded systematic %s"%syst.name())
+            continue
+        if systInfo.affectsWeights and fullChainOnWeightSysts == 0:
+            logging.info("Skipping full chain for weight-affecting systematic %s"%syst.name())
+            continue
+        logging.info("Adding full chain of algs with systematic %s"%syst.name())
         for algname, alg in algsToRun.iteritems() :
             if algname not in nonSystAlgs :
                 tmpAlgsToRun[algname + '_' + syst.name() ] = deepcopy(alg)

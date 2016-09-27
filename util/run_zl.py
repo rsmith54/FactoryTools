@@ -75,7 +75,7 @@ for regionName in ["SR","CR1L","CR2L","CRY"]:
     tmpWriteOutputNtuple.systName            = ""
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
-if options.doSystematics : commonOptions.doSystematics(algsToRun)
+if options.doSystematics : commonOptions.doSystematics(algsToRun,fullChainOnWeightSysts = 0, excludeStrings = ["JET_Rtrk_","TAUS_"])
 
 job.outputAdd(output);
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)
