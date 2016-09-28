@@ -12,6 +12,9 @@ from optparse import OptionParser
 
 from datetime import date
 
+import collections
+
+
 def parseCommonOptions() :
     parser = OptionParser()
     parser.add_option("--submitDir", help   = "dir to store the output", default="submit_dir")
@@ -156,7 +159,7 @@ def getSystList(dataSource = 1) :
 
 def doSystematics(algsToRun, nonSystAlgs = ["basicEventSelection", "mcEventVeto"], fullChainOnWeightSysts = 0 , excludeStrings = []) :
     '''This function will get the list of systematics from an initialized SUSYTools instance.  For each algorithm in algsToRun, it will add a copy of that algorithm to the algsToRun with an additional string for the systematic.  It will apply the systematic to those algorithms which have systName as a member of the class.  By default, we will skip running systematics on the algorithms : ''' , nonSystAlgs ,  '''.'''
-    tmpAlgsToRun = copy(algsToRun)
+    tmpAlgsToRun = deepcopy(algsToRun)
 
     for systInfo in getSystList() :
         syst = systInfo.systset
@@ -165,14 +168,43 @@ def doSystematics(algsToRun, nonSystAlgs = ["basicEventSelection", "mcEventVeto"
         if len( [substring for substring in excludeStrings if substring in syst.name()] ):
             logging.info("Skipping excluded systematic %s"%syst.name())
             continue
+
+        treatAsWeightSyst = False
         if systInfo.affectsWeights and fullChainOnWeightSysts == 0:
-            logging.info("Skipping full chain for weight-affecting systematic %s"%syst.name())
-            continue
+            logging.info("Marking as weight-affecting systematic %s"%syst.name())
+            treatAsWeightSyst = True
+
         logging.info("Adding full chain of algs with systematic %s"%syst.name())
         for algname, alg in algsToRun.iteritems() :
             if algname not in nonSystAlgs :
-                tmpAlgsToRun[algname + '_' + syst.name() ] = deepcopy(alg)
-                if hasattr(alg,"systName") :
-                    setattr(alg, "systName" , syst.name())
+                newalg = deepcopy(alg)
+                if hasattr(newalg,"systVar") :
+                    setattr(newalg, "systVar" , syst)
+                # if hasattr(newalg,"systVarInfo") :
+                #     logging.info("Applying systInfo called %s to %s"%(systInfo.systset.name(), algname  ) )
+                #     setattr(newalg, "systVarInfo" , systInfo )
+                if treatAsWeightSyst and "alibrate" not in algname:
+                    continue
+                tmpAlgsToRun[algname + '_' + syst.name() ] = newalg
+                if treatAsWeightSyst:
+                    tmpAlgsToRun = move_element(tmpAlgsToRun, 
+                        algname + '_' + syst.name(), 
+                        algsToRun.keys().index(algname)
+                        )
 
-    algsToRun.update(tmpAlgsToRun)
+    logging.debug("List of syst algorithms:")
+    for tmpalg in tmpAlgsToRun:
+        logging.debug("\t %s"%tmpalg)
+
+    return tmpAlgsToRun
+
+
+
+def move_element(odict, thekey, newpos):
+    odict[thekey] = odict.pop(thekey)
+    i = 0
+    for key, value in odict.items():
+        if key != thekey and i >= newpos:
+            odict[key] = odict.pop(key)
+        i += 1
+    return odict

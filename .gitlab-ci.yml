@@ -63,21 +63,6 @@ compile:
     paths:
     - testArea/
 
-# Download stage doesn't work because input xAOD is too large to be passed around via artifacts
-# download:
-#   stage: build
-#   tags:
-#     - cvmfs
-#   script:
-#     - bash
-#     - pwd;ls
-#     - source util/setup_CI.sh
-#     - rm -rf samples; mkdir samples; cd samples;
-#     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
-#   artifacts:
-#     paths:
-#     - samples/
-
 test:
   stage: test
   tags:
@@ -91,6 +76,26 @@ test:
     - rc compile
     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
     - python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --verbosity debug --inputDS factoryToolsSample/
+  artifacts:
+    paths:
+    - testArea/submit_dir/data-trees/*root
+
+testSystematics:
+  stage: test
+  tags:
+    - cvmfs
+  script:
+    - bash
+    - pwd;ls
+    - cd testArea/
+    - source FactoryTools/util/setup_CI.sh
+    - rc find_packages
+    - rc compile
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
+    - python FactoryTools/util/run_zl.py  --doOverwrite --doSystematics --nevents 10 --submitDir systematicsTest --verbosity debug --inputDS factoryToolsSample/
+  artifacts:
+    paths:
+    - testArea/systematicsTest/data-trees/*root
 
 
 testValgrind:
@@ -116,8 +121,6 @@ testValgrind:
     - ~/valgrind/bin/valgrind -q --leak-check=full --error-exitcode=0  --suppressions=valgrind-python.supp  python FactoryTools/util/run_zl.py  --doOverwrite --nevents 10 --inputDS factoryToolsSample/ &> valgrind.log
     - grep "possibly lost" valgrind.log
     - grep "definitely lost" valgrind.log
-    # - grep -A 20 "SUMMARY:" valgrind.log
-    # valgrind -q  --tool=memcheck --leak-check=yes python FactoryTools/util/run_zl.py  --submitDir valgrindTest --doOverwrite --nevents -1 --inputDS factoryToolsSample/
 
   artifacts:
     paths:

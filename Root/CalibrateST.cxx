@@ -26,7 +26,7 @@
 ClassImp(CalibrateST)
 
 CalibrateST :: CalibrateST () :
-systName(notSetString()),
+systVar(),
 m_objTool(nullptr)
 {
   // Here you put any code for the base initialization of variables,
@@ -106,11 +106,11 @@ EL::StatusCode CalibrateST :: initialize ()
 	bool const isAtlfast = false;
 
 	ST::ISUSYObjDef_xAODTool::DataSource datasource = (isData ? ST::ISUSYObjDef_xAODTool::Data : (isAtlfast ? ST::ISUSYObjDef_xAODTool::AtlfastII : ST::ISUSYObjDef_xAODTool::FullSim));
-	if( systName == notSetString()) {
-		ATH_MSG_ERROR( "you need to set the systematic string in your run script!");
-		ATH_MSG_ERROR( "If you wish to run without systematics, set the systName to \"\"");
-		return EL::StatusCode::FAILURE;
-	}
+	// if( systVar.name()=="" ) {
+	// 	ATH_MSG_ERROR( "you need to set the systematic string in your run script!");
+	// 	ATH_MSG_ERROR( "If you wish to run without systematics, set the syst to 0");
+	// 	return EL::StatusCode::FAILURE;
+	// }
 
 	if( PRWLumiCalcFileNames == notSetString()) {
 		ATH_MSG_ERROR( "you need to set the lumicalc file path in your run script!");
@@ -123,7 +123,7 @@ EL::StatusCode CalibrateST :: initialize ()
 	}
 
 
-	m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systName );
+	m_objTool = new ST::SUSYObjDef_xAOD( "SUSYObjDef_xAOD" + systVar.name() );
 
 	STRONG_CHECK( m_objTool->setProperty("DataSource", datasource)) ;
 	if( SUSYToolsConfigFileName == notSetString() ) {
@@ -147,6 +147,18 @@ EL::StatusCode CalibrateST :: initialize ()
 	return EL::StatusCode::SUCCESS;
 }
 
+EL::StatusCode CalibrateST :: addToSystList(std::string listName, std::string systName){
+
+	xAOD::TEvent * event = wk()->xaodEvent();
+	const xAOD::EventInfo* eventInfo(nullptr);
+	STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+	std::vector<std::string> myvector;
+	myvector = eventInfo->auxdecor< std::vector<std::string> >(listName);
+	myvector.push_back(systName);
+	eventInfo->auxdecor< std::vector<std::string> >(listName) = myvector;
+	return EL::StatusCode::SUCCESS;
+
+}
 
 
 EL::StatusCode CalibrateST :: execute ()
@@ -156,7 +168,18 @@ EL::StatusCode CalibrateST :: execute ()
 	// histograms and trees.  This is where most of your actual analysis
 	// code will go.
 
-	STRONG_CHECK( m_objTool->applySystematicVariation(systName));//apply the systematic variation
+	ATH_MSG_DEBUG( "Applying systematic variation:  "<< systVar.name() );
+	STRONG_CHECK( m_objTool->applySystematicVariation(systVar) );//apply the systematic variation
+
+	// Algorithm is handed a systname as a string
+	// Need to find the corresponding SystInfo object for later "affects" functionality
+	ST::SystInfo systVarInfo;
+	for (const auto& tmpSysInfo : m_objTool->getSystInfoList()) {
+		if(tmpSysInfo.systset.name() == systVar.name() ){
+			systVarInfo = tmpSysInfo;
+			break;
+		}
+	}
 
 	xAOD::TStore * store = wk()->xaodStore();
 	xAOD::TEvent * event = wk()->xaodEvent();
@@ -166,6 +189,13 @@ EL::StatusCode CalibrateST :: execute ()
 
 	const xAOD::EventInfo* eventInfo(nullptr);
 	STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+
+	if(systVarInfo.affectsKinematics==true) {
+		std::vector<std::string> emptyVec;
+		eventInfo->auxdecor< std::vector<std::string> >("muSF_systs") = emptyVec;
+		eventInfo->auxdecor< std::vector<std::string> >("elSF_systs") = emptyVec;
+		eventInfo->auxdecor< std::vector<std::string> >("btagSF_systs") = emptyVec;
+	}
 
 	if( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) m_objTool->ApplyPRWTool();
 
@@ -239,7 +269,6 @@ EL::StatusCode CalibrateST :: execute ()
 	STRONG_CHECK( store->record( newMetAuxContainer , "STCalibMETAux.") );//todo configurable if needed
 
 
-	// Also need to add trigger matching here
 
 	/////////////////////////////////////////////////////////////////
 	// Muons! - Figuring out year, getting SF
@@ -263,11 +292,14 @@ EL::StatusCode CalibrateST :: execute ()
 			(mu)->auxdecor< int >( "passTM" ) = passTM;
 		}
 	}
-	eventInfo->auxdecor<float>("muSF") = muSF ;
+	if(systVar.name()=="")	eventInfo->auxdecor<float>("muSF") = muSF ;
+	else if(ST::testAffectsObject(xAOD::Type::Muon, systVarInfo.affectsType) ){
+		eventInfo->auxdecor<float>("muSF_"+systVar.name()) = muSF ;
+		addToSystList("muSF_systs",systVar.name());
+	}
 
 	//
 	/////////////////////////////////////////////////////////////////
-
 
 	/////////////////////////////////////////////////////////////////
 	// Electrons! - Figuring out year, getting SF
@@ -289,11 +321,14 @@ EL::StatusCode CalibrateST :: execute ()
 			(el)->auxdecor< int >( "passTM" ) = passTM;
 		}
 	}
-	eventInfo->auxdecor<float>("elSF") = elSF ;
+	if(systVar.name()=="")	eventInfo->auxdecor<float>("elSF") = elSF ;
+	else if(ST::testAffectsObject(xAOD::Type::Electron, systVarInfo.affectsType) ){
+		eventInfo->auxdecor<float>("elSF_"+systVar.name()) = elSF ;
+		addToSystList("elSF_systs",systVar.name());
+	}
 
 	//
 	/////////////////////////////////////////////////////////////////
-
 
 	/////////////////////////////////////////////////////////////////
 	// B-Tagging! - Getting SF
@@ -303,7 +338,11 @@ EL::StatusCode CalibrateST :: execute ()
 	if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ){
 		btagSF = (float) m_objTool->BtagSF(jets_nominal);
 	}
-	eventInfo->auxdecor<float>("btagSF") = btagSF ;
+	if(systVar.name()=="")	eventInfo->auxdecor<float>("btagSF") = btagSF ;
+	else if(ST::testAffectsObject(xAOD::Type::BTag, systVarInfo.affectsType) ){
+		eventInfo->auxdecor<float>("btagSF_"+systVar.name()) = btagSF ;
+		addToSystList("btagSF_systs",systVar.name());
+	}
 
 	//
 	/////////////////////////////////////////////////////////////////

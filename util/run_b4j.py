@@ -44,7 +44,7 @@ setattr(algsToRun["basicEventSelection"], "m_derivationName", "SUSY2KernelSkim" 
 algsToRun["mcEventVeto"]               = ROOT.MCEventVeto()
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
-algsToRun["calibrateST" ].systName      = ""
+algsToRun["calibrateST" ].systVar      = 0
 algsToRun["calibrateST" ].fatJetCollectionName      = "CamKt12LCTopoJets"
 algsToRun["preselectDiFatJet"]     = ROOT.PreselectDiFatJetEvents()
 algsToRun["selectDiFatJet"]        = ROOT.SelectDiFatJetEvents()
@@ -57,7 +57,7 @@ for regionName in ["SR"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
-    tmpWriteOutputNtuple.systName            = ""
+    tmpWriteOutputNtuple.systVar            = 0
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
 if options.doSystematics : commonOptions.doSystematics(algsToRun)

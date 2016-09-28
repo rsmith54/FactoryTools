@@ -89,11 +89,11 @@ EL::StatusCode WriteOutputNtuple :: initialize ()
   // input events.
   ATH_MSG_INFO("writing to output file : " << outputName );
   ATH_MSG_INFO("region name            : " << regionName );
-  ATH_MSG_INFO("systematic name        : " << systName );
-  ATH_MSG_INFO("writing to tree        : " << regionName + systName );
+  ATH_MSG_INFO("systematic name        : " << systVar.name() );
+  ATH_MSG_INFO("writing to tree        : " << regionName + systVar.name() );
 
   m_ntupManager = new NtupManager;
-  m_ntupManager->initialize( outputName+"_"+regionName+"_"+systName, wk()->getOutputFile(outputName));//todo make the treename smarter
+  m_ntupManager->initialize( outputName+"_"+regionName+"_"+systVar.name(), wk()->getOutputFile(outputName));//todo make the treename smarter
 
   return EL::StatusCode::SUCCESS;
 }

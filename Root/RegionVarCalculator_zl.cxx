@@ -139,9 +139,22 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
 
 
   RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
+
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("muSF_systs")){
+      RegionVars["muSF_"+systName+":float"] = eventInfo->auxdecor<float>("muSF_"+systName);
+  }
+
   RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
+
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("elSF_systs")){
+      RegionVars["elSF_"+systName+":float"] = eventInfo->auxdecor<float>("elSF_"+systName);
+  }
+
   RegionVars["btagSF:float"] = eventInfo->auxdecor<float>("btagSF");
 
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("btagSF_systs")){
+      RegionVars["btagSF_"+systName+":float"] = eventInfo->auxdecor<float>("btagSF_"+systName);
+  }
 
   double MEff = 0;
   double HT = 0;
