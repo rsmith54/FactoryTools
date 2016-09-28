@@ -80,22 +80,22 @@ test:
     paths:
     - testArea/submit_dir/data-trees/*root
 
-# testSystematics:
-#   stage: test
-#   tags:
-#     - cvmfs
-#   script:
-#     - bash
-#     - pwd;ls
-#     - cd testArea/
-#     - source FactoryTools/util/setup_CI.sh
-#     - rc find_packages
-#     - rc compile
-#     - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
-#     - python FactoryTools/util/run_zl.py  --doOverwrite --doSystematics --nevents 10 --submitDir systematicsTest --verbosity debug --inputDS factoryToolsSample/
-#   artifacts:
-#     paths:
-#     - testArea/systematicsTest/data-trees/*root
+testSystematics:
+  stage: test
+  tags:
+    - cvmfs
+  script:
+    - bash
+    - pwd;ls
+    - cd testArea/
+    - source FactoryTools/util/setup_CI.sh
+    - rc find_packages
+    - rc compile
+    - scp -r atlzerol@lxplus.cern.ch:/afs/cern.ch/work/r/rsmith/public/factoryToolsSample/ factoryToolsSample
+    - python FactoryTools/util/run_zl.py  --doOverwrite --doSystematics --nevents 10 --submitDir systematicsTest --verbosity debug --inputDS factoryToolsSample/
+  artifacts:
+    paths:
+    - testArea/systematicsTest/data-trees/*root
 
 
 testValgrind:
