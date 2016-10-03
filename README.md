@@ -3,7 +3,10 @@
 Get FactoryTools with:
 
 ```
-git clone https://github.com/rsmith54/FactoryTools.git #!
+# Choose one based on where you want to grab the package from
+# git clone https://github.com/rsmith54/FactoryTools.git 
+# This one is the most current and should be used:
+git clone https://:@gitlab.cern.ch:8443/atlas-susy-0l-inclusive/FactoryTools.git #!
 ```
 
 ```
