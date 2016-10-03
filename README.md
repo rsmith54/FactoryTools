@@ -1,12 +1,18 @@
 ## Getting Started
 
-Once you have the FactoryTools package with
+Get FactoryTools with:
 
 ```
 git clone https://github.com/rsmith54/FactoryTools.git #!
 ```
 
-you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
+```
+# Please keep #! and #!! markers in README for install commands
+# Should be able to make a sourcable INSTALL file with `grep "#!" README.md > INSTALL`
+# #!! markers are used by CI for gitlab compilation - see https://gitlab.cern.ch/atlas-susy-0l-inclusive/FactoryTools/blob/master/.gitlab-ci.yml
+```
+
+You'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
 First setup RootCore :
 
 ```
@@ -59,11 +65,6 @@ python FactoryTools/util/run_zl.py --doOverwrite --driver grid --inputDS Factory
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
-
-```
-# Please keep #! markers for install commands
-# #!! markers are used by CI for gitlab compilation
-```
 
 ## Merging Step
 
