@@ -60,7 +60,7 @@ def fillSampleHandler ( sh_all, inp) :
         mylist = ROOT.SH.DiskListLocal(inp)
         ROOT.SH.scanDir(sh_all,mylist, "*")
     else :
-        ROOT.SH.scanDQ2(sh_all, inp)
+        ROOT.SH.scanRucio(sh_all, inp)
         sh_all.setMetaString("nc_grid_filter", "*");
     if not sh_all.size() :
         functionName = lambda : sys._getframe(1).f_code.co_name
@@ -93,6 +93,8 @@ def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
     if (driverName == "direct"):
         logging.info( "direct driver")
         driver = ROOT.EL.DirectDriver()
+        job.options().setDouble (ROOT.EL.Job.optCacheSize, 100*1024*1024);
+        job.options().setDouble (ROOT.EL.Job.optCacheLearnEntries, 100);
         logging.info("submit job")
         driver.submit(job, submitDir)
     elif driverName == "lsf" :
@@ -113,6 +115,8 @@ def submitJob (job , driverName , submitDir, gridUser = "" , gridTag = "") :
         driver = ROOT.EL.PrunDriver()
         gridOutputDatasetName = "user.%s.%%in:name[2]%%.%%in:name[3]%%.%s"%(gridUser,gridTag)
         driver.options().setString("nc_outputSampleName", gridOutputDatasetName  );
+        driver.options().setString(ROOT.EL.Job.optGridNGBPerJob,  "MAX");
+        #driver.options().setString(ROOT.EL.Job.optGridNFilesPerJob,  "1");
         driver.options().setDouble(ROOT.EL.Job.optGridMergeOutput, 1);
 
         logging.info("submit job")
