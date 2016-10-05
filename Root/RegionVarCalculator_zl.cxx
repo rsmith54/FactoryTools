@@ -60,6 +60,10 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   xAOD::TStore * store = m_worker->xaodStore();
   xAOD::TEvent * event = m_worker->xaodEvent();
 
+
+  const xAOD::EventInfo* eventInfo = nullptr;
+  STRONG_CHECK(event->retrieve( eventInfo, "EventInfo"));
+
   doGeneralCalculations(RegionVars, VecRegionVars);
 
   // Get relevant info from the vertex container //////////////////////
@@ -91,18 +95,21 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<float> jetEtaVec;
   std::vector<float> jetPhiVec;
   std::vector<float> jetEVec;
+  std::vector<float> jetBTagVec;
 
   for( const auto& jet : *jets_nominal) {
     jetPtVec.push_back( toGeV(jet->pt()));
     jetEtaVec.push_back( jet->p4().Eta() );
     jetPhiVec.push_back( jet->p4().Phi() );
     jetEVec.push_back( toGeV(jet->p4().E()) );
+    jet->auxdata<char>("bjet") == 1 ? jetBTagVec.push_back( 1. ) : jetBTagVec.push_back( 0. );
   }
 
   VecRegionVars[ "jetPt" ]  = jetPtVec;
   VecRegionVars[ "jetEta" ] = jetEtaVec;
   VecRegionVars[ "jetPhi" ] = jetPhiVec;
   VecRegionVars[ "jetE" ]   = jetEVec;
+  VecRegionVars[ "jetBTag" ]   = jetBTagVec;
 
   xAOD::IParticleContainer* leptons_nominal(nullptr);
   STRONG_CHECK(store->retrieve(leptons_nominal, "selectedLeptons"));
@@ -111,20 +118,43 @@ EL::StatusCode RegionVarCalculator_zl::doAllCalculations(std::map<std::string, d
   std::vector<float> lepEtaVec;
   std::vector<float> lepPhiVec;
   std::vector<float> lepEVec;
+  std::vector<float> lepSignVec;
 
-  for( const auto& lep : *leptons_nominal) {
+
+  for( xAOD::IParticle * lep : *leptons_nominal) {
     lepPtVec.push_back( toGeV(lep->pt()));
     lepEtaVec.push_back( lep->p4().Eta() );
     lepPhiVec.push_back( lep->p4().Phi() );
     lepEVec.push_back( toGeV(lep->p4().E()) );
+    if(xAOD::Electron* myelectron = static_cast<xAOD::Electron*>(lep)) lepSignVec.push_back( myelectron->charge() * 11. );
+    else if(xAOD::Muon* mymuon = dynamic_cast<xAOD::Muon*>(lep)) lepSignVec.push_back( mymuon->charge() * 13. );
+    else lepSignVec.push_back( 0. );
   }
 
   VecRegionVars[ "lepPt" ]  = lepPtVec;
   VecRegionVars[ "lepEta" ] = lepEtaVec;
   VecRegionVars[ "lepPhi" ] = lepPhiVec;
   VecRegionVars[ "lepE" ]   = lepEVec;
+  VecRegionVars[ "lepSign" ]   = lepSignVec;
 
 
+  RegionVars["muSF:float"] = eventInfo->auxdecor<float>("muSF");
+
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("muSF_systs")){
+      RegionVars["muSF_"+systName+":float"] = eventInfo->auxdecor<float>("muSF_"+systName);
+  }
+
+  RegionVars["elSF:float"] = eventInfo->auxdecor<float>("elSF");
+
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("elSF_systs")){
+      RegionVars["elSF_"+systName+":float"] = eventInfo->auxdecor<float>("elSF_"+systName);
+  }
+
+  RegionVars["btagSF:float"] = eventInfo->auxdecor<float>("btagSF");
+
+  for(auto systName : eventInfo->auxdecor< std::vector<std::string> >("btagSF_systs")){
+      RegionVars["btagSF_"+systName+":float"] = eventInfo->auxdecor<float>("btagSF_"+systName);
+  }
 
   double MEff = 0;
   double HT = 0;

@@ -17,6 +17,8 @@
 #include "xAODParticleEvent/ParticleContainer.h"
 #include "xAODParticleEvent/ParticleAuxContainer.h"
 
+#include <boost/algorithm/string.hpp>
+
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(SelectZeroLeptonEvents)
@@ -111,6 +113,7 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
 
   // If the event didn't pass the preselection alg, don't bother doing anything with it...
   std::string preselectedRegionName =  eventInfo->auxdecor< std::string >("regionName");
+  ATH_MSG_DEBUG("EventNumber: " << eventInfo->eventNumber()  );
   ATH_MSG_DEBUG("Preselected?: " << preselectedRegionName  );
 
   if( preselectedRegionName == "" ) return EL::StatusCode::SUCCESS;
@@ -214,9 +217,22 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   ATH_MSG_DEBUG("Number of Selected Baseline Leptons: " << nBaselineLeptons  );
   ATH_MSG_DEBUG("Number of Selected Photons: " << nPhotons  );
 
-  //Let's just categorize from here maybe? But if we want different CRs in different algs,
-  //then we'd need to play with something in the store a little more smartly
+  bool passTM = false;
+  for (auto lepton: *selectedLeptons.first){
+    if(lepton->auxdecor< int >( "passTM" ) ) passTM = true;
+  }
 
+
+  auto trigORFromString = [](std::vector< std::string > passTrigs, std::string trigString){
+    boost::replace_all(trigString, "_OR_", ":");
+    std::vector<std::string> trigVect;
+    boost::split(trigVect,trigString,boost::is_any_of(":") );
+    bool trigDecision = 0;
+    for(auto iTrig : trigVect){
+      trigDecision |= std::find(passTrigs.begin(), passTrigs.end(), iTrig ) != passTrigs.end();
+    }
+    return trigDecision;
+  };
 
 
 
@@ -227,52 +243,41 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
   passedTriggers["HLT_xe100"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100") != passTrigs.end();
   passedTriggers["HLT_xe100_mht_L1XE50"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_xe100_mht_L1XE50") != passTrigs.end();
 
-
-
-  if(eventInfo->eventNumber()==21368832){
-    std::cout << std::endl << std::endl << "LL - Found the event!" << std::endl;
-    for (auto trig : passTrigs) // access by value, the type of i is int
-        std::cout << trig << std::endl;
-    std::cout << std::endl << std::endl;
-    std::cout << passedTriggers["HLT_xe100_mht_L1XE50"] << std::endl << std::endl;
-  }
-
-
-
-  passedTriggers["HLT_e24_lhmedium_L1EM18VH"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e24_lhmedium_L1EM18VH") != passTrigs.end();
-  passedTriggers["HLT_e26_lhtight_nod0_ivarloose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e26_lhtight_nod0_ivarloose") != passTrigs.end();
-  passedTriggers["HLT_mu20_iloose_L1MU15"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu20_iloose_L1MU15") != passTrigs.end();
-  passedTriggers["HLT_mu26_ivarmedium"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu26_ivarmedium") != passTrigs.end();
+  // passedTriggers["HLT_e24_lhmedium_L1EM18VH"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e24_lhmedium_L1EM18VH") != passTrigs.end();
+  // passedTriggers["HLT_e26_lhtight_nod0_ivarloose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_e26_lhtight_nod0_ivarloose") != passTrigs.end();
+  // passedTriggers["HLT_mu20_iloose_L1MU15"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu20_iloose_L1MU15") != passTrigs.end();
+  // passedTriggers["HLT_mu26_ivarmedium"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_mu26_ivarmedium") != passTrigs.end();
 
   passedTriggers["HLT_g140_loose"] = std::find(passTrigs.begin(), passTrigs.end(), "HLT_g140_loose") != passTrigs.end();
 
-  passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"];
-  // passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"]  || passedTriggers["HLT_xe100"];
-  passedTriggers["Electron"] = passedTriggers["HLT_e24_lhmedium_L1EM18VH"] || passedTriggers["HLT_e26_lhtight_nod0_ivarloose"];
-  passedTriggers["Muon"] = passedTriggers["HLT_mu20_iloose_L1MU15"] || passedTriggers["HLT_mu26_ivarmedium"];
-  passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
+
+  if(eventInfo->auxdecor<float>("year")==2015){
+    passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"];
+    passedTriggers["Electron"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("elTrig2015") );
+    passedTriggers["Muon"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("muTrig2015") );
+    passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
+  } else {
+    passedTriggers["MET"] = passedTriggers["HLT_xe100_mht_L1XE50"];
+    passedTriggers["Electron"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("elTrig2016") );
+    passedTriggers["Muon"] = trigORFromString(passTrigs,eventInfo->auxdecor<std::string>("muTrig2016") );
+    passedTriggers["Photon"] = passedTriggers["HLT_g140_loose"];
+  }
 
 
-  auto  getRegionName = [](int nLeptons, int nBaselineLeptons, int nPhotons, std::map<std::string,int>  passedTriggers){ 
+  auto  getRegionName = [](int nLeptons, int nBaselineLeptons, int nPhotons, std::map<std::string,int>  passedTriggers, bool passTM){ 
             std::string regionName = "";
 					  if( nBaselineLeptons == 0 && passedTriggers["MET"] ) {regionName = "SR";}
-					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR1L";}
-            if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) ){regionName = "CR2L";}
+					  if( nLeptons == 1 && (passedTriggers["Electron"]||passedTriggers["Muon"]) && passTM){regionName = "CR1L";}
+            if( nLeptons == 2 && (passedTriggers["Electron"]||passedTriggers["Muon"]) && passTM){regionName = "CR2L";}
             if( nPhotons > 0  && passedTriggers["Photon"] ){regionName = "CRY";}
 					  return regionName;};//todo >2 leptons in the SR? pretty rare though
 
-  //Here we should add the particles that we want in the calculation to myparticles
-  //for( const auto& mylepton: *selectedLeptons.first){
-  //  xAOD::Particle *tmpparticle = new xAOD::Particle;
-  //  selectedRJigsawParticles.first->push_back(tmpparticle  );
-  //  tmpparticle->setP4( mylepton->p4() );
-  //}
 
-  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers )  );
+  ATH_MSG_DEBUG("Event falls in region: " << getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers, passTM )  );
 
   ATH_MSG_DEBUG("Writing particle container for calculator to store");
 
-  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers ) ;
+  eventInfo->auxdecor< std::string >("regionName") = getRegionName( nLeptons, nBaselineLeptons, nPhotons, passedTriggers, passTM ) ;
 
 
   // // What happens if we add the jets into the calculation?
@@ -285,12 +290,6 @@ EL::StatusCode SelectZeroLeptonEvents :: execute ()
       selectedRJigsawParticles.first->push_back( mylep );
     }
   }
-
-
-  //important for consistent tree production for e.g. backgrounds that often have too few objects
-  // if(selectedRJigsawParticles.first->size()<2) {
-  //   eventInfo->auxdecor< std::string >("regionName") = "";
-  // }
 
 
   ATH_MSG_DEBUG("Writing to eventInfo decoration: " <<  eventInfo->auxdecor< std::string >("regionName")   );

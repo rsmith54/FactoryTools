@@ -2,6 +2,7 @@
 #define FactoryTools_WriteOutputNtuple_H
 
 #include <EventLoop/Algorithm.h>
+#include "PATInterfaces/SystematicSet.h"
 
 class NtupManager;
 
@@ -18,7 +19,7 @@ public:
 
   std::string outputName;
   std::string regionName;
-  std::string systName  ;
+  CP::SystematicSet systVar  ;
 
 
   // variables that don't get filled at submission time should be

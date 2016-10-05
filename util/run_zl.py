@@ -48,28 +48,35 @@ setattr(algsToRun["basicEventSelection"], "m_applyTriggerCut" , False )
 
 algsToRun["calibrateST"]               = ROOT.CalibrateST()
 algsToRun["calibrateST" ].SUSYToolsConfigFileName = "${ROOTCOREBIN}/data/FactoryTools/SUSYTools_zl.conf"
-algsToRun["calibrateST" ].systName     = ""
+# algsToRun["calibrateST" ].systVar     = 0
 algsToRun["calibrateST" ].PRWConfigFileNames       = algsToRun["basicEventSelection"].m_PRWFileNames
 algsToRun["calibrateST" ].PRWLumiCalcFileNames     = algsToRun["basicEventSelection"].m_lumiCalcFileNames
-algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()#todo change this if we need it
+
+# This preselection algorithm does nothing at the moment.
+algsToRun["preselectDileptonicWW"]   = ROOT.PreselectDileptonicWWEvents()
+
+# Main selection and sorting algorithm
 algsToRun["selectZeroLepton"]        = ROOT.SelectZeroLeptonEvents()
 
+# These are the calculators that calculate various derived quantities
 algsToRun["calculateRJigsawVariables"] = ROOT.CalculateRJigsawVariables()
 algsToRun["calculateRJigsawVariables"].calculatorName = ROOT.CalculateRJigsawVariables.zlCalculator
 algsToRun["calculateRegionVars"]                      = ROOT.CalculateRegionVars()
 algsToRun["calculateRegionVars"].calculatorName       = ROOT.CalculateRegionVars.zlCalculator
 
+# This bit runs filtering on derived variables. e.g. MEff filter.
 algsToRun["postselectZeroLepton"]    = ROOT.PostselectZeroLeptonEvents()
 
-
+# These correspond to writing out the various trees used in the analysis
 for regionName in ["SR","CR1L","CR2L","CRY"]:
     tmpWriteOutputNtuple                       = ROOT.WriteOutputNtuple()
     tmpWriteOutputNtuple.outputName            = outputFilename
     tmpWriteOutputNtuple.regionName            = regionName
-    tmpWriteOutputNtuple.systName            = ""
+    # tmpWriteOutputNtuple.systVar            = 0
     algsToRun["writeOutputNtuple_"+regionName] = tmpWriteOutputNtuple
 
-if options.doSystematics : commonOptions.doSystematics(algsToRun)
+if options.doSystematics : 
+	algsToRun = commonOptions.doSystematics(algsToRun,fullChainOnWeightSysts = 0, excludeStrings = ["JET_Rtrk_","TAUS_"])
 
 job.outputAdd(output);
 commonOptions.addAlgsFromDict(job , algsToRun , options.verbosity)

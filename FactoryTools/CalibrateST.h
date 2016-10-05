@@ -4,6 +4,9 @@
 #include <EventLoop/Algorithm.h>
 #include "SUSYTools/SUSYObjDef_xAOD.h"
 
+#include "PATInterfaces/SystematicSet.h"
+
+
 class CalibrateST : public EL::Algorithm
 {
   // put your configuration variables here as public variables.
@@ -25,11 +28,17 @@ public:
     return notSetString;
   }
 
-  std::string systName;
+  CP::SystematicSet systVar;
   std::string SUSYToolsConfigFileName;
   std::string PRWConfigFileNames;
   std::string PRWLumiCalcFileNames;
   std::string fatJetContainerName;
+
+  std::string muTrig2015;
+  std::string muTrig2016;
+  std::string elTrig2015;
+  std::string elTrig2016;
+
 
   ST::SUSYObjDef_xAOD *m_objTool;//!
 
@@ -46,6 +55,8 @@ public:
   virtual EL::StatusCode postExecute ();
   virtual EL::StatusCode finalize ();
   virtual EL::StatusCode histFinalize ();
+
+  EL::StatusCode addToSystList(std::string listName, std::string systName);
 
   // this is needed to distribute the algorithm to the workers
   ClassDef(CalibrateST, 1);
