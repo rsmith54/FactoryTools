@@ -184,7 +184,7 @@ EL::StatusCode CalibrateST :: execute ()
 	xAOD::TStore * store = wk()->xaodStore();
 	xAOD::TEvent * event = wk()->xaodEvent();
 
-	//  store->print();
+	// //  store->print();
 	store->clear();//We must clear the store when doing systematics so that we have a brand new setup.
 
 	const xAOD::EventInfo* eventInfo(nullptr);
@@ -239,11 +239,11 @@ EL::StatusCode CalibrateST :: execute ()
 	}
 
 	// Taus
-	xAOD::TauJetContainer* taus_nominal(nullptr);
-	xAOD::ShallowAuxContainer* taus_nominal_aux(nullptr);
-	if(hasTaus) {
-		STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
-	}
+	// xAOD::TauJetContainer* taus_nominal(nullptr);
+	// xAOD::ShallowAuxContainer* taus_nominal_aux(nullptr);
+	// if(hasTaus) {
+	// 	STRONG_CHECK( m_objTool->GetTaus(taus_nominal,taus_nominal_aux) );
+	// }
 
 	xAOD::MissingETContainer*    newMetContainer    = new xAOD::MissingETContainer();
 	xAOD::MissingETAuxContainer* newMetAuxContainer = new xAOD::MissingETAuxContainer();
