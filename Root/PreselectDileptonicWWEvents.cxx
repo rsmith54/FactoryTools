@@ -128,7 +128,8 @@ EL::StatusCode PreselectDileptonicWWEvents :: execute ()
   eventInfo->auxdecor< std::string >("regionName") = "Preselected";
 
 
-  if(eventInfo->auxdecor< std::string >("regionName") == "")  wk()->skipEvent();
+  // if(eventInfo->auxdecor< std::string >("regionName") == "")  wk()->skipEvent();
+
 
   return EL::StatusCode::SUCCESS;
 }

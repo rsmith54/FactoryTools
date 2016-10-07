@@ -1,12 +1,21 @@
 ## Getting Started
 
-Once you have the FactoryTools package with
+Get FactoryTools with:
 
 ```
-git clone https://github.com/rsmith54/FactoryTools.git #!
+# Choose one based on where you want to grab the package from
+# git clone https://github.com/rsmith54/FactoryTools.git 
+# This one is the most current and should be used:
+git clone https://:@gitlab.cern.ch:8443/atlas-susy-0l-inclusive/FactoryTools.git #!
 ```
 
-you'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
+```
+# Please keep #! and #!! markers in README for install commands
+# Should be able to make a sourcable INSTALL file with `grep "#!" README.md > INSTALL`
+# #!! markers are used by CI for gitlab compilation - see https://gitlab.cern.ch/atlas-susy-0l-inclusive/FactoryTools/blob/master/.gitlab-ci.yml
+```
+
+You'll still need a few dependencies. You'll need to get `Ext_RestFrames` and `CommonTools`. We are using a newer version of SUSYTools than is currently in the release, while depending on a package not in the release we are using yet (todo update when not true anymore).
 First setup RootCore :
 
 ```
@@ -16,8 +25,8 @@ source FactoryTools/util/setup.sh #!
 Now we can checkout our dependencies using the following :
 
 ```
-rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-05 SUSYTools; #!!
-rc checkout SUSYTools/doc/packages.txt; #!!
+#rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-08-09 SUSYTools; #!!
+#rc checkout SUSYTools/doc/packages.txt; #!!
 git clone https://github.com/UCATLAS/xAODAnaHelpers.git; cd xAODAnaHelpers; git checkout 630919c55078d543f91e1dee12175a1c4783941e;  git checkout -b localRJbranch; cd ..; #!!
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.7; git checkout -b v1.7; cd ..; #!!
 rc checkout_pkg svn+ssh://svn.cern.ch/reps/atlasinst/Institutes/LBNL/AnalysisToolsRunII/CommonTools/trunk/ CommonTools; cd CommonTools; svn update -r 417790; cd -; #!!
@@ -59,11 +68,6 @@ python FactoryTools/util/run_zl.py --doOverwrite --driver grid --inputDS Factory
 ```
 
 This default assumes your system username is the same as your grid/NICE name. If not, you can change it with --gridUser, and the --gridTag defaults to just the date.
-
-```
-# Please keep #! markers for install commands
-# #!! markers are used by CI for gitlab compilation
-```
 
 ## Merging Step
 
